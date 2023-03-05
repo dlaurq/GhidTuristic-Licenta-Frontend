@@ -7,11 +7,11 @@ const Country = ({country, handleDelete, handleEdit,handleUpdate}) => {
   return (
     <>
     {!country.edit ?
-        <section className="flex flex-row justify-between p-5 items-center border-b">
-          <h3 className="text-2xl text-gray-100">{country.name}</h3>
+        <section className="flex flex-row justify-between p-5 items-center border-b border-gray-300">
+          <h3 className="text-2xl text-gray-300">{country.name}</h3>
           <div className="buttons">
-            <Button handleClick={handleEdit}>Edit</Button>
-            <Button handleClick={handleDelete}>Delete</Button>
+            <Button handleClick={handleEdit} classes='mx-1'>Edit</Button>
+            <Button handleClick={handleDelete} classes='mx-1'>Delete</Button>
           </div>
         </section>
       :

@@ -3,11 +3,13 @@ import Button from "../../../components/Button"
 import Country from "./components/Country"
 import api from "../../../api/axios"
 import CountryForm from "./components/CountryForm"
+import ErrorMsg from "../../../components/ErrorMsg"
 
 
 const Countries = () => {
   const [countries, setCountries] = useState([])
   const [serverMsg, setServerMsg] = useState('')
+  const [msgColor, setMsgColor] = useState('')
 
   
   const fetchCountries = async () =>{
@@ -35,6 +37,7 @@ const Countries = () => {
       const newCountries = [...countries, {...res.data.country, edit:false}]
       setCountries(newCountries)
       setServerMsg(res.data.message)
+      setMsgColor('text-green-500')
     }catch(err){
       console.log(err.response)
       setServerMsg(`Error: ${err.response.data.message}`)
@@ -48,6 +51,7 @@ const Countries = () => {
       const newCountries = countries.filter(country => country.id !== id)
       setCountries(newCountries)
       setServerMsg(res.data.message)
+      setMsgColor('text-red-500')
     }catch(err){
       setServerMsg(`Error: ${err.response.data.message}`)
     }
@@ -61,6 +65,7 @@ const Countries = () => {
       const newCountries = countries.map(country => (country.id === values.id ? {...country, name:values.country, edit:false} : {...country}))
       setCountries(newCountries)
       setServerMsg(res.data.message)
+      setMsgColor('text-blue-500')
     }catch(err){
       setServerMsg(`Error: ${err.response.data.message}`)
     }
@@ -77,9 +82,9 @@ const Countries = () => {
   },[])
 
   return (
-    <section className="bg-slate-600">
-      <p className="text-center text-3xl text-blue-600 font-bold">{serverMsg}</p>
-
+    <section className="bg-gray-900">
+      
+      <ErrorMsg color={msgColor}>{serverMsg}</ErrorMsg>
       <CountryForm handleSubmit={handleCreate} buttonText='Adauga'/>
 
       {countries.map(country =>

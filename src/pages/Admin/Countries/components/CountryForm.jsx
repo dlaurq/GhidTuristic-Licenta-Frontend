@@ -1,6 +1,8 @@
 import { useFormik } from "formik"
 import * as Yup from "yup"
 import Button from "../../../../components/Button"
+import Form from "../../../../components/Form"
+import Input from "../../../../components/Input"
 
 const CountryForm = ({handleSubmit, buttonText, country}) => {
     const formik = useFormik({
@@ -18,23 +20,28 @@ const CountryForm = ({handleSubmit, buttonText, country}) => {
     })
 
   return (
-    <form onSubmit={formik.handleSubmit} autoComplete='off' className="text-slate-300 text-xl font-bold p-3 border-zinc-800 border-2 w-full text-center">
-    <label htmlFor="country">Nume tara</label>
-    <input 
-      className="text-neutral-700 m-5"
-      id="country" 
-      name="country" 
-      type="text" 
-      placeholder="Nume tara"
-      onChange={formik.handleChange}
-      value={formik.values.country}
-      onBlur={formik.handleBlur}
-    />
+    <Form handleSubmit={formik.handleSubmit} classes='h-52'>
+      <section className="flex flex-col">
+        <label htmlFor="country" className="mb-3">
+          {formik.touched.country && formik.errors.country 
+            ? formik.errors.country
+            : 'Nume tara'
+          }
+        </label>
+        <Input 
+          id="country" 
+          name="country" 
+          type="text" 
+          placeholder="Nume tara"
+          handleChange={formik.handleChange}
+          value={formik.values.country}
+          handleBlur={formik.handleBlur}
+        />
+      </section>
+    
     <Button type="submit">{buttonText}</Button>
-    {formik.touched.country && formik.errors.country ? (
-     <div>{formik.errors.country}</div>
-   ) : null}
-  </form>
+    
+  </Form>
   )
 }
 

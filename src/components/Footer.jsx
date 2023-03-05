@@ -1,7 +1,7 @@
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-gray-300 w-screen py-5 text-center font-bold">
+    <footer className="bg-black text-gray-300 w-screen py-5 text-center font-bold">
         ACESTA ESTE UN FOOTER TEMPORAR
     </footer>
   )

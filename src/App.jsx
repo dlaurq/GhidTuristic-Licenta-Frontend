@@ -6,6 +6,7 @@ import {
 } from "react-router-dom"
 import AdminLayout from "./layouts/AdminLayout"
 import RootLayout from "./layouts/RootLayout"
+import Counties from "./pages/Admin/Counties/Counties"
 import Countries from "./pages/Admin/Countries/Countries"
 import Home from "./pages/Home"
 
@@ -17,6 +18,7 @@ function App() {
         <Route index element={<Home />}/>
         <Route path="admin" element={<AdminLayout />}>
           <Route path="country" element={<Countries />}/>
+          <Route path="county" element={<Counties />}/>
         </Route>
       </Route>
     )
