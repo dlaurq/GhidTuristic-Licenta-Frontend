@@ -42,10 +42,10 @@ const CountyForm = ({handleSubmit, buttonText, county, country, countries}) => {
           value={formik.values.countryId}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className='text-gray-900 w-full'
+          className='text-gray-900 w-full font-bold bg-gray-300'
         >
           <option value=''>Selecteaza o tara</option>
-          {countries.map(country => <option key={country.id} value={country.id}>{country.name}</option>)}
+          {countries.map(country => <option key={country.id} value={country.id} className='font-normal bg-gray-300 '>{country.name}</option>)}
         </select>
       </section>
     

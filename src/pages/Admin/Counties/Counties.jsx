@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import api from "../../../api/axios"
+import ConfBox from '../../../components/ConfBox'
 import ErrorMsg from '../../../components/ErrorMsg'
 import County from './components/County'
 import CountyForm from './components/CountyForm'
@@ -10,6 +11,7 @@ const Counties = () => {
   const [filter, setFilter] = useState('')
   const [serverMsg, setServerMsg] = useState()
   const [msgColor, setMsgColor] = useState('')
+  const [delConfBox, setDelConfBox] = useState(false)
 
   useEffect(() =>{
     fetchCountries()
@@ -61,27 +63,28 @@ const Counties = () => {
   const handleCreate = async (values) =>{
     try{
       const res = await api.post('/counties',{name:values.county, countryId:values.country})
-      console.log(res.data)
-      const newCountries = [...countries, {...res.data.country, edit:false}]
-      setCountries(newCountries)
+      const newCounties = [...counties, {...res.data.county}]
+      setCounties(newCounties)
       setServerMsg(res.data.message)
       setMsgColor('text-green-500')
     }catch(err){
       setServerMsg(`Error: ${err.message}`)
+      setMsgColor('text-red-500')
     }
   }
 
   const handleDelete = async (id) => {
     try{
       const res = await api.delete(`/counties/${id}`)
-      const newCountries = countries.filter(country => country.id !== id)
-      setCountries(newCountries)
+      const newCounties = counties.filter(county => county.id !== id)
+      setCounties(newCounties)
       setServerMsg(res.data.message)
-      setMsgColor('text-red-500')
+      setMsgColor('text-green-500')
     }catch(err){
+      console.log(err.response.data.message)
       setServerMsg(`Error: ${err.response.data.message}`)
+      setMsgColor('text-red-500')
     }
-
   }
   
   const handleUpdate = async (values) =>{
@@ -103,6 +106,13 @@ const Counties = () => {
     
   }
 
+
+
+  const toggleConfDelBox = (id)=>{
+    const newCounties = counties.map(county => county.id === id ? {...county, deleteBox:!county.deleteBox} : county)
+    setCounties(newCounties)
+  }
+
   return (
     <section className='bg-gray-900 text-gray-300'>
 
@@ -110,7 +120,14 @@ const Counties = () => {
         <p>Filtreaza dupa tara:</p>
         <select name="countrySelector" id="countrySelector" onChange={handleChange} className='text-gray-900'>
           <option value="">--Alege o tara--</option>
-          {countries.map(country => <option key={country.id} value={country.id}>{country.name}</option>)}
+          {countries.map(country => 
+            <option 
+              key={country.id} 
+              value={country.id}
+            >
+              {country.name}
+            </option>
+          )}
         </select>
       </section>
 
@@ -122,7 +139,15 @@ const Counties = () => {
         handleSubmit={handleCreate}
       />
 
-      {counties.map(county => <County key={county.id} county={county} handleDelete={handleDelete}/>)}
+      {counties.map(county => 
+        <County 
+          key={county.id} 
+          toggleConfDelBox={() => toggleConfDelBox(county.id)}
+          handleEdit={() => handleEdit(country.id)} 
+          county={county} 
+          handleDelete={() => handleDelete(county.id)}
+        />
+      )}
 
     </section>
   )

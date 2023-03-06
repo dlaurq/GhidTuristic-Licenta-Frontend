@@ -16,7 +16,7 @@ const AdminNav = () => {
             ['Locatii','Location'],
             ['Poze','Location'],
           ].map(([title, url]) => (
-            <li className="hover:underline focus:underline underline-offset-8"><NavLink className={({isActive}) => isActive && 'text-emerald-600 underline'} to={url}>{title}</NavLink></li>
+            <li key={title} className="hover:underline focus:underline underline-offset-8"><NavLink className={({isActive}) => isActive ? 'text-emerald-600 underline' : {undefined}} to={url}>{title}</NavLink></li>
           ))
           }
         </ul>

@@ -10,6 +10,7 @@ const Countries = () => {
   const [countries, setCountries] = useState([])
   const [serverMsg, setServerMsg] = useState('')
   const [msgColor, setMsgColor] = useState('')
+  const [delConfBox, setDelConfBox] = useState(false)
 
   
   const fetchCountries = async () =>{
@@ -51,11 +52,13 @@ const Countries = () => {
       const newCountries = countries.filter(country => country.id !== id)
       setCountries(newCountries)
       setServerMsg(res.data.message)
-      setMsgColor('text-red-500')
+      setMsgColor('text-green-500')
     }catch(err){
       setServerMsg(`Error: ${err.response.data.message}`)
+      setMsgColor('text-red-500')
+    }finally{
+      setDelConfBox(false)
     }
-
   }
   
   const handleUpdate = async (values) =>{
@@ -77,18 +80,31 @@ const Countries = () => {
     
   }
 
+  const handleConfDelBox = () =>{
+    setDelConfBox(prevDelConfBox => !prevDelConfBox)
+  }
+
+  const toggleConfDelBox = (id)=>{
+    const newCountries = countries.map(country => country.id === id ? {...country, deleteBox:!country.deleteBox} : country)
+    setCountries(newCountries)
+  }
+
+
   useEffect(()=>{
     fetchCountries()
   },[])
 
   return (
     <section className="bg-gray-900">
+
       
       <ErrorMsg color={msgColor}>{serverMsg}</ErrorMsg>
       <CountryForm handleSubmit={handleCreate} buttonText='Adauga'/>
 
       {countries.map(country =>
         <Country 
+          toggleConfDelBox={() => toggleConfDelBox(country.id)}
+          delConfBox={delConfBox}
           country={country} 
           handleDelete={() => handleDelete(country.id)} 
           handleEdit={() => handleEdit(country.id)} 
