@@ -10,6 +10,7 @@ import Counties from "./pages/Admin/Counties/Counties"
 import Countries from "./pages/Admin/Countries/Countries"
 import Cities from "./pages/Admin/Cities/Cities"
 import Home from "./pages/Home"
+import Locations from "./pages/Admin/Locations/Locations"
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="country" element={<Countries />}/>
           <Route path="county" element={<Counties />}/>
           <Route path="city" element={<Cities />}/>
+          <Route path="locations" element={<Locations />}/>
         </Route>
       </Route>
     )

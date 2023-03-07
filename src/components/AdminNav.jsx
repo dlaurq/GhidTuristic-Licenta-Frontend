@@ -10,10 +10,10 @@ const AdminNav = () => {
             ['Tari','Country'],
             ['Judete','County'],
             ['Orase','City'],
-            ['Adrese','Location'],
+            ['Adrese','Locations'],
             ['Utilizatori','Location'],
             ['Recenzii','Location'],
-            ['Locatii','Location'],
+            ['Entitati','Location'],
             ['Poze','Location'],
           ].map(([title, url]) => (
             <li key={title} className="hover:underline focus:underline underline-offset-8"><NavLink className={({isActive}) => isActive ? 'text-emerald-600 underline' : {undefined}} to={url}>{title}</NavLink></li>
