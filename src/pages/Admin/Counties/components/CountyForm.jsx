@@ -3,12 +3,14 @@ import * as Yup from "yup"
 import Button from "../../../../components/Button"
 import Form from "../../../../components/Form"
 import Input from "../../../../components/Input"
+import Select from "../../../../components/Select"
+import Option from "../../../../components/Option"
+import Label from "../../../../components/Label"
 
 const CountyForm = ({handleSubmit, buttonText, county, country, countries}) => {
-
   const formik = useFormik({
     initialValues:{
-      country: (country ? country.id : ''),
+      country: (county ? county.CountryId : ''),
       county: (county ? county.name : ''),
       id: (county ? county.id : '')
     },
@@ -29,32 +31,32 @@ const CountyForm = ({handleSubmit, buttonText, county, country, countries}) => {
 
   return (
     <Form handleSubmit={formik.handleSubmit} classes='h-60'>
-      <section className="">
-        <label htmlFor="country">
+      <section>
+        <Label htmlFor="country">
           {formik.touched.country && formik.errors.country 
             ? formik.errors.country
             : ''
           }
-        </label>
-        <select 
+        </Label>
+        <Select 
           name="country" 
           id="country"
-          value={formik.values.countryId}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
+          value={formik.values.country}
+          handleChange={formik.handleChange}
+          handleBlur={formik.handleBlur}
           className='text-gray-900 w-full font-bold bg-gray-300'
         >
-          <option value=''>Selecteaza o tara</option>
-          {countries.map(country => <option key={country.id} value={country.id} className='font-normal bg-gray-300 '>{country.name}</option>)}
-        </select>
+          <Option value=''>Selecteaza o tara</Option>
+          {countries.map(country => <Option key={country.id} value={country.id} className='font-normal bg-gray-300 '>{country.name}</Option>)}
+        </Select>
       </section>
     
       <section className="mb-2">
-        <label htmlFor="county">
+        <Label htmlFor="county">
           {formik.touched.county && formik.errors.county 
           ? formik.errors.county
           : 'Nume Judet'}
-        </label>
+        </Label>
         <Input 
           id="county" 
           name="county" 

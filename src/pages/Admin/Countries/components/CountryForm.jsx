@@ -3,6 +3,7 @@ import * as Yup from "yup"
 import Button from "../../../../components/Button"
 import Form from "../../../../components/Form"
 import Input from "../../../../components/Input"
+import Label from "../../../../components/Label"
 
 const CountryForm = ({handleSubmit, buttonText, country}) => {
     const formik = useFormik({
@@ -16,18 +17,17 @@ const CountryForm = ({handleSubmit, buttonText, country}) => {
         }),
     
         onSubmit:handleSubmit,
-        //onSubmit: () => {formik.resetForm()},
     })
 
   return (
     <Form handleSubmit={formik.handleSubmit} classes='h-52'>
       <section className="flex flex-col">
-        <label htmlFor="country" className="mb-3">
+        <Label htmlFor="country" classes="mb-3">
           {formik.touched.country && formik.errors.country 
             ? formik.errors.country
             : 'Nume tara'
           }
-        </label>
+        </Label>
         <Input 
           id="country" 
           name="country" 

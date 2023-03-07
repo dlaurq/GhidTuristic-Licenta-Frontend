@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react"
-import Button from "../../../components/Button"
 import Country from "./components/Country"
 import api from "../../../api/axios"
 import CountryForm from "./components/CountryForm"
 import ErrorMsg from "../../../components/ErrorMsg"
-
 
 const Countries = () => {
   const [countries, setCountries] = useState([])
@@ -78,10 +76,6 @@ const Countries = () => {
     const newCountries = countries.map(country => (country.id === id ? {...country, edit:true} : {...country, edit:false}))
     setCountries(newCountries)
     
-  }
-
-  const handleConfDelBox = () =>{
-    setDelConfBox(prevDelConfBox => !prevDelConfBox)
   }
 
   const toggleConfDelBox = (id)=>{

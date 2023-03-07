@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import api from "../../../api/axios"
-import ConfBox from '../../../components/ConfBox'
 import ErrorMsg from '../../../components/ErrorMsg'
 import County from './components/County'
 import CountyForm from './components/CountyForm'
+import Select from '../../../components/Select'
+import Option from '../../../components/Option'
 
 const Counties = () => {
   const [countries ,setCountries] = useState([])
@@ -11,7 +12,6 @@ const Counties = () => {
   const [filter, setFilter] = useState('')
   const [serverMsg, setServerMsg] = useState()
   const [msgColor, setMsgColor] = useState('')
-  const [delConfBox, setDelConfBox] = useState(false)
 
   useEffect(() =>{
     fetchCountries()
@@ -20,7 +20,7 @@ const Counties = () => {
 
   useEffect(() =>{
     if(filter !== ''){
-      getCountiesByCountry(filter)
+      //getCountiesByCountry(filter)
     }
   },[filter])
 
@@ -55,10 +55,10 @@ const Counties = () => {
   }
 
   const handleChange = (e) =>{
-    if(e.target.value !== ''){
-      setFilter(e.target.value)
-    }
+    setFilter(e.target.value)
+    
   }
+
 
   const handleCreate = async (values) =>{
     try{
@@ -89,24 +89,23 @@ const Counties = () => {
   
   const handleUpdate = async (values) =>{
     console.log(values)
+    
     try{
-      const res = await api.patch(`/counties/${values.id}`,{name:values.country})
-      const newCountries = countries.map(country => (country.id === values.id ? {...country, name:values.country, edit:false} : {...country}))
-      setCountries(newCountries)
+      const res = await api.patch(`/counties/${values.id}`,{name:values.county,countryId:values.country})
+      const newCounties = counties.map(county => (county.id === values.id ? {...county, name:values.county, edit:false} : {...county}))
+      setCounties(newCounties)
       setServerMsg(res.data.message)
       setMsgColor('text-blue-500')
     }catch(err){
       setServerMsg(`Error: ${err.response.data.message}`)
+      setMsgColor('text-red-500')
     }
   }
 
   const handleEdit = async (id) => {
-    const newCountries = countries.map(country => (country.id === id ? {...country, edit:true} : {...country, edit:false}))
-    setCountries(newCountries)
-    
+    const newCounties = counties.map(county => (county.id === id ? {...county, edit:true} : {...county, edit:false}))
+    setCounties(newCounties)
   }
-
-
 
   const toggleConfDelBox = (id)=>{
     const newCounties = counties.map(county => county.id === id ? {...county, deleteBox:!county.deleteBox} : county)
@@ -118,17 +117,17 @@ const Counties = () => {
 
       <section className="flex flex-row justify-between items-center p-5 text-xl border-b font-medium">
         <p>Filtreaza dupa tara:</p>
-        <select name="countrySelector" id="countrySelector" onChange={handleChange} className='text-gray-900'>
-          <option value="">--Alege o tara--</option>
+        <Select name="countrySelector" id="countrySelector" handleChange={handleChange} className='text-gray-900'>
+          <Option value="">--Alege o tara--</Option>
           {countries.map(country => 
-            <option 
+            <Option 
               key={country.id} 
               value={country.id}
             >
               {country.name}
-            </option>
+            </Option>
           )}
-        </select>
+        </Select>
       </section>
 
       <ErrorMsg color={msgColor}>{serverMsg}</ErrorMsg>
@@ -143,9 +142,12 @@ const Counties = () => {
         <County 
           key={county.id} 
           toggleConfDelBox={() => toggleConfDelBox(county.id)}
-          handleEdit={() => handleEdit(country.id)} 
+          handleEdit={() => handleEdit(county.id)} 
           county={county} 
           handleDelete={() => handleDelete(county.id)}
+          handleUpdate={handleUpdate}
+          countries={countries}
+          classes={filter && county.CountryId !== filter && "hidden"}
         />
       )}
 
