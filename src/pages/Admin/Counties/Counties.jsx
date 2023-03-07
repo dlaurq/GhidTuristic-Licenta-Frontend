@@ -18,12 +18,6 @@ const Counties = () => {
     fetchCounties()
   },[])
 
-  useEffect(() =>{
-    if(filter !== ''){
-      //getCountiesByCountry(filter)
-    }
-  },[filter])
-
   const fetchCountries = async () =>{
     try{
       const res = await api.get('/countries')
@@ -44,21 +38,10 @@ const Counties = () => {
     }
   }
 
-  const getCountiesByCountry = async (id) =>{
-    try{
-      const res = await api.get(`/counties/country/${id}`)
-      setCounties(res.data)
-      setServerMsg('')
-    }catch (err){
-      setServerMsg(`Error: ${err.message}`)
-    }
-  }
-
   const handleChange = (e) =>{
     setFilter(e.target.value)
     
   }
-
 
   const handleCreate = async (values) =>{
     try{
@@ -81,15 +64,12 @@ const Counties = () => {
       setServerMsg(res.data.message)
       setMsgColor('text-green-500')
     }catch(err){
-      console.log(err.response.data.message)
       setServerMsg(`Error: ${err.response.data.message}`)
       setMsgColor('text-red-500')
     }
   }
   
   const handleUpdate = async (values) =>{
-    console.log(values)
-    
     try{
       const res = await api.patch(`/counties/${values.id}`,{name:values.county,countryId:values.country})
       const newCounties = counties.map(county => (county.id === values.id ? {...county, name:values.county, edit:false} : {...county}))

@@ -13,7 +13,7 @@ const CountryForm = ({handleSubmit, buttonText, country}) => {
         },
     
         validationSchema: Yup.object({
-          country: Yup.string().max(60,"Numele tarii poate sa contina maxim 60").required("Copletati campul").matches(/^[a-zA-Z\s]*$/, "Numele trebuie sa contina doar litere"),
+          country: Yup.string().max(60,"Numele tarii poate sa contina maxim 60 de caractere").required("Copletati campul").matches(/^[a-zA-Z\s]*$/, "Numele trebuie sa contina doar litere"),
         }),
     
         onSubmit:handleSubmit,
