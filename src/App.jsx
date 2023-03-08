@@ -11,6 +11,8 @@ import Countries from "./pages/Admin/Countries/Countries"
 import Cities from "./pages/Admin/Cities/Cities"
 import Home from "./pages/Home"
 import Locations from "./pages/Admin/Locations/Locations"
+import Register from "./pages/Auth/Register"
+import Login from "./pages/Auth/Login"
 
 function App() {
 
@@ -18,6 +20,8 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element={<RootLayout />}>
         <Route index element={<Home />}/>
+        <Route path="register" element={<Register />}/>
+        <Route path="login" element={<Login />}/>
         <Route path="admin" element={<AdminLayout />}>
           <Route path="country" element={<Countries />}/>
           <Route path="county" element={<Counties />}/>

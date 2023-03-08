@@ -30,8 +30,8 @@ const MainNav = () => {
               <FontAwesomeIcon icon={faX} size='3x'/>
             </header>
             <ul className="pt-20 text-3xl font-normal flex flex-col justify-evenly items-center gap-5">
-              <li><NavLink to="" className="">Inregistrare</NavLink></li>
-              <li><NavLink to="" className="">Autentificare</NavLink></li>
+              <li><NavLink to="register" className="">Inregistrare</NavLink></li>
+              <li><NavLink to="login" className="">Autentificare</NavLink></li>
               <li><NavLink to="admin" className="">Admin</NavLink></li>
               <li><NavLink to="" className="">Cont</NavLink></li>
             </ul>
