@@ -6,8 +6,16 @@ import Input from '../../components/Input'
 import Label from '../../components/Label'
 import * as Yup from "yup"
 import api from "../../api/axios"
+import useAuth from '../../hooks/useAuth'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 
 const Login = () => {
+
+    const {setAuth} = useAuth()
+
+    const navigate = useNavigate()
+    const location = useLocation()
+    const from = location.state?.from?.pathname || '/'
 
     const handleSubmit = async (values) =>{
         try{
@@ -16,8 +24,9 @@ const Login = () => {
                 headers: { 'Content-Type': 'application/json' },
                 withCredentials: true
             })
-
-            console.log(res.data)
+            const accessToken = res.data.accessToken
+            setAuth({username:values.username, accessToken})
+            navigate(from, {replace:true})
         }catch(err){
             console.log(err)
         }

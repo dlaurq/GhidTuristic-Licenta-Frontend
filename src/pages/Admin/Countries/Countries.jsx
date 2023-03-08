@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react"
 import Country from "./components/Country"
-import api from "../../../api/axios"
 import CountryForm from "./components/CountryForm"
 import ErrorMsg from "../../../components/ErrorMsg"
+import useAxiosPrivate from "../../../hooks/useAxiosPrivate"
 
 const Countries = () => {
   const [countries, setCountries] = useState([])
   const [serverMsg, setServerMsg] = useState('')
   const [msgColor, setMsgColor] = useState('')
   const [delConfBox, setDelConfBox] = useState(false)
+  const axiosPrivate = useAxiosPrivate()
 
   
   const fetchCountries = async () =>{
     try{
-      const res = await api.get('/countries')
+      const res = await axiosPrivate.get('/countries')
       const newCountries = res.data.map(country => ({...country, edit:false}))
       setCountries(newCountries)
       setServerMsg('')
@@ -31,7 +32,7 @@ const Countries = () => {
 
   const handleCreate = async (values) => {
     try{
-      const res = await api.post('/countries',{name:values.country})
+      const res = await axiosPrivate.post('/countries',{name:values.country})
       console.log(res.data)
       const newCountries = [...countries, {...res.data.country, edit:false}]
       setCountries(newCountries)
@@ -46,7 +47,7 @@ const Countries = () => {
 
   const handleDelete = async (id) => {
     try{
-      const res = await api.delete(`/countries/${id}`)
+      const res = await axiosPrivate.delete(`/countries/${id}`)
       const newCountries = countries.filter(country => country.id !== id)
       setCountries(newCountries)
       setServerMsg(res.data.message)
@@ -62,7 +63,7 @@ const Countries = () => {
   const handleUpdate = async (values) =>{
     console.log(values)
     try{
-      const res = await api.patch(`/countries/${values.id}`,{name:values.country})
+      const res = await axiosPrivate.patch(`/countries/${values.id}`,{name:values.country})
       const newCountries = countries.map(country => (country.id === values.id ? {...country, name:values.country, edit:false} : {...country}))
       setCountries(newCountries)
       setServerMsg(res.data.message)

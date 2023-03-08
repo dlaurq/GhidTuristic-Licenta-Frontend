@@ -13,20 +13,29 @@ import Home from "./pages/Home"
 import Locations from "./pages/Admin/Locations/Locations"
 import Register from "./pages/Auth/Register"
 import Login from "./pages/Auth/Login"
+import RequireAuth from "./components/RequireAuth"
 
 function App() {
 
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<RootLayout />}>
+
+        {/**Public routes */}
         <Route index element={<Home />}/>
         <Route path="register" element={<Register />}/>
         <Route path="login" element={<Login />}/>
-        <Route path="admin" element={<AdminLayout />}>
-          <Route path="country" element={<Countries />}/>
-          <Route path="county" element={<Counties />}/>
-          <Route path="city" element={<Cities />}/>
-          <Route path="locations" element={<Locations />}/>
+
+        {/**Private routes */}
+        <Route element={<RequireAuth allowedRoles={[420]} />}>
+          <Route path="admin" element={<AdminLayout />}>
+            <Route path="country" element={<Countries />}/>
+            <Route path="county" element={<Counties />}/>
+            <Route path="city" element={<Cities />}/>
+            <Route path="locations" element={<Locations />}/>
+        </Route>
+
+        {/**404 route */}
         </Route>
       </Route>
     )
