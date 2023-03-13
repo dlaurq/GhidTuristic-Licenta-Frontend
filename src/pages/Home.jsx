@@ -1,7 +1,19 @@
+import { useLoadScript } from "@react-google-maps/api"
+import Map from "../components/Map"
 
 const Home = () => {
+
+  const {isLoaded} = useLoadScript({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API,
+  })
+
+  if(!isLoaded) return <div>Loading ...</div>
+
   return (
-    <div className="bg-gray-900">Home</div>
+    /**<Map /> */
+
+    <div>Home</div>
+    
   )
 }
 

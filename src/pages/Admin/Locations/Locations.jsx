@@ -20,7 +20,7 @@ const Locations = () => {
 
   const fetchCities = async () =>{
     try{
-      const res = await api.get('/cities')
+      const res = await api.get('api/cities')
       setCities(res.data)
       setServerMsg('')
     }catch (err){
@@ -30,7 +30,7 @@ const Locations = () => {
 
   const fetchLocations = async () =>{
     try{
-      const res = await api.get('/locations')
+      const res = await api.get('api/locations')
       setLocations(res.data)
       setServerMsg('')
     }catch (err){
@@ -45,7 +45,7 @@ const Locations = () => {
   const handleCreate = async (values) =>{
     console.log(values)
     try{
-      const res = await api.post('/locations',{address:values.location, cityId:values.city})
+      const res = await api.post('api/locations',{address:values.location, cityId:values.city})
       console.log(res.data)
       const newLocations = [...locations, {...res.data.location}]
       setLocations(newLocations)
@@ -59,7 +59,7 @@ const Locations = () => {
 
   const handleDelete = async (id) => {
     try{
-      const res = await api.delete(`/locations/${id}`)
+      const res = await api.delete(`api/locations/${id}`)
       const newLocations = locations.filter(location => location.id !== id)
       setLocations(newLocations)
       setServerMsg(res.data.message)
@@ -72,7 +72,7 @@ const Locations = () => {
   
   const handleUpdate = async (values) =>{
     try{
-      const res = await api.patch(`/locations/${values.id}`,{address:values.location,cityId:values.city})
+      const res = await api.patch(`api/locations/${values.id}`,{address:values.location,cityId:values.city})
       const newLocations = locations.map(location => (location.id === values.id ? {...location, address:values.location, edit:false} : {...location}))
       setLocations(newLocations)
       setServerMsg(res.data.message)

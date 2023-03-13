@@ -20,7 +20,7 @@ const Cities = () => {
 
   const fetchCities = async () =>{
     try{
-      const res = await api.get('/cities')
+      const res = await api.get('api/cities')
       setCities(res.data)
       setServerMsg('')
     }catch (err){
@@ -30,7 +30,7 @@ const Cities = () => {
 
   const fetchCounties = async () =>{
     try{
-      const res = await api.get('/counties')
+      const res = await api.get('api/counties')
       setCounties(res.data)
       setServerMsg('')
     }catch (err){
@@ -44,7 +44,7 @@ const Cities = () => {
 
   const handleCreate = async (values) =>{
     try{
-      const res = await api.post('/cities',{name:values.city, countyId:values.county})
+      const res = await api.post('api/cities',{name:values.city, countyId:values.county})
       const newCities = [...cities, {...res.data.city}]
       setCities(newCities)
       setServerMsg(res.data.message)
@@ -57,7 +57,7 @@ const Cities = () => {
 
   const handleDelete = async (id) => {
     try{
-      const res = await api.delete(`/cities/${id}`)
+      const res = await api.delete(`api/cities/${id}`)
       const newCities = cities.filter(city => city.id !== id)
       setCities(newCities)
       setServerMsg(res.data.message)
@@ -70,7 +70,7 @@ const Cities = () => {
   
   const handleUpdate = async (values) =>{
     try{
-      const res = await api.patch(`/cities/${values.id}`,{name:values.city,countyId:values.county})
+      const res = await api.patch(`api/cities/${values.id}`,{name:values.city,countyId:values.county})
       const newCities = cities.map(city => (city.id === values.id ? {...city, name:values.city, edit:false} : {...city}))
       setCities(newCities)
       setServerMsg(res.data.message)

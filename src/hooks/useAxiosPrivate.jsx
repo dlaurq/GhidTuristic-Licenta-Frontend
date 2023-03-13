@@ -9,7 +9,7 @@ const useAxiosPrivate = () => {
 
     useEffect(() => {
 
-        const requestIntercept = axiosPrivate.interceptors.requrest.use(
+        const requestIntercept = axiosPrivate.interceptors.request.use(
             config => {
                 if(!config.headers['Authorization']){
                     config.headers['Authorization'] = `Bearer ${auth?.accessToken}`

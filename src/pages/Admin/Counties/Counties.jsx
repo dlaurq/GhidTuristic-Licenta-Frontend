@@ -20,7 +20,7 @@ const Counties = () => {
 
   const fetchCountries = async () =>{
     try{
-      const res = await api.get('/countries')
+      const res = await api.get('api/countries')
       setCountries(res.data)
       setServerMsg('')
     }catch (err){
@@ -30,7 +30,7 @@ const Counties = () => {
 
   const fetchCounties = async () =>{
     try{
-      const res = await api.get('/counties')
+      const res = await api.get('api/counties')
       setCounties(res.data)
       setServerMsg('')
     }catch (err){
@@ -45,7 +45,7 @@ const Counties = () => {
 
   const handleCreate = async (values) =>{
     try{
-      const res = await api.post('/counties',{name:values.county, countryId:values.country})
+      const res = await api.post('api/counties',{name:values.county, countryId:values.country})
       const newCounties = [...counties, {...res.data.county}]
       setCounties(newCounties)
       setServerMsg(res.data.message)
@@ -58,7 +58,7 @@ const Counties = () => {
 
   const handleDelete = async (id) => {
     try{
-      const res = await api.delete(`/counties/${id}`)
+      const res = await api.delete(`api/counties/${id}`)
       const newCounties = counties.filter(county => county.id !== id)
       setCounties(newCounties)
       setServerMsg(res.data.message)
@@ -71,7 +71,7 @@ const Counties = () => {
   
   const handleUpdate = async (values) =>{
     try{
-      const res = await api.patch(`/counties/${values.id}`,{name:values.county,countryId:values.country})
+      const res = await api.patch(`api/counties/${values.id}`,{name:values.county,countryId:values.country})
       const newCounties = counties.map(county => (county.id === values.id ? {...county, name:values.county, edit:false} : {...county}))
       setCounties(newCounties)
       setServerMsg(res.data.message)

@@ -14,6 +14,7 @@ import Locations from "./pages/Admin/Locations/Locations"
 import Register from "./pages/Auth/Register"
 import Login from "./pages/Auth/Login"
 import RequireAuth from "./components/RequireAuth"
+import Partener from "./pages/Partener/Partener"
 
 function App() {
 
@@ -26,17 +27,24 @@ function App() {
         <Route path="register" element={<Register />}/>
         <Route path="login" element={<Login />}/>
 
+
+
         {/**Private routes */}
         <Route element={<RequireAuth allowedRoles={[420]} />}>
           <Route path="admin" element={<AdminLayout />}>
-            <Route path="country" element={<Countries />}/>
-            <Route path="county" element={<Counties />}/>
-            <Route path="city" element={<Cities />}/>
-            <Route path="locations" element={<Locations />}/>
+            <Route path="country" element={<Countries />} />
+            <Route path="county" element={<Counties />} />
+            <Route path="city" element={<Cities />} />
+            <Route path="locations" element={<Locations />} />
+          </Route>
         </Route>
 
+        
+        <Route path="partener" element={ <Partener /> } />
+
+      
+
         {/**404 route */}
-        </Route>
       </Route>
     )
   )
