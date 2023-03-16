@@ -26,7 +26,8 @@ const Login = () => {
             })
             const accessToken = res.data.accessToken
             setAuth({username:values.username, accessToken})
-            navigate(from, {replace:true})
+            console.log(from)
+            navigate(from, { replace: true })
         }catch(err){
             console.log(err)
         }

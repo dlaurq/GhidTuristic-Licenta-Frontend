@@ -1,24 +1,30 @@
 import { NavLink, Link } from "react-router-dom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faBars, faX} from "@fortawesome/free-solid-svg-icons"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import useAuth from "../hooks/useAuth"
 import jwt_decode from "jwt-decode"
-
+import useLogout from "../hooks/useLogout"
 
 const MainNav = () => {
   const [mobileNav, setMobileNav] = useState(false)
 
   const {auth} = useAuth()
-  const decoded = auth?.accessToken
-        ? jwt_decode(auth.accessToken)
-        : undefined
+  const logout = useLogout()
 
-  const roles = decoded?.UserInfo.roles || []
+  const roles = auth.roles
+
+  useEffect(() => {
+    console.log(auth)
+  }, [])
 
   const handleClick = () =>{
     setMobileNav(prevMobileNav => !prevMobileNav)
-    
+
+  }
+
+  const handleLogout = async () => {
+    await logout()
   }
 
   return (
@@ -40,17 +46,18 @@ const MainNav = () => {
             </header>
             <ul className="pt-20 text-3xl font-normal flex flex-col justify-evenly items-center gap-5">
               <>
-                {!auth.username
+                {!auth?.accessToken
                   ?<>
                     <li><NavLink to="register" className="">Inregistrare</NavLink></li>
                     <li><NavLink to="login" className="">Autentificare</NavLink></li>
                   </>  
                   :<>
-                    <li><NavLink to="" className="">Cont</NavLink></li>
+                    <li><NavLink to="/" className="">Cont</NavLink></li>
+                    <li><NavLink to="/" onClick={handleLogout} className="">Logout</NavLink></li>
 
-                    {roles.find(role => role === 420) 
+                    {roles?.find(role => role === 420) 
                     ?<li><NavLink to="admin" className="">Admin</NavLink></li>
-                    :roles.find(role => role === 1337) && <li><NavLink to="partener" className="">Partener</NavLink></li>}
+                    :roles?.find(role => role === 1337) && <li><NavLink to="partener" className="">Partener</NavLink></li>}
 
                   </>
                 

@@ -2,7 +2,8 @@ import {
   createBrowserRouter, 
   createRoutesFromElements, 
   Route, 
-  RouterProvider
+  RouterProvider,
+  Routes
 } from "react-router-dom"
 import AdminLayout from "./layouts/AdminLayout"
 import RootLayout from "./layouts/RootLayout"
@@ -15,42 +16,45 @@ import Register from "./pages/Auth/Register"
 import Login from "./pages/Auth/Login"
 import RequireAuth from "./components/RequireAuth"
 import Partener from "./pages/Partener/Partener"
+import PersistLogin from "./components/PersistLogin"
 
 function App() {
 
-  const router = createBrowserRouter(
-    createRoutesFromElements(
-      <Route path="/" element={<RootLayout />}>
 
-        {/**Public routes */}
-        <Route index element={<Home />}/>
-        <Route path="register" element={<Register />}/>
-        <Route path="login" element={<Login />}/>
-
-
-
-        {/**Private routes */}
-        <Route element={<RequireAuth allowedRoles={[420]} />}>
-          <Route path="admin" element={<AdminLayout />}>
-            <Route path="country" element={<Countries />} />
-            <Route path="county" element={<Counties />} />
-            <Route path="city" element={<Cities />} />
-            <Route path="locations" element={<Locations />} />
-          </Route>
-        </Route>
-
-        
-        <Route path="partener" element={ <Partener /> } />
-
-      
-
-        {/**404 route */}
-      </Route>
-    )
-  )
 
   return (
-    <RouterProvider router={router} />
+    <Routes>
+      <Route element={<PersistLogin />}>
+        <Route path="/" element={<RootLayout />}>
+
+          {/**Public routes */}
+          <Route path="/" element={<Home />}/>
+          <Route path="register" element={<Register />}/>
+          <Route path="login" element={<Login />}/>
+
+
+
+          {/**Private routes */}
+          
+            <Route element={<RequireAuth allowedRoles={[420]} />}>
+              <Route path="admin" element={<AdminLayout />}>
+                <Route path="country" element={<Countries />} />
+                <Route path="county" element={<Counties />} />
+                <Route path="city" element={<Cities />} />
+                <Route path="locations" element={<Locations />} />
+              </Route>
+            </Route>
+          
+
+
+          <Route path="partener" element={ <Partener /> } />
+
+
+
+          {/**404 route */}
+        </Route>
+      </Route>
+    </Routes>
   )
 }
 

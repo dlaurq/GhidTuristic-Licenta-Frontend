@@ -3,6 +3,7 @@ import Country from "./components/Country"
 import CountryForm from "./components/CountryForm"
 import ErrorMsg from "../../../components/ErrorMsg"
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate"
+import { useNavigate, useLocation } from "react-router-dom"
 
 const Countries = () => {
   const [countries, setCountries] = useState([])
@@ -10,25 +11,31 @@ const Countries = () => {
   const [msgColor, setMsgColor] = useState('')
   const [delConfBox, setDelConfBox] = useState(false)
   const axiosPrivate = useAxiosPrivate()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   
-  const fetchCountries = async () =>{
-    try{
-      const res = await axiosPrivate.get('/countries')
-      const newCountries = res.data.map(country => ({...country, edit:false}))
-      setCountries(newCountries)
-      setServerMsg('')
-    }catch (err){
-      if(err.response){
-        console.log(err.response.data)
-        console.log(err.response.status)
-        console.log(err.response.headers)
-      }else{
-        console.log(`Error: ${err.message}`)
+  
+  useEffect(()=>{
+
+    const fetchCountries = async () =>{
+      try{
+        const res = await axiosPrivate.get('/countries', {
+        })
+        const newCountries = res.data.map(country => ({...country, edit:false}))
+        setCountries(newCountries)
+        setServerMsg('')
+      }catch (err){
+        console.log(err)
+        navigate('/login', { state: { from: location}, replace: true})
         setServerMsg(`Error: ${err.message}`)
       }
     }
-  }
+  
+    fetchCountries()
+
+
+  },[])
 
   const handleCreate = async (values) => {
     try{
@@ -85,13 +92,10 @@ const Countries = () => {
   }
 
 
-  useEffect(()=>{
-    fetchCountries()
-  },[])
+  
 
   return (
     <section className="bg-gray-900">
-
       
       <ErrorMsg color={msgColor}>{serverMsg}</ErrorMsg>
       <CountryForm handleSubmit={handleCreate} buttonText='Adauga'/>
@@ -107,6 +111,7 @@ const Countries = () => {
           key={country.id}
         />
       )}
+
     </section>
   )
 }
