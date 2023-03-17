@@ -15,7 +15,7 @@ const MainNav = () => {
   const roles = auth.roles
 
   useEffect(() => {
-    console.log(auth)
+    //console.log(auth)
   }, [])
 
   const handleClick = () =>{

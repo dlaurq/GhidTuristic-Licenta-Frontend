@@ -1,25 +1,15 @@
-import React from 'react'
-
-const Input = ({id,name,type,placeholder,handleChange,value,handleBlur}) => {
+import { useEffect } from "react"
 
 
-  /**
-    <input 
-      className=""
-      id="county" 
-      name="county" 
-      type="text" 
-      placeholder="Nume judet"
-      onChange={formik.handleChange}
-      value={formik.values.county}
-      onBlur={formik.handleBlur}
-    />
-    */
+const Input = ({id,name,type,placeholder,handleChange,value,handleBlur, multiple, accept, className}) => {
+
+
+
 
 
   return (
     <input 
-      className='text-neutral-700 w-full'
+      className={`text-neutral-700 w-full ${className}`}
       id={id}
       name={name}
       type={type}
@@ -27,6 +17,8 @@ const Input = ({id,name,type,placeholder,handleChange,value,handleBlur}) => {
       onChange={handleChange}
       value={value}
       onBlur={handleBlur}
+      accept = {accept}
+      multiple = {multiple ? true : false}
     />
   )
 }

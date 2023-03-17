@@ -11,7 +11,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 
 const Login = () => {
 
-    const {setAuth} = useAuth()
+    const {auth, setAuth} = useAuth()
 
     const navigate = useNavigate()
     const location = useLocation()
@@ -26,7 +26,6 @@ const Login = () => {
             })
             const accessToken = res.data.accessToken
             setAuth({username:values.username, accessToken})
-            console.log(from)
             navigate(from, { replace: true })
         }catch(err){
             console.log(err)

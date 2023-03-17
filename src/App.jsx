@@ -17,6 +17,7 @@ import Login from "./pages/Auth/Login"
 import RequireAuth from "./components/RequireAuth"
 import Partener from "./pages/Partener/Partener"
 import PersistLogin from "./components/PersistLogin"
+import Missing from "./pages/Missing"
 
 function App() {
 
@@ -31,7 +32,6 @@ function App() {
           <Route path="/" element={<Home />}/>
           <Route path="register" element={<Register />}/>
           <Route path="login" element={<Login />}/>
-
 
 
           {/**Private routes */}
@@ -52,6 +52,8 @@ function App() {
 
 
           {/**404 route */}
+          <Route path="*" element={ <Missing /> } />
+
         </Route>
       </Route>
     </Routes>

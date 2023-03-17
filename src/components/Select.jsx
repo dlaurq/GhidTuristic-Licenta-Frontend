@@ -1,9 +1,9 @@
 
 
-const Select = ({children, name, id, handleChange, classes,value,handleBlur}) => {
+const Select = ({children, name, id, handleChange, className,value,handleBlur}) => {
   return (
     <select 
-        className={`text-gray-900 ${classes}`}
+        className={`text-gray-900 ${className}`}
         name={name} 
         id={id} 
         onChange={handleChange} 
