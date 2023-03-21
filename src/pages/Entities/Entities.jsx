@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Button from '../../components/Button'
+import EntityCard from '../../components/EntityCard'
 import Label from '../../components/Label'
 import Option from '../../components/Option'
 import Select from '../../components/Select'
@@ -10,15 +11,22 @@ const Entities = () => {
     const [showFilters, setShowFilters] = useState()
     const [world, setWorld] = useState({})
     const [filters, setFilters] = useState({sort: 'rating', country:'', county: '', city: ''})
+    const [entities, setEntities] = useState([])
 
     const api = useAxiosPrivate()
 
     useEffect(() => {
+        const fetchPlaces = async () => {
+            const res = await api.get('/places')
+            setEntities(res.data)
+        }
+
         const fetchWorld = async () => {
             const res = await api.get('/geo')
             setWorld(res.data)
         }
 
+        fetchPlaces()
         fetchWorld()
     }, [])
 
@@ -42,8 +50,8 @@ const Entities = () => {
 
 
   return (
-    <section className=' mx-auto'>
-        <nav className='flex flex-col justify-between items-center w-full text-gray-900 font-medium'>
+    <section className=' mx-auto bg-gray-900'>
+        <nav className='flex flex-col justify-between items-center w-full text-gray-900 font-medium bg-white'>
             <section className='m-2'>
                 <Label htmlFor="sort">
                     Sorteaza dupa: 
@@ -60,7 +68,7 @@ const Entities = () => {
                 </Select>
             </section>
             <Button 
-                className='text-gray-300 bg-gray-900 border-0 w-full p-1'
+                className='text-gray-300 bg-gray-900 border-0 w-full p-1 border-b-2'
                 handleClick={toggleShowFilters}
             >Filtre</Button>
             {showFilters
@@ -111,8 +119,10 @@ const Entities = () => {
                 : null
             }
         </nav>
-
-        
+        {entities.length === 0 
+            ? <h3 className='text-gray-300'>Nu exista obiective</h3>
+            : entities.map(entity => <EntityCard key={entity.id} entity={entity} />)
+        }
     </section>
   )
 }

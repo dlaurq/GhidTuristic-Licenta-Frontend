@@ -4,7 +4,7 @@ import NewEntityForm from './components/NewEntityForm'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import jwt_decode from "jwt-decode"
 import useAuth from '../../hooks/useAuth'
-import EntityCard from './components/EntityCard'
+import EntityCard from '../../components/EntityCard'
 
 const Partener = () => {
 

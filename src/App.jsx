@@ -19,6 +19,7 @@ import Partener from "./pages/Partener/Partener"
 import PersistLogin from "./components/PersistLogin"
 import Missing from "./pages/Missing"
 import Entities from "./pages/Entities/Entities"
+import Entity from "./pages/Entities/Entity"
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
           <Route path="/" element={<Home />}/>
           <Route path="register" element={<Register />}/>
           <Route path="login" element={<Login />}/>
+          <Route path="obiective/:name" element={ <Entity /> } />
           <Route path="obiective" element={ <Entities /> } />
 
           {/**Private routes */}
