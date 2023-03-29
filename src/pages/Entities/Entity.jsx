@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Button from '../../components/Button'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
+import Review from './components/Review'
 import ReviewForm from './components/ReviewForm'
 const Entity = (props) => {
 
@@ -12,8 +13,10 @@ const Entity = (props) => {
     useEffect(() => {
         const fetchEntity = async () => {
             const res = await api.get(`/places/${name}`)
-            //DE CALCULAT RATING SI NR RECENZII
+            console.log(res.data)
             setEntity(res.data)
+            //DE CALCULAT RATING SI NR RECENZII
+            //setEntity(res.data)
         }
 
         fetchEntity()
@@ -32,7 +35,8 @@ const Entity = (props) => {
         {/** recenzii */}
 
         <section>
-            <ReviewForm />
+            <ReviewForm entityName={name}/>
+            {entity?.Reviews?.map((review, index) => <Review key={index} {...review}/>)}
         </section>
     </section>
   )

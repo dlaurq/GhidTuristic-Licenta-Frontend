@@ -6,15 +6,42 @@ import Button from '../../../components/Button'
 import Label from '../../../components/Label'
 import Input from '../../../components/Input'
 import { Rating } from 'react-simple-star-rating'
+import useAuth from '../../../hooks/useAuth'
+import jwt_decode from "jwt-decode"
+import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
 
-const ReviewForm = () => {
+const ReviewForm = ({entityName}) => {
 
     const [imgsUrl, setImgsUrl] = useState([])
-
-    
+    const { auth } = useAuth()
+    const api = useAxiosPrivate()
 
     const handleSubmit = async (values) => {
-        console.log(values)
+
+        const decoded = auth?.accessToken
+        ? jwt_decode(auth.accessToken)
+        : undefined
+
+        const username = decoded.UserInfo.username
+
+        const formData = new FormData();
+
+        formData.append("entityName", entityName)
+        
+        for (let value in values) {
+            if(values !== 'imgs')
+                formData.append(value, values[value]);
+        }
+        formData.append('username', username)
+        const imgs = [...values.imgs]
+        imgs.forEach(img => formData.append('imgs', img))
+        
+        const res = await api.post(
+            '/reviews',
+            formData,
+            {headers: {'Content-Type': 'multipart/form-data'}})
+
+        console.log(res.data)
     }
 
     const formik = useFormik({
@@ -26,7 +53,11 @@ const ReviewForm = () => {
             postDate: new Date().toLocaleString('ro-RO')
         },
         validationSchema: Yup.object({
-
+            title: Yup.string().required("Camp obligatoriul"),
+            description: Yup.string(),
+            rating: Yup.number().min(1, "Camp obligatoriul").required("Camp obligatoriul"),
+            imgs: Yup.mixed().required("Camp obligatoriul"),
+            
         }),
         onSubmit: handleSubmit
     })
