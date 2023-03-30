@@ -9,15 +9,23 @@ import { Rating } from 'react-simple-star-rating'
 import useAuth from '../../../hooks/useAuth'
 import jwt_decode from "jwt-decode"
 import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
+import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
 
 const ReviewForm = ({entityName}) => {
 
     const [imgsUrl, setImgsUrl] = useState([])
+    const [toggleForm, setToggleForm] = useState(false)
     const { auth } = useAuth()
     const api = useAxiosPrivate()
 
-    const handleSubmit = async (values) => {
+    const handleToggleForm = () => {
+        setToggleForm(prev => !prev)
+    }
 
+    const handleSubmit = async (values) => {
+        console.log(values)
         const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
         : undefined
@@ -35,13 +43,12 @@ const ReviewForm = ({entityName}) => {
         formData.append('username', username)
         const imgs = [...values.imgs]
         imgs.forEach(img => formData.append('imgs', img))
-        
+        /** 
         const res = await api.post(
             '/reviews',
             formData,
             {headers: {'Content-Type': 'multipart/form-data'}})
-
-        console.log(res.data)
+            */
     }
 
     const formik = useFormik({
@@ -56,7 +63,7 @@ const ReviewForm = ({entityName}) => {
             title: Yup.string().required("Camp obligatoriul"),
             description: Yup.string(),
             rating: Yup.number().min(1, "Camp obligatoriul").required("Camp obligatoriul"),
-            imgs: Yup.mixed().required("Camp obligatoriul"),
+            imgs: Yup.mixed().test('file-length', "Puteti adauga doar 3 poze", (value) => value.length < 4),
             
         }),
         onSubmit: handleSubmit
@@ -64,15 +71,20 @@ const ReviewForm = ({entityName}) => {
 
     useEffect(() => {
         const imgs = [...formik.values.imgs]
-        if(imgs.length < 1) return
-        const newImgsUrl = []
-        imgs.forEach(img => newImgsUrl.push(URL.createObjectURL(img)))
-        setImgsUrl(newImgsUrl)
+        if(imgs.length < 1) 
+            setImgsUrl([])
+        else{
+            const newImgsUrl = []
+            imgs.forEach(img => newImgsUrl.push(URL.createObjectURL(img)))
+            setImgsUrl(newImgsUrl)
+        }
     }, [formik.values.imgs])
 
-  return (
-    <Form handleSubmit={formik.handleSubmit} className='bg-gray-900' encType="multipart/form-data" >
-
+  return (<>{
+    !toggleForm
+    ?<p onClick={handleToggleForm} className='text-3xl p-5 bg-gray-900 text-gray-300 font-bold'>Lasa o recenzie <FontAwesomeIcon icon={faCaretUp}/></p>
+    :<Form handleSubmit={formik.handleSubmit} className='bg-gray-900 border-none' encType="multipart/form-data" >
+        <p onClick={handleToggleForm} className='text-3xl mb-3'>Lasa o recenzie <FontAwesomeIcon icon={faCaretDown}/></p>
         <section>
             <Label htmlFor='title'>{
                 formik.touched.title && formik.errors.title 
@@ -120,7 +132,7 @@ const ReviewForm = ({entityName}) => {
             </section>
             
 
-            <section>
+            <section className=''>
                 <Label htmlFor="imgs">
                     {formik.touched.imgs && formik.errors.imgs 
                         ? formik.errors.imgs
@@ -135,7 +147,7 @@ const ReviewForm = ({entityName}) => {
                     accept="image/*"
                     handleChange={(e) => formik.setFieldValue('imgs', e.currentTarget.files)} 
                 />
-                <section className='flex flex-row flex-wrap justify-center items-center gap-4'>
+                <section className='flex flex-row flex-wrap justify-center items-center gap-4 py-2'>
                     {imgsUrl.map(img => 
                         <img 
                             className="py-2 w-1/4 h-auto self-center"
@@ -151,7 +163,7 @@ const ReviewForm = ({entityName}) => {
 
         <Button type='submit'>Adauga recenzie</Button>
     </Form>
-  )
+  }</>)
 }
 
 export default ReviewForm
