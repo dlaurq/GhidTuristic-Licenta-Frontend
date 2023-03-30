@@ -24,13 +24,15 @@ const CountyForm = ({handleSubmit, buttonText, county, country, countries}) => {
         .required("Camp obligatoriul")
     }),
 
-    onSubmit:handleSubmit,
-    //onSubmit: () => {formik.resetForm()},
+    onSubmit: (values) => {
+      handleSubmit(values)
+      formik.resetForm()
+    },
   })
   
 
   return (
-    <Form handleSubmit={formik.handleSubmit} classes='h-60'>
+    <Form handleSubmit={formik.handleSubmit} className='h-60'>
       <section>
         <Label htmlFor="country">
           {formik.touched.country && formik.errors.country 

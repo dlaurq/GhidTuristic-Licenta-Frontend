@@ -16,13 +16,16 @@ const CountryForm = ({handleSubmit, buttonText, country}) => {
           country: Yup.string().max(60,"Numele tarii poate sa contina maxim 60 de caractere").required("Copletati campul").matches(/^[a-zA-Z\s]*$/, "Numele trebuie sa contina doar litere"),
         }),
     
-        onSubmit:handleSubmit,
+        onSubmit: (values) => {
+          handleSubmit(values)
+          formik.resetForm()
+        },
     })
 
   return (
-    <Form handleSubmit={formik.handleSubmit} classes='h-52'>
+    <Form handleSubmit={formik.handleSubmit} className='h-52'>
       <section className="flex flex-col">
-        <Label htmlFor="country" classes="mb-3">
+        <Label htmlFor="country" className="mb-3">
           {formik.touched.country && formik.errors.country 
             ? formik.errors.country
             : 'Nume tara'
@@ -39,7 +42,7 @@ const CountryForm = ({handleSubmit, buttonText, country}) => {
         />
       </section>
     
-    <Button type="submit">{buttonText}</Button>
+    <Button className="mt-5" type="submit">{buttonText}</Button>
     
   </Form>
   )

@@ -22,6 +22,7 @@ const Countries = () => {
       try{
         const res = await axiosPrivate.get('/countries', {
         })
+        console.log(res.data)
         const newCountries = res.data.map(country => ({...country, edit:false}))
         setCountries(newCountries)
         setServerMsg('')
@@ -97,7 +98,7 @@ const Countries = () => {
   return (
     <section className="bg-gray-900">
       
-      <ErrorMsg color={msgColor}>{serverMsg}</ErrorMsg>
+      <ErrorMsg color={msgColor ? msgColor : "text-gray-300"}>{serverMsg ? serverMsg : "Adauga o tara"}</ErrorMsg>
       <CountryForm handleSubmit={handleCreate} buttonText='Adauga'/>
 
       {countries.map(country =>

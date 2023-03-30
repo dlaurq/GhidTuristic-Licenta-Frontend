@@ -30,7 +30,7 @@ const LocationForm = ({handleSubmit, buttonText, location, cities}) => {
   
 
   return (
-    <Form handleSubmit={formik.handleSubmit} classes='h-60'>
+    <Form handleSubmit={formik.handleSubmit} className='h-60'>
       <section>
         <Label htmlFor="city">
           {formik.touched.city && formik.errors.city 

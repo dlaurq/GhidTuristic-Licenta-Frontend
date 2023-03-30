@@ -5,6 +5,7 @@ import Location from './components/Location'
 import LocationForm from './components/LocationForm'
 import Select from '../../../components/Select'
 import Option from '../../../components/Option'
+import { useLocation } from 'react-router-dom'
 
 const Locations = () => {
   const [cities ,setCities] = useState([])
@@ -13,9 +14,12 @@ const Locations = () => {
   const [serverMsg, setServerMsg] = useState()
   const [msgColor, setMsgColor] = useState('')
 
+  const location = useLocation()
+
   useEffect(() =>{
     fetchCities()
     fetchLocations()
+    setFilter(location?.state?.id)
   },[])
 
   const fetchCities = async () =>{
@@ -98,7 +102,7 @@ const Locations = () => {
 
       <section className="flex flex-row justify-between items-center p-5 text-xl border-b font-medium">
         <p>Filtreaza dupa Oras:</p>
-        <Select name="locationSelector" id="locationSelector" handleChange={handleChange} className='text-gray-900'>
+        <Select name="locationSelector" id="locationSelector" handleChange={handleChange} className='text-gray-900' value={filter}>
           <Option value="">--Alege un Oras--</Option>
           {cities.map(city => 
             <Option 
@@ -110,15 +114,16 @@ const Locations = () => {
           )}
         </Select>
       </section>
-
-      <ErrorMsg color={msgColor}>{serverMsg}</ErrorMsg>
-
-      <LocationForm 
-        cities={cities}
-        buttonText='Adauga'
-        handleSubmit={handleCreate}
-      />
-
+      
+      {/** 
+      <ErrorMsg color={msgColor}>{serverMsg ? serverMsg : "Adauga o adresa"}</ErrorMsg>
+      
+        <LocationForm 
+          cities={cities}
+          buttonText='Adauga'
+          handleSubmit={handleCreate}
+        />
+      */}
       {locations.map(location => 
         <Location 
           key={location.id} 
@@ -128,7 +133,7 @@ const Locations = () => {
           handleDelete={() => handleDelete(location.id)}
           handleUpdate={handleUpdate}
           cities={cities}
-          classes={filter && location.CityId !== filter && "hidden"}
+          className={filter && location.CityId !== filter && "hidden"}
         />
       )}
 

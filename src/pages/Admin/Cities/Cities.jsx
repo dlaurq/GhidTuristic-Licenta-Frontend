@@ -5,6 +5,7 @@ import City from './components/City'
 import CityForm from './components/CityForm'
 import Select from '../../../components/Select'
 import Option from '../../../components/Option'
+import { useLocation } from 'react-router-dom'
 
 const Cities = () => {
   const [cities ,setCities] = useState([])
@@ -13,9 +14,12 @@ const Cities = () => {
   const [serverMsg, setServerMsg] = useState()
   const [msgColor, setMsgColor] = useState('')
 
+  const location = useLocation()
+
   useEffect(() =>{
     fetchCities()
     fetchCounties()
+    setFilter(location?.state?.id)
   },[])
 
   const fetchCities = async () =>{
@@ -96,7 +100,7 @@ const Cities = () => {
 
       <section className="flex flex-row justify-between items-center p-5 text-xl border-b font-medium">
         <p>Filtreaza dupa Judet:</p>
-        <Select name="citySelector" id="citySelector" handleChange={handleChange} className='text-gray-900'>
+        <Select name="citySelector" id="citySelector" handleChange={handleChange} className='text-gray-900' value={filter}>
           <Option value="">--Alege un Judet--</Option>
           {counties.map(county => 
             <Option 
@@ -109,7 +113,7 @@ const Cities = () => {
         </Select>
       </section>
 
-      <ErrorMsg color={msgColor}>{serverMsg}</ErrorMsg>
+      <ErrorMsg color={msgColor}>{serverMsg ? serverMsg : 'Adauga un oras'}</ErrorMsg>
 
       <CityForm 
         counties={counties}
@@ -126,7 +130,7 @@ const Cities = () => {
           handleDelete={() => handleDelete(city.id)}
           handleUpdate={handleUpdate}
           counties={counties}
-          classes={filter && city.CountyId !== filter && "hidden"}
+          className={filter && city.CountyId !== filter && "hidden"}
         />
       )}
 
