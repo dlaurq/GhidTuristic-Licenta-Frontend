@@ -20,6 +20,7 @@ import PersistLogin from "./components/PersistLogin"
 import Missing from "./pages/Missing"
 import Entities from "./pages/Entities/Entities"
 import Entity from "./pages/Entities/Entity"
+import Users from "./pages/Admin/Users/Users"
 
 function App() {
 
@@ -45,6 +46,7 @@ function App() {
                 <Route path="county" element={<Counties />} />
                 <Route path="city" element={<Cities />} />
                 <Route path="locations" element={<Locations />} />
+                <Route path="users" element={<Users />} />
               </Route>
             </Route>
           

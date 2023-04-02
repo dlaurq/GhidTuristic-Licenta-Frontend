@@ -10,7 +10,7 @@ const RequireAuth = ({allowedRoles}) => {
         ? jwt_decode(auth.accessToken)
         : undefined
 
-    console.log(decoded)
+    //console.log(decoded)
     const roles = decoded?.UserInfo.roles || []
     
     return (

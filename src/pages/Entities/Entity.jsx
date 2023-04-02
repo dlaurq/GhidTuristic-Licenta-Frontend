@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, NavLink, useParams } from 'react-router-dom'
 import Button from '../../components/Button'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
-import Review from './components/Review'
+import Review from '../../components/Review'
 import ReviewForm from './components/ReviewForm'
 import useAuth from '../../hooks/useAuth'
 const Entity = (props) => {
