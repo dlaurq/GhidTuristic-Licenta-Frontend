@@ -21,6 +21,7 @@ import Missing from "./pages/Missing"
 import Entities from "./pages/Entities/Entities"
 import Entity from "./pages/Entities/Entity"
 import Users from "./pages/Admin/Users/Users"
+import AdminEntities from "./pages/Admin/Entities/AdminEntities"
 
 function App() {
 
@@ -47,6 +48,7 @@ function App() {
                 <Route path="city" element={<Cities />} />
                 <Route path="locations" element={<Locations />} />
                 <Route path="users" element={<Users />} />
+                <Route path="entities" element={<AdminEntities />} />
               </Route>
             </Route>
           

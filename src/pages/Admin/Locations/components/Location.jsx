@@ -8,7 +8,7 @@ const Location = ({location, handleDelete, handleEdit, handleUpdate, toggleConfD
   const naviage = useNavigate()
 
   const handleClick = () => {
-    naviage(`/admin/${location?.Users[0]?.username ? 'Users' : 'Places'}`, {state: {...location}})
+    naviage(`/admin/${location?.Users[0]?.username ? 'Users' : 'entities'}`, {state: {search: (location?.Users[0]?.username || location?.Places[0]?.name)}})
   }
 
   return (

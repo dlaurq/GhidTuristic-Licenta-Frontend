@@ -2,22 +2,48 @@ import { useState } from "react"
 import { useEffect } from "react"
 import Button from "../../../components/Button"
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate"
-import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
+import { faCaretDown, faCaretUp, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import Review from "../../../components/Review"
 import ConfBox from "../../../components/ConfBox"
+import Input from "../../../components/Input"
+import { useLocation, useNavigate } from "react-router-dom"
+
 
 const Users = () => {
 
     const [users, setUsers] = useState([])
+    const [filter, setFilter] = useState('')
+    const [filterUsers, setFilterUsers] = useState(users)
+    
 
     const api = useAxiosPrivate()
+    const location = useLocation()
+
+    useEffect(() => {
+        setFilter(location?.state?.search || '')
+
+        const fetchUsers = async () => {
+            try {
+                const res = await api.get('/users')
+                setUsers(res.data)
+                setFilterUsers(res.data)
+            } catch (err) {
+                console.log(err)
+            }
+        }
+        fetchUsers()
+    }, [])
+
+    useEffect(() => {
+        const newUsers = users.filter(user => user.username.includes(filter) )
+        setFilterUsers(newUsers)
+    }, [filter, users])
 
     const handleDeleteUser = async (username) => {
         try {
             const res = await api.delete(`/users/${username}`)
-            console.log(res.data)
             const newUsers = users.filter(user => user.username !== username)
             setUsers(newUsers)
         } catch (err) {
@@ -25,25 +51,27 @@ const Users = () => {
         }
     }
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const res = await api.get('/users')
-                console.log(res.data)
-                setUsers(res.data)
-            } catch (err) {
-                console.log(err)
-            }
-        }
-
-        fetchUsers()
-    }, [])
+    
 
   return (
-    <div>
-        {users?.map(user => <User key={user.username} {...user} Entities={user.Places} handleDeleteUser={handleDeleteUser} />)}
+    <section>
+
+        <section className="p-5 bg-gray-900 text-gray-300 flex flex-row justify-between items-center gap-5">
+            <FontAwesomeIcon icon={faMagnifyingGlass} />
+            <Input 
+            id="filterBar"
+            name="filterBar"
+            placeholder="Nume utilizator"
+            value={filter}
+            handleChange={(e) => setFilter(e.target.value)}
+            />
+        </section>
+
+        <hr />
+
+        {filterUsers?.map(user => <User key={user.username} {...user} Entities={user.Places} handleDeleteUser={handleDeleteUser} />)}
         
-    </div>
+    </section>
   )
 }
 
@@ -55,8 +83,10 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
     const [showReviewsDetails, setShowReviewsDetails] = useState(false)
     const [showConfBox, setShowConfBox] = useState(false)
     const [reviews, setReviews] = useState(Reviews)
+    const [roles, setRoles] = useState(Roles)
 
     const api = useAxiosPrivate()
+    const navigate = useNavigate()
 
     const toggleShowUserDetails = () => setShowUserDetails(prev => !prev)
     const toggleShowEntitiesDetails = () => setShowEntitiesDetails(prev => !prev)
@@ -66,9 +96,21 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
     const handleDeleteReview = async (id) => {
         try {
             const res = await api.delete(`/reviews/${id}`)
-            console.log(res.data)
             const newReviews = reviews.filter(review => review.id !== id)
             setReviews(newReviews)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
+    const handlePromote = async () => {
+        try {
+            const res = await api.patch('/users/partener', {username: username})
+            if(roles?.find(role => role.name === '1337')){
+                const newRoles = roles?.filter(role => role.name !== '1337')
+                setRoles(newRoles)
+            }else setRoles(prev => [...prev, {name: '1337'}])
+            
         } catch (err) {
             console.log(err)
         }
@@ -95,15 +137,13 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                     <p>Bio: {bio}</p>
                     <p>Email: {email}</p>
                     <p>Nr. Tel: {phoneNR}</p>
-                    <p>Roles: </p>
                     
-                    <section className="flex flex-row justify-between items-center">
-                        <Button>Edit Roles</Button>
-                        <Button handleClick={toggleShowConfBox}>Delete</Button>
-                        {showConfBox && <ConfBox handleNo={toggleShowConfBox} handleYes={() => handleDeleteUser(username)} >Confirmati stergerea?</ConfBox>}
-                    </section>
-                    <hr />
+                    <Button handleClick={handlePromote} >{ roles?.find(role => role.name === '1337') ? "Retrigradeaza la utilizator" : "Promovati ca partener"}</Button>
+                    <Button handleClick={toggleShowConfBox} >Sterge profilul</Button>
+                    {showConfBox && <ConfBox handleNo={toggleShowConfBox} handleYes={() => handleDeleteUser(username)} >Confirmati stergerea?</ConfBox>}
 
+                    <hr />
+                    {/**Lista entitati */}
                     {!showEntitiesDetails
                         ?<section className="flex flex-row justify-between items-center">
                             <p>Entitati: {Entities.length}</p>
@@ -114,10 +154,18 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                                 <p>Entitati: {Entities.length}</p>
                                 <p onClick={toggleShowEntitiesDetails}><FontAwesomeIcon icon={faCaretDown}/></p>
                             </section>
+                            <section>
+                                {Entities.map((entity, index) => 
+                                    <section key={index} onClick={() => navigate('/admin/entities', {state: {search: entity.name}})}>
+                                        <p>{entity.name}</p>
+                                    </section>
+                                    )}
+                            </section>
                         </section>
                     }
                     <hr />
 
+                    {/**Lista recenzii */}
                     {!showReviewsDetails
                         ?<section className="flex flex-row justify-between items-center">
                             <p>Recenzii: {reviews.length}</p>
@@ -132,7 +180,7 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                                 {reviews?.map((review, index) => 
                                     <Review key={index} {...review}>
                                         <section className="mt-5">
-                                            <Button handleClick={toggleShowConfBox} className="w-full text-gray-900 border-gray-900 border-2 font-bold">Delete</Button>
+                                            <Button handleClick={toggleShowConfBox} className="w-full text-gray-900 border-gray-900 border-2 font-bold">Sterge recenzia</Button>
                                             {showConfBox && <ConfBox handleNo={toggleShowConfBox} handleYes={() => handleDeleteReview(review.id)} >Confirmati stergerea?</ConfBox>}
                                         </section>
                                     </Review>)}
@@ -144,5 +192,6 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
         </section>
     )
 }
+
 
 export default Users
