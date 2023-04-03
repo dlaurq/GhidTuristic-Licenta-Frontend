@@ -7,18 +7,50 @@ import { useEffect } from "react"
 import Button from "../../../components/Button"
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate"
 import { useLocation } from "react-router-dom"
+import EntityCard from "../../../components/EntityCard"
+import ConfBox from "../../../components/ConfBox"
 
 const AdminEntities = () => {
 
   const [entities, setEntities] = useState([])
   const [filter, setFilter] = useState('')
   const [filterEntities, setFilterEntities] = useState(entities)
+  const [showConfBox, setShowConfBox] = useState(false)
 
   const location = useLocation()
+  const api = useAxiosPrivate()
+
+  const toggleShowConfBox = () => setShowConfBox(prev => !prev)
 
   useEffect(() => {
     setFilter(location?.state?.search || '')
+
+    const fetchEntities = async () => {
+      try {
+          const res = await api.get('/places')
+          setEntities(res.data)
+          setFilterEntities(res.data)
+      } catch (err) {
+          console.log(err)
+      }
+    }
+    fetchEntities()
   }, [])
+
+  useEffect(() => {
+    const newEntities = entities.filter(entity => entity.name.includes(filter) )
+    setFilterEntities(newEntities)
+}, [filter, entities])
+
+  const handleDeleteEntity = async (id) => {
+    try {
+        const res = await api.delete(`/places/${id}`)
+        const newEntities = entities.filter(review => review.id !== id)
+        setEntities(newEntities)
+    } catch (err) {
+        console.log(err)
+    }
+  }
 
   return (
     <section>
@@ -35,6 +67,15 @@ const AdminEntities = () => {
       </section>
 
       <hr />
+
+      {filterEntities?.map((entity, index) => 
+        <EntityCard key={index} name={entity.name} >
+          <section className="mt-5">
+              <Button handleClick={toggleShowConfBox} className="w-full text-gray-300 border-gray-300 border-2 font-bold">Sterge Entitatea</Button>
+              {showConfBox && <ConfBox handleNo={toggleShowConfBox} handleYes={() => handleDeleteEntity(entity.id)} >Confirmati stergerea?</ConfBox>}
+          </section>
+        </EntityCard>
+      )}
 
     </section>
   )

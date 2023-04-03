@@ -44,7 +44,7 @@ const Partener = () => {
 
       {entities.length === 0 
         ? <h3 className='text-gray-300'>Nu aveti nici o entitate inregistrata</h3>
-        : entities.map(entity => <EntityCard key={entity.id} entity={entity} />)
+        : entities.map(entity => <EntityCard key={entity.id} name={entity.name} />)
       }
 
     </section>
