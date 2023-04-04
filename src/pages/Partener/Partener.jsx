@@ -35,12 +35,15 @@ const Partener = () => {
     <section className='bg-gray-900 text-center'>
 
       <Button 
+        className="m-5"
         handleClick={ () => setToggleForm(prevToggleForm => !prevToggleForm)}
       >
         Creaza o noua entitate
       </Button>
 
       {toggleForm ? <NewEntityForm/> : null}
+
+      <hr />
 
       {entities.length === 0 
         ? <h3 className='text-gray-300'>Nu aveti nici o entitate inregistrata</h3>

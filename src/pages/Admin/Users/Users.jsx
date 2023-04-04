@@ -37,7 +37,7 @@ const Users = () => {
     }, [])
 
     useEffect(() => {
-        const newUsers = users.filter(user => user.username.includes(filter) )
+        const newUsers = users.filter(user => user.username.toLowerCase().includes(filter.toLowerCase()))
         setFilterUsers(newUsers)
     }, [filter, users])
 

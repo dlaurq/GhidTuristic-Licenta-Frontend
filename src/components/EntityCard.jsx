@@ -15,7 +15,7 @@ const EntityCard = ({name, children}) => {
     const fetchEntity = async () => {
       try {
         const res = await api.get(`/places/${name}`)
-        console.log(res.data)
+        //console.log(res.data)
         setEntity(res.data)
       } catch (err) {
         console.log(err)

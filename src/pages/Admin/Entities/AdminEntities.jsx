@@ -38,7 +38,7 @@ const AdminEntities = () => {
   }, [])
 
   useEffect(() => {
-    const newEntities = entities.filter(entity => entity.name.includes(filter) )
+    const newEntities = entities.filter(entity => entity.name.toLowerCase().includes(filter.toLowerCase()))
     setFilterEntities(newEntities)
 }, [filter, entities])
 
@@ -69,7 +69,7 @@ const AdminEntities = () => {
       <hr />
 
       {filterEntities?.map((entity, index) => 
-        <EntityCard key={index} name={entity.name} >
+        <EntityCard key={entity.id} name={entity.name} >
           <section className="mt-5">
               <Button handleClick={toggleShowConfBox} className="w-full text-gray-300 border-gray-300 border-2 font-bold">Sterge Entitatea</Button>
               {showConfBox && <ConfBox handleNo={toggleShowConfBox} handleYes={() => handleDeleteEntity(entity.id)} >Confirmati stergerea?</ConfBox>}
