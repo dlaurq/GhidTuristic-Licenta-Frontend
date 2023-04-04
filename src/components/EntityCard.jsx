@@ -39,7 +39,7 @@ const EntityCard = ({name, children}) => {
         <img src={`${staticApi}${entity?.Images?.[0]?.imgUrl}`} alt={entity?.name} />
         <h2 onClick={() => navigate(`/obiective/${entity.name}`)} className="font-bold text-2xl my-4 cursor-pointer">{entity?.name}</h2>
         <section className="flex flex-row justify-evenly text-xl my-2">
-          <p>Rating: {calcRating(entity.Reviews) || 0}</p>
+          <p>Rating: {calcRating(entity?.Reviews) || 0}</p>
           <p>Recenzii: {entity?.Reviews?.length}</p>
         </section>
         <p className="py-6 text-left">{entity?.description}</p>

@@ -10,23 +10,29 @@ import Button from "../../../components/Button"
 import useAuth from "../../../hooks/useAuth"
 import * as Yup from "yup"
 import jwt_decode from "jwt-decode"
+import useStaticApi from "../../../hooks/useStaticApi"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faX } from "@fortawesome/free-solid-svg-icons"
 
-const NewEntityForm = () => {
+const NewEntityForm = ({entity, submitTxt, children, update, hideForm}) => {
 
     const [geo, setGeo] = useState({})
     const [imgsUrl, setImgsUrl] = useState([])
+    const [extImgs, setExtImgs] = useState(entity?.Images ? entity?.Images : [])
     const api = useAxiosPrivate()
+    const staticApi = useStaticApi()
     const {auth} = useAuth()
     
 
     useEffect(() => {
-
+        //console.log(entity)  
         const fetchGeo = async () => {
             const res = await api.get('/geo')
             setGeo(res.data)
         }
 
         fetchGeo()
+        console.log(extImgs)
     }, [])
 
  
@@ -58,25 +64,39 @@ const NewEntityForm = () => {
         for (var pair of formData.entries()) {
             console.log(pair[0]+ ', ' + pair[1]); 
         }
-        
-        const res = await api.post(
-            '/places',
-            formData,
-            {headers: {'Content-Type': 'multipart/form-data'}})
+        if(update){
+            console.log(extImgs)
+            console.log(values.imgs)
+            formData.append('extImgs', JSON.stringify(extImgs))
+            const res = await api.patch(
+                `/places/${entity.id}`,
+                formData,
+                {headers: {'Content-Type': 'multipart/form-data'}})
+            console.log(res.data)
+            hideForm()
+            
 
-        console.log(res.data)
+        }else{
+            const res = await api.post(
+                '/places',
+                formData,
+                {headers: {'Content-Type': 'multipart/form-data'}})
+            console.log(res.data)
+        }
+
+        
         
     }
 
     const formik = useFormik({
         initialValues:{
-            name: '',
-            description: '',
-            country: '',
-            county: '',
-            city: '',
+            name: entity?.name || '',
+            description: entity?.description || '',
+            country: entity?.Location?.City?.County?.Country?.id || '',
+            county: entity?.Location?.City?.County?.id || '',
+            city: entity?.Location?.City?.id || '',
             imgs: [],
-            address: '',
+            address: entity?.Location?.address || '',
         },
 
         validationSchema: Yup.object({
@@ -232,21 +252,43 @@ const NewEntityForm = () => {
             />
         </section>
         
-        <Button type="submit"> Inregistreaza</Button>
+        <Button type="submit"> { submitTxt || "Inregistreaza"}</Button>
 
         <section>
-        <img src="" alt="" />
-        {imgsUrl.map(
-            img => 
-                <img 
-                    className="py-2"
-                    key={img} 
-                    src={img} 
-                    alt={img} 
-                />
-            )
-        }
+            <p>Poze incarcate</p>
+            {imgsUrl.map(
+                img => 
+                    <img 
+                        className="py-2"
+                        key={img} 
+                        src={img} 
+                        alt={img} 
+                    />
+                )
+            }
         </section>
+        <section>
+            <p>Poze existente</p>
+            {extImgs.map(
+                img => 
+                    <section className='relative my-2' key={img.imgUrl} >
+                        <FontAwesomeIcon 
+                            icon={faX} 
+                            onClick={() => setExtImgs(prev => prev?.filter(filterImg => filterImg.imgUrl !== img.imgUrl))}
+                            className='absolute top-2 right-2 text-4xl text-gray-300 cursor-pointer'/>
+                        
+                        <img 
+                            className=""
+                            
+                            src={`${staticApi}${img.imgUrl}`} 
+                            alt={img.imgUrl} 
+                        />
+                    
+                    </section>
+                )
+            }
+        </section>
+        {children}
     </Form>
   )
 }
