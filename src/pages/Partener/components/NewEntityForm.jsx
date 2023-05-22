@@ -14,9 +14,10 @@ import useStaticApi from "../../../hooks/useStaticApi"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faX } from "@fortawesome/free-solid-svg-icons"
 
-const NewEntityForm = ({entity, submitTxt, children, update, hideForm}) => {
+const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggleForm, setFormSubmited, setEntities}) => {
 
     const [geo, setGeo] = useState({})
+    const [categories, setCategories] = useState([])
     const [imgsUrl, setImgsUrl] = useState([])
     const [extImgs, setExtImgs] = useState(entity?.Images ? entity?.Images : [])
     const api = useAxiosPrivate()
@@ -31,15 +32,23 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm}) => {
             setGeo(res.data)
         }
 
+        const fetchCategories = async () => {
+            const res = await api.get('/categories')
+            setCategories(res.data)
+            //console.log(res.data)
+        }
+
         fetchGeo()
-        console.log(extImgs)
+        fetchCategories()
+        
+        //console.log(entity)
     }, [])
 
  
 
     const handleSubmit = async (values) => {
 
-        console.log(values)
+        //console.log(values)
 
         const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
@@ -47,8 +56,8 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm}) => {
 
         const username = decoded.UserInfo.username
 
-        console.log(values)
-        console.log(typeof decoded.UserInfo.username)
+        //console.log(values)
+        //console.log(typeof decoded.UserInfo.username)
 
         const formData = new FormData();
         
@@ -62,17 +71,17 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm}) => {
         
 
         for (var pair of formData.entries()) {
-            console.log(pair[0]+ ', ' + pair[1]); 
+            //console.log(pair[0]+ ', ' + pair[1]); 
         }
         if(update){
-            console.log(extImgs)
-            console.log(values.imgs)
+            //console.log(extImgs)
+            //console.log(values.imgs)
             formData.append('extImgs', JSON.stringify(extImgs))
             const res = await api.patch(
                 `/places/${entity.id}`,
                 formData,
                 {headers: {'Content-Type': 'multipart/form-data'}})
-            console.log(res.data)
+            //console.log(res.data)
             hideForm()
             
 
@@ -81,17 +90,21 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm}) => {
                 '/places',
                 formData,
                 {headers: {'Content-Type': 'multipart/form-data'}})
-            console.log(res.data)
+            //console.log(res.data)
         }
 
-        
-        
+        if(setToggleForm)
+            setToggleForm(prev => !prev)
+
+        setFormSubmited(prev => !prev)
+        setEntities([])
     }
 
     const formik = useFormik({
         initialValues:{
             name: entity?.name || '',
             description: entity?.description || '',
+            category: entity?.Category?.id || '',
             country: entity?.Location?.City?.County?.Country?.id || '',
             county: entity?.Location?.City?.County?.id || '',
             city: entity?.Location?.City?.id || '',
@@ -106,6 +119,7 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm}) => {
             description: Yup.string()
                 .max(300,"Descrierea nu poate sa fie mai lunga de 300 de caractere.")
               .required("Camp obligatoriul"),
+            category: Yup.string().required("Camp obligatoriul"),
             country: Yup.string().required("Camp obligatoriul"),
             county: Yup.string().required("Camp obligatoriul"),
             city: Yup.string().required("Camp obligatoriul"),
@@ -158,6 +172,25 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm}) => {
                 onBlur={formik.handleBlur} 
                 value={formik.values.description}
             />
+        </section>
+
+        <section className="w-full flex flex-row justify-between">
+            <Label htmlFor="category">
+                {formik.touched.category && formik.errors.category 
+                    ? formik.errors.category
+                    : 'Categorie'
+            }</Label>
+            <Select 
+                className="w-3/4"
+                name="category" 
+                id="category"
+                value={formik.values.category}
+                handleChange={formik.handleChange}
+                handleBlur={formik.handleBlur}
+            >
+                    <Option value="">Selectati o categorie</Option>
+                    {categories.map( category => <Option key={category.id} value={category.id}>{category.name}</Option>)}
+            </Select>
         </section>
 
         <section className="w-full flex flex-row justify-between">

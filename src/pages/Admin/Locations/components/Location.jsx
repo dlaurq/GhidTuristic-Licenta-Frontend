@@ -5,10 +5,10 @@ import LocationForm from "./LocationForm"
 
 const Location = ({location, handleDelete, handleEdit, handleUpdate, toggleConfDelBox, cities, className}) => {
   
-  const naviage = useNavigate()
+  const navigate = useNavigate()
 
   const handleClick = () => {
-    naviage(`/admin/${location?.Users[0]?.username ? 'Users' : 'entities'}`, {state: {search: (location?.Users[0]?.username || location?.Places[0]?.name)}})
+    navigate(`/admin/${location?.Users[0]?.username ? 'Users' : 'entities'}`, {state: {search: (location?.Users[0]?.username || location?.Places[0]?.name)}})
   }
 
   return (

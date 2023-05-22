@@ -5,6 +5,7 @@ import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import Review from '../../components/Review'
 import ReviewForm from './components/ReviewForm'
 import useAuth from '../../hooks/useAuth'
+
 const Entity = (props) => {
 
     const {name} = useParams()
@@ -22,8 +23,28 @@ const Entity = (props) => {
         }
 
         fetchEntity()
-        console.log(auth)
+        //console.log(auth)
     }, [])
+
+    const handleVisitedBtn = async () => {
+        try{
+            //console.log(auth?.username, entity?.id)
+            const res = await api.post('/visited', {username: auth?.username, place: entity?.id})
+            //console.log(res.data)
+        }catch (err){
+            console.log(err)
+        }
+    }
+
+    const handleToVisitBtn = async () => {
+        try{
+            //console.log(auth?.username, entity?.id)
+            const res = await api.post('/toVisit', {username: auth?.username, place: entity?.id})
+            //.log(res.data)
+        }catch (err){
+            console.log(err)
+        }
+    }
 
   return (
     <section className=' '>
@@ -34,12 +55,13 @@ const Entity = (props) => {
                 {entity?.Images?.map((img, index) => <img key={index} src={`http://localhost:5000/uploads/${img?.imgUrl}`} />)}
             </section>
 
+            <p className='text-xl py-3'>{entity?.Category?.name}</p>
             <p className='text-xl py-3'>{entity.description}</p>
 
             {auth?.accessToken
             ?<section>
-                <Button >Adauga la 'De vizitat'</Button>
-                <Button >Adauga la 'Vizitate'</Button>
+                <Button className="bg-gray-900 my-2 w-full text-left pl-5" handleClick={handleToVisitBtn}>Adauga la 'De vizitat'</Button>
+                <Button className="bg-gray-900 my-2 w-full text-left pl-5" handleClick={handleVisitedBtn}>Adauga la 'Vizitate'</Button>
             </section>
             : null}
                 

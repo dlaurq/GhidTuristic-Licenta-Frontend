@@ -13,6 +13,7 @@ const AdminNav = () => {
             ['Adrese','Locations'],
             ['Utilizatori','Users'],
             ['Entitati','Entities'],
+            ['Categorii','Categories'],
           ].map(([title, url]) => (
             <li key={title} className="pr-5 py-2 hover:underline focus:underline underline-offset-8"><NavLink className={({isActive}) => isActive ? 'text-emerald-600 underline' : {undefined}} to={url}>{title}</NavLink></li>
           ))

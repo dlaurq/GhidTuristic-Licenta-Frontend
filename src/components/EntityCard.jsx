@@ -24,6 +24,7 @@ const EntityCard = ({name, children}) => {
     }
 
     fetchEntity()
+    //console.log(entity, name)
   }, [])
 
   const calcRating = (reviews) => {
@@ -36,13 +37,15 @@ const EntityCard = ({name, children}) => {
 
   return (
     <section className="text-gray-300 bg-gray-900 text-center border-b-2 p-5">
+      
         <img src={`${staticApi}${entity?.Images?.[0]?.imgUrl}`} alt={entity?.name} />
         <h2 onClick={() => navigate(`/obiective/${entity.name}`)} className="font-bold text-2xl my-4 cursor-pointer">{entity?.name}</h2>
         <section className="flex flex-row justify-evenly text-xl my-2">
           <p>Rating: {calcRating(entity?.Reviews) || 0}</p>
           <p>Recenzii: {entity?.Reviews?.length}</p>
         </section>
-        <p className="py-6 text-left">{entity?.description}</p>
+        <p className="py-3 text-left">{entity?.Category?.name}</p>
+        <p className="pb-6 text-left">{entity?.description}</p>
 
         {children}
     </section>

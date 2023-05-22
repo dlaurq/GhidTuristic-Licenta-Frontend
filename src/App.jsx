@@ -22,6 +22,7 @@ import Entities from "./pages/Entities/Entities"
 import Entity from "./pages/Entities/Entity"
 import Users from "./pages/Admin/Users/Users"
 import AdminEntities from "./pages/Admin/Entities/AdminEntities"
+import Categories from "./pages/Admin/Categories/Categories"
 
 function App() {
 
@@ -49,6 +50,7 @@ function App() {
                 <Route path="locations" element={<Locations />} />
                 <Route path="users" element={<Users />} />
                 <Route path="entities" element={<AdminEntities />} />
+                <Route path="categories" element={<Categories />} />
               </Route>
             </Route>
           

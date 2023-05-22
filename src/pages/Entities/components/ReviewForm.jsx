@@ -43,12 +43,14 @@ const ReviewForm = ({entityName}) => {
         formData.append('username', username)
         const imgs = [...values.imgs]
         imgs.forEach(img => formData.append('imgs', img))
-        /** 
+        
         const res = await api.post(
             '/reviews',
             formData,
             {headers: {'Content-Type': 'multipart/form-data'}})
-            */
+
+        setToggleForm(prev => !prev)
+        
     }
 
     const formik = useFormik({
