@@ -94,17 +94,15 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
     //const toggleShowConfBox = () => setShowConfBox(prev => !prev)
     
     const handleDeleteReview = async (id) => {
-        console.log(id)
-        /*
+        
         try {
-            
             const res = await api.delete(`/reviews/${id}`)
             const newReviews = reviews.filter(review => review.id !== id)
             setReviews(newReviews)
         } catch (err) {
             console.log(err)
         }
-        */
+        
     }
 
     const handlePromote = async () => {
@@ -142,9 +140,9 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                     <p>Email: {email}</p>
                     <p>Nr. Tel: {phoneNR}</p>
                     
-                    <Button handleClick={handlePromote} >{ roles?.find(role => role.name === '1337') ? "Retrigradeaza la utilizator" : "Promovati ca partener"}</Button>
-                    <Button handleClick={setShowConfBox(username)} >Sterge profilul</Button>
-                    {showConfBox === username && <ConfBox handleNo={setShowConfBox(username)} handleYes={() => handleDeleteUser(username)} >Confirmati stergerea?</ConfBox>}
+                    <Button handleClick={handlePromote} >{ roles?.find(role => role.name === '1337') ? "Retrogradeaza la utilizator" : "Promovati ca partener"}</Button>
+                    <Button handleClick={() => setShowConfBox(username)} >Sterge profilul</Button>
+                    {showConfBox === username && <ConfBox handleNo={() =>setShowConfBox('')} handleYes={() => handleDeleteUser(username)} >Confirmati stergerea?</ConfBox>}
 
                     <hr />
                     {/**Lista entitati */}
@@ -184,8 +182,8 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                                 {reviews?.map((review) => 
                                     <Review key={review.id} {...review}>
                                         <section className="mt-5">
-                                            <Button handleClick={setShowConfBox(review)} className="w-full text-gray-900 border-gray-900 border-2 font-bold">Sterge recenzia</Button>
-                                            {showConfBox?.id === review.id && <ConfBox handleNo={setShowConfBox(review)} handleYes={() => handleDeleteReview(review.id)} >Confirmati stergerea?</ConfBox>}
+                                            <Button handleClick={() => setShowConfBox(review)} className="w-full text-gray-900 border-gray-900 border-2 font-bold">Sterge recenzia</Button>
+                                            {showConfBox?.id === review.id && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDeleteReview(review.id)} >Confirmati stergerea?</ConfBox>}
                                         </section>
                                     </Review>)}
                             </section>

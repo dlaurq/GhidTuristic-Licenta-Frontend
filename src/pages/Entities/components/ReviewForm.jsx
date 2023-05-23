@@ -13,7 +13,7 @@ import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 
-const ReviewForm = ({entityName}) => {
+const ReviewForm = ({entityName, fetchEntity}) => {
 
     const [imgsUrl, setImgsUrl] = useState([])
     const [toggleForm, setToggleForm] = useState(false)
@@ -50,7 +50,7 @@ const ReviewForm = ({entityName}) => {
             {headers: {'Content-Type': 'multipart/form-data'}})
 
         setToggleForm(prev => !prev)
-        
+        fetchEntity()
     }
 
     const formik = useFormik({
