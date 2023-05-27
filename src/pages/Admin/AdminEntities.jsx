@@ -1,16 +1,12 @@
 import { useState } from "react"
-import Input from "../../../components/Input"
 import { faCaretDown, faCaretUp, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { useEffect } from "react"
-import Button from "../../../components/Button"
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate"
+import useAxiosPrivate from "../../hooks/useAxiosPrivate"
 import { useLocation } from "react-router-dom"
-import EntityCard from "../../../components/EntityCard"
-import ConfBox from "../../../components/ConfBox"
-import Select from "../../../components/Select"
-import Option from "../../../components/Option"
+import EntityCard from "../../components/EntityCard"
+import ConfBox from "../../components/ConfBox"
 
 const AdminEntities = () => {
 
@@ -78,29 +74,29 @@ const AdminEntities = () => {
 
     <section className="p-5 bg-gray-900 text-gray-300 text-xl">
       <p className="mb-2">Filtreaza dupa categorie: </p>
-      <Select 
+      <select 
         name='categories'
         id='categories'
-        handleChange={(e) => setFilter(e.target.value)}
+        onChange={(e) => setFilter(e.target.value)}
         value={filter}
         
         >
-        <Option value=''>
+        <option value=''>
           Alege o categorie
-        </Option>
-        {categories.map(item => <Option key={item.id} value={item.id}>{item.name}</Option>)}
-      </Select>
+        </option>
+        {categories.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+      </select>
     </section>
 
 
       <section className="p-5 bg-gray-900 text-gray-300 flex flex-row justify-between items-center gap-5">
         <FontAwesomeIcon icon={faMagnifyingGlass} />
-        <Input 
+        <input 
         id="searchBar"
         name="searchBar"
         placeholder="Nume utilizator"
         value={search}
-        handleChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => setSearch(e.target.value)}
         />
       </section>
 
@@ -109,7 +105,7 @@ const AdminEntities = () => {
       {filterEntities?.map((entity, index) => 
         <EntityCard key={entity.id} name={entity.name} >
           <section className="mt-5">
-              <Button handleClick={toggleShowConfBox} className="w-full text-gray-300 border-gray-300 border-2 font-bold">Sterge Entitatea</Button>
+              <button type="button" onClick={toggleShowConfBox} className="w-full text-gray-300 border-gray-300 border-2 font-bold">Sterge Entitatea</button>
               {showConfBox && <ConfBox handleNo={toggleShowConfBox} handleYes={() => handleDeleteEntity(entity.id)} >Confirmati stergerea?</ConfBox>}
           </section>
         </EntityCard>

@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base{
+    button {
+        @apply p-2 text-xl text-gray-300 border;
+    }
+
+    input {
+        @apply text-neutral-700 w-full;
+    }
+
+    select {
+        @apply text-gray-900;
+    }
+
+    form {
+        @apply text-gray-300 text-xl font-bold p-5 w-full text-left border-b flex flex-col justify-around;
+    }
+}

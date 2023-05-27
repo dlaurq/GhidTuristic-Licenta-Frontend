@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import Button from '../../components/Button'
 import NewEntityForm from './components/NewEntityForm'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import jwt_decode from "jwt-decode"
@@ -55,12 +54,13 @@ const Partener = () => {
   return (
     <section className='bg-gray-900 text-center'>
 
-      <Button 
+      <button 
+        type='button'
         className="m-5"
-        handleClick={ () => setToggleForm(prevToggleForm => !prevToggleForm)}
+        onClick={ () => setToggleForm(prevToggleForm => !prevToggleForm)}
       >
         Creaza o noua entitate
-      </Button>
+      </button>
 
       {toggleForm ? <NewEntityForm setFormSubmited={setFormSubmited} setEntities={setEntities} setToggleForm={setToggleForm}/> : null}
 
@@ -72,17 +72,17 @@ const Partener = () => {
           entity.id !== showEditBox 
             ? <EntityCard key={entity.id} name={entity.name} >
               <section className='flex flex-row justify-between items-center'>
-                <Button handleClick={() => setShowEditBox(entity.id)}>Editeaza</Button>
-                <Button handleClick={() => setShowConfBox(entity)}>Sterge</Button>
+                <button type='button' onClick={() => setShowEditBox(entity.id)}>Editeaza</button>
+                <button type='button' onClick={() => setShowConfBox(entity)}>Sterge</button>
                 
                 {showConfBox?.id === entity.id && <ConfBox handleNo={() => setShowConfBox({})} handleYes={() => handleDelete(entity.id)} >Confirmati stergerea?</ConfBox>}
               </section>
             </EntityCard>
             : <NewEntityForm setFormSubmited={setFormSubmited} setEntities={setEntities} key={entity.id} entity={entity} submitTxt="Salveaza" update={true} hideForm={() => setShowEditBox(false)}>
               <section>
-                <Button className="w-full" handleClick={() => setShowEditBox(false)}>
+                <button type='button' className="w-full" onClick={() => setShowEditBox(false)}>
                   Cancel
-                </Button>
+                </button>
               </section>
             </NewEntityForm>
           )

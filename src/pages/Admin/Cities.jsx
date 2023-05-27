@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import api from "../../../api/axios"
-import ErrorMsg from '../../../components/ErrorMsg'
-import City from './components/City'
-import CityForm from './components/CityForm'
-import Select from '../../../components/Select'
-import Option from '../../../components/Option'
+import api from "../../api/axios"
+import ErrorMsg from '../../components/ErrorMsg'
 import { useLocation } from 'react-router-dom'
+import { useFormik } from "formik"
+import * as Yup from "yup"
+import { useNavigate } from "react-router-dom"
+import ConfBox from '../../components/ConfBox'
 
 const Cities = () => {
   const [cities ,setCities] = useState([])
@@ -100,17 +100,17 @@ const Cities = () => {
 
       <section className="flex flex-row justify-between items-center p-5 text-xl border-b font-medium">
         <p>Filtreaza dupa Judet:</p>
-        <Select name="citySelector" id="citySelector" handleChange={handleChange} className='text-gray-900' value={filter}>
-          <Option value="">--Alege un Judet--</Option>
+        <select name="citySelector" id="citySelector" onChange={handleChange} className='text-gray-900' value={filter}>
+          <option value="">--Alege un Judet--</option>
           {counties.map(county => 
-            <Option 
+            <option 
               key={county.id} 
               value={county.id}
             >
               {county.name}
-            </Option>
+            </option>
           )}
-        </Select>
+        </select>
       </section>
 
       <ErrorMsg color={msgColor}>{serverMsg ? serverMsg : 'Adauga un oras'}</ErrorMsg>
@@ -137,5 +137,106 @@ const Cities = () => {
     </section>
   )
 }
+
+
+const CityForm = ({handleSubmit, buttonText, city, counties}) => {
+  const formik = useFormik({
+    initialValues:{
+      county: (city ? city.CountyId : ''),
+      city: (city ? city.name : ''),
+      id: (city ? city.id : '')
+    },
+
+    validationSchema: Yup.object({
+      city: Yup.string()
+        .max(60,"Numele orasului poate sa contina maxim 60 de caractere")
+        .required("Camp obligatoriul")
+        .matches(/^[a-zA-Z\s]*$/, "Numele trebuie sa contina doar litere"),
+      county: Yup.string()
+        .required("Camp obligatoriul")
+    }),
+
+    onSubmit: (values) => {
+      handleSubmit(values)
+      formik.resetForm()
+    },
+  })
+  
+
+  return (
+    <form onSubmit={formik.handleSubmit} className='h-60'>
+      <section>
+        <label htmlFor="county">
+          {formik.touched.county && formik.errors.county 
+            ? formik.errors.county
+            : ''
+          }
+        </label>
+        <select 
+          name="county" 
+          id="county"
+          value={formik.values.county}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className='text-gray-900 w-full font-bold bg-gray-300'
+        >
+          <option value=''>Selecteaza un judet</option>
+          {counties.map(county => <option key={county.id} value={county.id} className='font-normal bg-gray-300 '>{county.name}</option>)}
+        </select>
+      </section>
+    
+      <section className="mb-2">
+        <label htmlFor="city">
+          {formik.touched.city && formik.errors.city 
+          ? formik.errors.city
+          : 'Nume oras'}
+        </label>
+        <input 
+          id="city" 
+          name="city" 
+          type="text" 
+          placeholder="Nume oras"
+          onChange={formik.handleChange}
+          value={formik.values.city}
+          onBlur={formik.handleBlur}
+        />
+      </section>
+    
+      <button type="submit">{buttonText}</button>
+    </form>
+  )
+}
+
+
+
+const City = ({city, handleDelete, handleEdit, handleUpdate, toggleConfDelBox, counties, className}) => {
+  
+  const naviage = useNavigate()
+
+  const handleClick = () => {
+    naviage('/admin/Locations', {state: {...city}})
+  }
+
+  return (
+    <>{!city.edit 
+      ?<section className={`flex flex-row justify-between p-5 items-center border-b border-gray-300 ${className}`}>
+        {city.deleteBox && <ConfBox handleNo={toggleConfDelBox} handleYes={handleDelete}>Confirmare stergere?</ConfBox>}
+          <h3 onClick={handleClick} className="text-2xl break-all">{city.name} ({city?.Locations?.length || 0})</h3>
+          <div className="flex flex-row">
+              <button type="button" onClick={handleEdit} className='mx-1'>Edit</button>
+              <button type="button" onClick={toggleConfDelBox} className='mx-1'>Delete</button>
+          </div>
+      </section>
+
+      :<CityForm 
+      city={city}
+      counties={counties}
+      buttonText='Salvati'
+      handleSubmit={handleUpdate}
+      />}
+    </>
+  )
+}
+
 
 export default Cities

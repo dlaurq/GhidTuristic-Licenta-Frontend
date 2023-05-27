@@ -1,10 +1,6 @@
 import { useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import Form from '../../../components/Form'
 import * as Yup from 'yup'
-import Button from '../../../components/Button'
-import Label from '../../../components/Label'
-import Input from '../../../components/Input'
 import { Rating } from 'react-simple-star-rating'
 import useAuth from '../../../hooks/useAuth'
 import jwt_decode from "jwt-decode"
@@ -85,31 +81,31 @@ const ReviewForm = ({entityName, fetchEntity}) => {
   return (<>{
     !toggleForm
     ?<p onClick={handleToggleForm} className='text-3xl p-5 bg-gray-900 text-gray-300 font-bold'>Lasa o recenzie <FontAwesomeIcon icon={faCaretUp}/></p>
-    :<Form handleSubmit={formik.handleSubmit} className='bg-gray-900 border-none' encType="multipart/form-data" >
+    :<form onSubmit={formik.handleSubmit} className='bg-gray-900 border-none' encType="multipart/form-data" >
         <p onClick={handleToggleForm} className='text-3xl mb-3'>Lasa o recenzie <FontAwesomeIcon icon={faCaretDown}/></p>
         <section>
-            <Label htmlFor='title'>{
+            <label htmlFor='title'>{
                 formik.touched.title && formik.errors.title 
                     ? formik.errors.title
                     : 'Titlu'
-            }</Label>
-            <Input 
+            }</label>
+            <input 
                 id="title" 
                 name="title" 
                 type="text" 
                 placeholder="Titlu" 
-                handleChange={formik.handleChange} 
-                handleBlur={formik.handleBlur} 
+                onChange={formik.handleChange} 
+                onBlur={formik.handleBlur} 
                 value={formik.values.title}
             />
         </section>
 
         <section>
-            <Label htmlFor='description'>{
+            <label htmlFor='description'>{
                 formik.touched.description && formik.errors.description 
                     ? formik.errors.description
                     : 'Descriere'
-            }</Label>
+            }</label>
             <textarea 
                 className='text-neutral-700 w-full'
                 id="description" 
@@ -122,11 +118,11 @@ const ReviewForm = ({entityName, fetchEntity}) => {
             />
 
             <section>
-                <Label htmlFor='rating'>{
+                <label htmlFor='rating'>{
                     formik.touched.rating && formik.errors.rating 
                         ? formik.errors.rating
                         : 'Rating'
-                }</Label>
+                }</label>
                 <Rating 
                     SVGstyle={{display: 'inline-block'}}
                     onClick={(rate) => formik.setFieldValue('rating', rate)}
@@ -135,19 +131,19 @@ const ReviewForm = ({entityName, fetchEntity}) => {
             
 
             <section className=''>
-                <Label htmlFor="imgs">
+                <label htmlFor="imgs">
                     {formik.touched.imgs && formik.errors.imgs 
                         ? formik.errors.imgs
                         : 'Poze'
-                }</Label>
-                <Input 
+                }</label>
+                <input 
                     className=" text-gray-200"
                     id="imgs" 
                     name="imgs" 
                     type="file" 
                     multiple
                     accept="image/*"
-                    handleChange={(e) => formik.setFieldValue('imgs', e.currentTarget.files)} 
+                    onChange={(e) => formik.setFieldValue('imgs', e.currentTarget.files)} 
                 />
                 <section className='flex flex-row flex-wrap justify-center items-center gap-4 py-2'>
                     {imgsUrl.map(img => 
@@ -163,8 +159,8 @@ const ReviewForm = ({entityName, fetchEntity}) => {
             </section>
         </section>
 
-        <Button type='submit'>Adauga recenzie</Button>
-    </Form>
+        <button type='submit'>Adauga recenzie</button>
+    </form>
   }</>)
 }
 

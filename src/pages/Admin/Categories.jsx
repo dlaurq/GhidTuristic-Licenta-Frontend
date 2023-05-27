@@ -1,13 +1,9 @@
 import { useFormik } from 'formik'
-import Button from '../../../components/Button'
-import Form from '../../../components/Form'
-import Input from '../../../components/Input'
-import Label from '../../../components/Label'
 import * as Yup from "yup"
-import useAxiosPrivate from '../../../hooks/useAxiosPrivate'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import { useEffect } from 'react'
 import { useState } from 'react'
-import ConfBox from '../../../components/ConfBox'
+import ConfBox from '../../components/ConfBox'
 import { useNavigate } from 'react-router-dom'
 
 const Categories = () => {
@@ -55,30 +51,30 @@ const Categories = () => {
 
   return (
     <section>
-        <Form handleSubmit={formik.handleSubmit} className="bg-gray-900">
+        <form onSubmit={formik.handleSubmit} className="bg-gray-900">
             <section className='mb-6'>
-                <Label htmlFor="name" className="">
+                <label htmlFor="name" className="">
                   {formik.touched.name && formik.errors.name 
                     ? formik.errors.name
                     : 'Nume'}
-                </Label>
-                <Input
+                </label>
+                <input
                   id="name"
                   name="name"
                   placeholder="Introduceti numele"
                   value={formik.values.name}
-                  handleBlur={formik.handleBlur}
-                  handleChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
                 />
 
             </section>
-            <Button type='submit'>Adauga</Button>
-        </Form>
+            <button type='submit'>Adauga</button>
+        </form>
         <section>
             {categories.map(category => 
               <section key={category.id} className='p-5 bg-gray-900 border-b-2 flex justify-between items-center text-gray-300 text-2xl'>
                 <p onClick={() => navigate('/admin/Entities', {state: {filter: category.id}})}>{category.name}</p>
-                <Button handleClick={toggleShowConfBox}>Sterge</Button>
+                <button type="button" onClick={toggleShowConfBox}>Sterge</button>
                 {showConfBox && <ConfBox handleNo={toggleShowConfBox} handleYes={() => handleDelete(category.id)} >Confirmati stergerea?</ConfBox>}
               </section>
               )}

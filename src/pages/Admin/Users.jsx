@@ -1,13 +1,11 @@
 import { useState } from "react"
 import { useEffect } from "react"
-import Button from "../../../components/Button"
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate"
+import useAxiosPrivate from "../../hooks/useAxiosPrivate"
 import { faCaretDown, faCaretUp, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
-import Review from "../../../components/Review"
-import ConfBox from "../../../components/ConfBox"
-import Input from "../../../components/Input"
+import Review from "../../components/Review"
+import ConfBox from "../../components/ConfBox"
 import { useLocation, useNavigate } from "react-router-dom"
 
 
@@ -58,12 +56,12 @@ const Users = () => {
 
         <section className="p-5 bg-gray-900 text-gray-300 flex flex-row justify-between items-center gap-5">
             <FontAwesomeIcon icon={faMagnifyingGlass} />
-            <Input 
+            <input 
             id="filterBar"
             name="filterBar"
             placeholder="Nume utilizator"
             value={filter}
-            handleChange={(e) => setFilter(e.target.value)}
+            onChange={(e) => setFilter(e.target.value)}
             />
         </section>
 
@@ -140,8 +138,8 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                     <p>Email: {email}</p>
                     <p>Nr. Tel: {phoneNR}</p>
                     
-                    <Button handleClick={handlePromote} >{ roles?.find(role => role.name === '1337') ? "Retrogradeaza la utilizator" : "Promovati ca partener"}</Button>
-                    <Button handleClick={() => setShowConfBox(username)} >Sterge profilul</Button>
+                    <button type="button" onClick={handlePromote} >{ roles?.find(role => role.name === '1337') ? "Retrogradeaza la utilizator" : "Promovati ca partener"}</button>
+                    <button type="button" onClick={() => setShowConfBox(username)} >Sterge profilul</button>
                     {showConfBox === username && <ConfBox handleNo={() =>setShowConfBox('')} handleYes={() => handleDeleteUser(username)} >Confirmati stergerea?</ConfBox>}
 
                     <hr />
@@ -182,7 +180,7 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                                 {reviews?.map((review) => 
                                     <Review key={review.id} {...review}>
                                         <section className="mt-5">
-                                            <Button handleClick={() => setShowConfBox(review)} className="w-full text-gray-900 border-gray-900 border-2 font-bold">Sterge recenzia</Button>
+                                            <button type="button" onClick={() => setShowConfBox(review)} className="w-full text-gray-900 border-gray-900 border-2 font-bold">Sterge recenzia</button>
                                             {showConfBox?.id === review.id && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDeleteReview(review.id)} >Confirmati stergerea?</ConfBox>}
                                         </section>
                                     </Review>)}

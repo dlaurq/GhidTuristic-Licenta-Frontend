@@ -1,12 +1,6 @@
 import { useFormik } from "formik"
 import { useEffect, useState } from "react"
-import Form from "../../../components/Form"
-import Input from "../../../components/Input"
-import Label from "../../../components/Label"
-import Select from "../../../components/Select"
-import Option from "../../../components/Option"
 import useAxiosPrivate from "../../../hooks/useAxiosPrivate"
-import Button from "../../../components/Button"
 import useAuth from "../../../hooks/useAuth"
 import * as Yup from "yup"
 import jwt_decode from "jwt-decode"
@@ -139,29 +133,29 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
     }, [formik.values.imgs])
 
   return (
-    <Form handleSubmit={formik.handleSubmit} encType="multipart/form-data" className="gap-3">
+    <form onSubmit={formik.handleSubmit} encType="multipart/form-data" className="gap-3">
         <section>
-            <Label htmlFor="name">
+            <label htmlFor="name">
                 {formik.touched.name && formik.errors.name 
                     ? formik.errors.name
                     : 'Nume'
-            }</Label>
-            <Input 
+            }</label>
+            <input 
                 id="name" 
                 name="name" 
                 type="text" 
                 placeholder="Numele entitatii" 
-                handleChange={formik.handleChange} 
-                handleBlur={formik.handleBlur} 
+                onChange={formik.handleChange} 
+                onBlur={formik.handleBlur} 
                 value={formik.values.name}/>
         </section>
 
         <section>
-            <Label htmlFor="description">
+            <label htmlFor="description">
                 {formik.touched.description && formik.errors.description 
                     ? formik.errors.description
                     : 'Descriere'
-            }</Label>
+            }</label>
             <textarea 
                 className="resize-none text-gray-900 w-full"
                 spellCheck='false'
@@ -175,87 +169,87 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
         </section>
 
         <section className="w-full flex flex-row justify-between">
-            <Label htmlFor="category">
+            <label htmlFor="category">
                 {formik.touched.category && formik.errors.category 
                     ? formik.errors.category
                     : 'Categorie'
-            }</Label>
-            <Select 
+            }</label>
+            <select 
                 className="w-3/4"
                 name="category" 
                 id="category"
                 value={formik.values.category}
-                handleChange={formik.handleChange}
-                handleBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
             >
-                    <Option value="">Selectati o categorie</Option>
-                    {categories.map( category => <Option key={category.id} value={category.id}>{category.name}</Option>)}
-            </Select>
+                    <option value="">Selectati o categorie</option>
+                    {categories.map( category => <option key={category.id} value={category.id}>{category.name}</option>)}
+            </select>
         </section>
 
         <section className="w-full flex flex-row justify-between">
-            <Label htmlFor="country">
+            <label htmlFor="country">
                 {formik.touched.country && formik.errors.country 
                     ? formik.errors.country
                     : 'Tara'
-            }</Label>
-            <Select 
+            }</label>
+            <select 
                 className="w-3/4"
                 name="country" 
                 id="country"
                 value={formik.values.country}
-                handleChange={formik.handleChange}
-                handleBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
             >
-                    <Option value="">Selectati o tara</Option>
-                    {geo?.countries?.map( country => <Option key={country.id} value={country.id}>{country.name}</Option>)}
-            </Select>
+                    <option value="">Selectati o tara</option>
+                    {geo?.countries?.map( country => <option key={country.id} value={country.id}>{country.name}</option>)}
+            </select>
         </section>
 
         <section className="w-full flex flex-row justify-between">
-            <Label htmlFor="county">
+            <label htmlFor="county">
                 {formik.touched.county && formik.errors.county 
                     ? formik.errors.county
                     : 'Judet'
-            }</Label>
-            <Select 
+            }</label>
+            <select 
                 className="w-3/4"
                 name="county" 
                 id="county"
                 value={formik.values.county}
-                handleChange={formik.handleChange}
-                handleBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
             >
-                <Option value="">Selectati un judet</Option>
-                {geo?.counties?.filter( county => county.CountryId === formik.values.country).map( county => <Option key={county.id} value={county.id}>{county.name}</Option>)}
-            </Select>
+                <option value="">Selectati un judet</option>
+                {geo?.counties?.filter( county => county.CountryId === formik.values.country).map( county => <option key={county.id} value={county.id}>{county.name}</option>)}
+            </select>
         </section>
 
         <section className="w-full flex flex-row justify-between">
-            <Label htmlFor="city">
+            <label htmlFor="city">
                 {formik.touched.city && formik.errors.city 
                     ? formik.errors.city
                     : 'Oras'
-            }</Label>
-            <Select 
+            }</label>
+            <select 
                 className="w-3/4"
                 name="city" 
                 id="city"
                 value={formik.values.city}
-                handleChange={formik.handleChange}
-                handleBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
             >
-                <Option value="">Selectati un oras</Option>
-                {geo?.cities?.filter( city => city.CountyId === formik.values.county).map( city => <Option key={city.id} value={city.id}>{city.name}</Option>)}
-            </Select>
+                <option value="">Selectati un oras</option>
+                {geo?.cities?.filter( city => city.CountyId === formik.values.county).map( city => <option key={city.id} value={city.id}>{city.name}</option>)}
+            </select>
         </section>
 
         <section>
-            <Label htmlFor="address">
+            <label htmlFor="address">
                 {formik.touched.address && formik.errors.address 
                     ? formik.errors.address
                     : 'Adresa'
-            }</Label>
+            }</label>
             <textarea 
                 className="resize-none text-gray-900 w-full"
                 spellCheck='false'
@@ -269,23 +263,23 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
         </section>
 
         <section>
-            <Label htmlFor="imgs">
+            <label htmlFor="imgs">
                 {formik.touched.imgs && formik.errors.imgs 
                     ? formik.errors.imgs
                     : 'Poze'
-            }</Label>
-            <Input 
+            }</label>
+            <input 
                 className=" text-gray-200"
                 id="imgs" 
                 name="imgs" 
                 type="file" 
                 multiple
                 accept="image/*"
-                handleChange={(e) => formik.setFieldValue('imgs', e.currentTarget.files)} 
+                onChange={(e) => formik.setFieldValue('imgs', e.currentTarget.files)} 
             />
         </section>
         
-        <Button type="submit"> { submitTxt || "Inregistreaza"}</Button>
+        <button type="submit"> { submitTxt || "Inregistreaza"}</button>
 
         <section>
             <p>Poze incarcate</p>
@@ -322,7 +316,7 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
             }
         </section>
         {children}
-    </Form>
+    </form>
   )
 }
 

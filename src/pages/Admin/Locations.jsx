@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import api from "../../../api/axios"
-import ErrorMsg from '../../../components/ErrorMsg'
-import Location from './components/Location'
-import LocationForm from './components/LocationForm'
-import Select from '../../../components/Select'
-import Option from '../../../components/Option'
+import api from "../../api/axios"
 import { useLocation } from 'react-router-dom'
+import { useFormik } from "formik"
+import * as Yup from "yup"
+import { useNavigate } from "react-router-dom"
+import ConfBox from '../../components/ConfBox'
 
 const Locations = () => {
   const [cities ,setCities] = useState([])
@@ -102,17 +101,17 @@ const Locations = () => {
 
       <section className="flex flex-row justify-between items-center p-5 text-xl border-b font-medium">
         <p>Filtreaza dupa Oras:</p>
-        <Select name="locationSelector" id="locationSelector" handleChange={handleChange} className='text-gray-900' value={filter}>
-          <Option value="">--Alege un Oras--</Option>
+        <select name="locationSelector" id="locationSelector" onChange={handleChange} className='text-gray-900' value={filter}>
+          <option value="">--Alege un Oras--</option>
           {cities.map(city => 
-            <Option 
+            <option 
               key={city.id} 
               value={city.id}
             >
               {city.name}
-            </Option>
+            </option>
           )}
-        </Select>
+        </select>
       </section>
       
       {/** 
@@ -138,6 +137,106 @@ const Locations = () => {
       )}
 
     </section>
+  )
+}
+
+
+const Location = ({location, handleDelete, handleEdit, handleUpdate, toggleConfDelBox, cities, className}) => {
+  
+  const navigate = useNavigate()
+
+  const handleClick = () => {
+    navigate(`/admin/${location?.Users[0]?.username ? 'Users' : 'entities'}`, {state: {search: (location?.Users[0]?.username || location?.Places[0]?.name)}})
+  }
+
+  return (
+    <>{!location.edit 
+      ?<section className={`flex flex-row justify-between p-5 items-center border-b border-gray-300 ${className}`}>
+        {location.deleteBox && <ConfBox handleNo={toggleConfDelBox} handleYes={handleDelete}>Confirmare stergere?</ConfBox>}
+          <h3 onClick={handleClick} className="text-2xl break-all">{location.address} ({location?.Users[0]?.username || location?.Places[0]?.name || ' '})</h3>
+          <div className="flex flex-row">
+            {/** 
+              <Button handleClick={handleEdit} className='mx-1'>Edit</Button>
+            */}
+              <button onClick={toggleConfDelBox} className='mx-1'>Delete</button>
+          </div>
+      </section>
+
+      :<LocationForm 
+      location={location}
+      cities={cities}
+      buttonText='Salvati'
+      handleSubmit={handleUpdate}
+      />}
+    </>
+  )
+}
+
+
+
+const LocationForm = ({handleSubmit, buttonText, location, cities}) => {
+  const formik = useFormik({
+    initialValues:{
+      city: (location ? location.CityId : ''),
+      location: (location ? location.address : ''),
+      id: (location ? location.id : '')
+    },
+
+    validationSchema: Yup.object({
+      location: Yup.string()
+        .max(60,"Numele Locatiei poate sa contina maxim 60 de caractere")
+        .required("Camp obligatoriul")
+        .matches(/^[a-zA-Z\s]*$/, "Numele trebuie sa contina doar litere"),
+      city: Yup.string()
+        .required("Camp obligatoriul")
+    }),
+
+    onSubmit:handleSubmit,
+    //onSubmit: () => {formik.resetForm()},
+  })
+  
+
+  return (
+    <form onSubmit={formik.handleSubmit} className='h-60'>
+      <section>
+        <label htmlFor="city">
+          {formik.touched.city && formik.errors.city 
+            ? formik.errors.city
+            : ''
+          }
+        </label>
+        <select 
+          name="city" 
+          id="city"
+          value={formik.values.city}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          className='text-gray-900 w-full font-bold bg-gray-300'
+        >
+          <option value=''>Selecteaza un oras</option>
+          {cities.map(city => <option key={city.id} value={city.id} className='font-normal bg-gray-300 '>{city.name}</option>)}
+        </select>
+      </section>
+    
+      <section className="mb-2">
+        <label htmlFor="location">
+          {formik.touched.location && formik.errors.location 
+          ? formik.errors.location
+          : 'Nume locatie'}
+        </label>
+        <input 
+          id="location" 
+          name="location" 
+          type="text" 
+          placeholder="Nume locatie"
+          onChange={formik.handleChange}
+          value={formik.values.location}
+          onBlur={formik.handleBlur}
+        />
+      </section>
+    
+      <button type="submit">{buttonText}</button>
+    </form>
   )
 }
 

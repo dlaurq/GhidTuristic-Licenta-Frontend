@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Link, NavLink, useParams } from 'react-router-dom'
-import Button from '../../components/Button'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import Review from '../../components/Review'
 import ReviewForm from './components/ReviewForm'
@@ -79,12 +78,12 @@ const Entity = (props) => {
             ?<section>
                 
                 {entity?.PlacesToVisits?.length === 0 || !entity?.PlacesToVisits?.some(place => place?.User?.username === auth?.username)
-                    ? <Button className="bg-gray-900 my-2 w-full text-left pl-5" handleClick={handleToVisitBtn}>Adauga la 'De vizitat'</Button>
+                    ? <button type="button" className="bg-gray-900 my-2 w-full text-left pl-5" onClick={handleToVisitBtn}>Adauga la 'De vizitat'</button>
                     : undefined
                 }
                 
                 {entity?.PlacesToVisits?.length === 0 || !entity?.PlacesVisiteds?.some(place => place?.User?.username === auth?.username)
-                    ? <Button className="bg-gray-900 my-2 w-full text-left pl-5" handleClick={handleVisitedBtn}>Adauga la 'Vizitate'</Button>
+                    ? <button type="button" className="bg-gray-900 my-2 w-full text-left pl-5" onClick={handleVisitedBtn}>Adauga la 'Vizitate'</button>
                     : undefined
                 }
 
@@ -105,7 +104,7 @@ const Entity = (props) => {
             ?entity?.Reviews?.map((review, index) => review?.User?.username === auth?.username && 
                 <Review key={index} {...review}>
                     <section className="mt-5">
-                        <Button handleClick={() => setShowConfBox(prev => !prev)} className="w-full text-gray-900 border-gray-900 border-2 font-bold">Sterge recenzia</Button>
+                        <button type="button" onClick={() => setShowConfBox(prev => !prev)} className="w-full text-gray-900 border-gray-900 border-2 font-bold">Sterge recenzia</button>
                         {showConfBox  && <ConfBox handleNo={() => setShowConfBox(prev => !prev)} handleYes={() => handleDeleteReview(review.id)} >Confirmati stergerea?</ConfBox>}
                     </section>
                 </Review>)

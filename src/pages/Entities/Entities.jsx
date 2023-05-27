@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Button from '../../components/Button'
 import EntityCard from '../../components/EntityCard'
-import Label from '../../components/Label'
-import Option from '../../components/Option'
-import Select from '../../components/Select'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 
 const Entities = () => {
@@ -53,67 +49,67 @@ const Entities = () => {
     <section className=' mx-auto bg-gray-900'>
         <nav className='flex flex-col justify-between items-center w-full text-gray-900 font-medium bg-white'>
             <section className='m-2'>
-                <Label htmlFor="sort">
+                <label htmlFor="sort">
                     Sorteaza dupa: 
-                </Label>
-                <Select 
+                </label>
+                <select 
                     name="sort"
                     id="sort"
-                    handleChange={handleFilterChange}
-                    className=''
+                    onChange={handleFilterChange}
                 >
-                    <Option value='rating'>Rating</Option>
-                    <Option value='PriceLH'>Pret (Mic-Mare)</Option>
-                    <Option value='PriceHL'>Pret (Mare-Mic)</Option>
-                </Select>
+                    <option value='rating'>Rating</option>
+                    <option value='PriceLH'>Pret (Mic-Mare)</option>
+                    <option value='PriceHL'>Pret (Mare-Mic)</option>
+                </select>
             </section>
-            <Button 
+            <button 
+                type="button"
                 className='text-gray-300 bg-gray-900 border-0 w-full p-1 border-b-2'
-                handleClick={toggleShowFilters}
-            >Filtre</Button>
+                onClick={toggleShowFilters}
+            >Filtre</button>
             {showFilters
                 ?<section className='w-full text-center bg-gray-400'>
                     <section className='m-2 '>
-                        <Label htmlFor="country">
+                        <label htmlFor="country">
                             Tara: 
-                        </Label>
-                        <Select 
+                        </label>
+                        <select 
                             name="country"
                             id="country"
-                            handleChange={handleFilterChange}
+                            onChange={handleFilterChange}
                             className='bg-gray-400'
                         >
-                            <Option value=''>Selecteaza o tara</Option>
-                            {world.countries.map(country => <Option key={country.id} value={country.id}>{country.name}</Option>)}
-                        </Select>
+                            <option value=''>Selecteaza o tara</option>
+                            {world.countries.map(country => <option key={country.id} value={country.id}>{country.name}</option>)}
+                        </select>
                     </section>
                     <section className='m-2'>
-                        <Label htmlFor="county">
+                        <label htmlFor="county">
                             Judet: 
-                        </Label>
-                        <Select 
+                        </label>
+                        <select 
                             name="county"
                             id="county"
-                            handleChange={handleFilterChange}
+                            onChange={handleFilterChange}
                             className='bg-gray-400'
                         >
-                            <Option value=''>Selecteaza un judet</Option>
-                            {world.counties.map(county => <Option key={county.id} value={county.id}>{county.name}</Option>)}
-                        </Select>
+                            <option value=''>Selecteaza un judet</option>
+                            {world.counties.map(county => <option key={county.id} value={county.id}>{county.name}</option>)}
+                        </select>
                     </section>
                     <section className='m-2 '>
-                        <Label htmlFor="city">
+                        <label htmlFor="city">
                             Oras: 
-                        </Label>
-                        <Select 
+                        </label>
+                        <select 
                             name="city"
                             id="city"
                             handleChange={handleFilterChange}
-                            className='bg-gray-400'
+                            onChange='bg-gray-400'
                         >
-                            <Option value='rating'>Selecteaza un oras</Option>
-                            {world.cities.map(city => <Option key={city.id} value={city.id}>{city.name}</Option>)}
-                        </Select>
+                            <option value='rating'>Selecteaza un oras</option>
+                            {world.cities.map(city => <option key={city.id} value={city.id}>{city.name}</option>)}
+                        </select>
                     </section>
                 </section>
                 : null

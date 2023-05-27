@@ -1,5 +1,3 @@
-import Button from "./Button"
-
 const ConfBox = ({handleYes, handleNo, children, }) => {
 
   return (
@@ -8,8 +6,8 @@ const ConfBox = ({handleYes, handleNo, children, }) => {
         <section className="bg-gray-900 border-2 p-5 w-4/5 shadow-sm shadow-black flex flex-col justify-between">
             <p className=" text-center mb-8 text-xl text-gray-300">{children}</p>
             <section className="flex flex-row justify-evenly items-center">
-                <Button handleClick={handleYes} classes="px-4">Da</Button>
-                <Button handleClick={() => handleNo} classes="px-4">Nu</Button>
+                <button type="button" onClick={handleYes} classes="px-4">Da</button>
+                <button type="button" onClick={() => handleNo} classes="px-4">Nu</button>
             </section>
         </section>
     </section>

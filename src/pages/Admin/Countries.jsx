@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
-import Country from "./components/Country"
-import CountryForm from "./components/CountryForm"
-import ErrorMsg from "../../../components/ErrorMsg"
-import useAxiosPrivate from "../../../hooks/useAxiosPrivate"
+import ErrorMsg from "../../components/ErrorMsg"
+import useAxiosPrivate from "../../hooks/useAxiosPrivate"
 import { useNavigate, useLocation } from "react-router-dom"
+import { useFormik } from "formik"
+import * as Yup from "yup"
+import ConfBox from "../../components/ConfBox"
 
 const Countries = () => {
   const [countries, setCountries] = useState([])
@@ -115,6 +116,77 @@ const Countries = () => {
 
     </section>
   )
+}
+
+
+const Country = ({country, handleDelete, handleEdit,handleUpdate, toggleConfDelBox}) => {
+
+  const naviage = useNavigate()
+
+  const handleClick = () => {
+    naviage('/admin/County', {state: {...country}})
+  }
+
+  return (
+    <>
+    {!country.edit ?
+        <section className="flex flex-row justify-between p-5 items-center border-b border-gray-300">
+          {country.deleteBox && <ConfBox handleNo={toggleConfDelBox} handleYes={handleDelete}>Confirmare stergere?</ConfBox>}
+          <h3 onClick={handleClick}  className="text-2xl text-gray-300 break-all">{country.name} ({country?.Counties?.length || 0})</h3>
+          <div className="buttons">
+            <button onClick={handleEdit} className='mx-1'>Edit</button>
+            <button onClick={toggleConfDelBox} className='mx-1'>Delete</button>
+          </div>
+        </section>
+      :
+      <CountryForm buttonText='Edit' handleSubmit={handleUpdate} country={country}/>}
+  </>
+  )
+}
+
+
+
+const CountryForm = ({handleSubmit, buttonText, country}) => {
+  const formik = useFormik({
+      initialValues:{
+        country: (country ? country.name : ''),
+        id: (country ? country.id : '')
+      },
+  
+      validationSchema: Yup.object({
+        country: Yup.string().max(60,"Numele tarii poate sa contina maxim 60 de caractere").required("Copletati campul").matches(/^[a-zA-Z\s]*$/, "Numele trebuie sa contina doar litere"),
+      }),
+  
+      onSubmit: (values) => {
+        handleSubmit(values)
+        formik.resetForm()
+      },
+  })
+
+return (
+  <form onSubmit={formik.handleSubmit} className='h-52'>
+    <section className="flex flex-col">
+      <label htmlFor="country" className="mb-3">
+        {formik.touched.country && formik.errors.country 
+          ? formik.errors.country
+          : 'Nume tara'
+        }
+      </label>
+      <input 
+        id="country" 
+        name="country" 
+        type="text" 
+        placeholder="Nume tara"
+        onChange={formik.handleChange}
+        value={formik.values.country}
+        onBlur={formik.handleBlur}
+      />
+    </section>
+  
+  <button className="mt-5" type="submit">{buttonText}</button>
+  
+</form>
+)
 }
 
 export default Countries
