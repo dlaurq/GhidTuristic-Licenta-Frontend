@@ -8,7 +8,7 @@
     }
 
     input {
-        @apply text-neutral-700 w-full;
+        @apply border-2 focus:border-amber-400 text-neutral-400 focus:text-amber-400 w-full;
     }
 
     select {
@@ -17,5 +17,13 @@
 
     form {
         @apply text-gray-300 text-xl font-bold p-5 w-full text-left border-b flex flex-col justify-around;
+    }
+
+    button {
+        @apply block bg-gray-900 ;
+    }
+
+    label {
+        @apply text-gray-900
     }
 }

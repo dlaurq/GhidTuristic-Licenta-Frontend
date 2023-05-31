@@ -52,7 +52,7 @@ const MainNav = () => {
                     <li><NavLink to="login" className="">Autentificare</NavLink></li>
                   </>  
                   :<>
-                    <li><NavLink to="/" className="">Cont</NavLink></li>
+                    <li><NavLink to="/cont" className="">Cont</NavLink></li>
                     <li><NavLink to="/" onClick={handleLogout} className="">Logout</NavLink></li>
 
                     {roles?.find(role => role === 420) 

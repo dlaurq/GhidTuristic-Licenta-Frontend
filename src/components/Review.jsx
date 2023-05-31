@@ -1,9 +1,39 @@
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useEffect } from 'react'
+import { useState } from 'react'
 import { Rating } from 'react-simple-star-rating'
+import useAxiosPrivate from '../hooks/useAxiosPrivate'
 
+const Review = ({ title, createdAt, rating, User, description, Images, children, id }) => {
 
-const Review = ({ title, createdAt, rating, User, description, Images, children }) => {
+  const api = useAxiosPrivate()
+
+  const [review, setReview] = useState({
+    title: title, 
+    createdAt: createdAt, 
+    rating: rating, 
+    User: User, 
+    description: description, 
+    Images: Images
+  })
+
+  useEffect(() => {
+    const fetchReview = async () => {
+      try{
+        const res = await api.get(`/review/${id}`)
+        console.log(res.data)
+      }catch(err){
+        console.log(err)
+      }
+      
+    }
+
+    if(id){
+      fetchReview()
+    }
+  }, [])
+
   return (
     <section className='p-5 mb-5 border-4 last:mb-0 border-amber-500 bg-white'>
       <section className='flex flex-row justify-start items-center mb-2'>

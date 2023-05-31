@@ -60,7 +60,7 @@ const Home = () => {
         {recomandari?.topActiv?.length !== 0 && 
         <section>
           <p>Top Activitati</p>
-          <section className="flex flex-row overflow-y-auto gap-5 ">
+          <section className="flex flex-row overflow-y-auto gap-5 justify-start items-center">
             {recomandari?.topActiv?.map(item => <EntityCard className='min-w-[15rem]' key={item.id} name={item.name} />)}
           </section>
         </section>

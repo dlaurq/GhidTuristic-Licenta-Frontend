@@ -23,6 +23,7 @@ import Entity from "./pages/Entities/Entity"
 import Users from "./pages/Admin/Users"
 import AdminEntities from "./pages/Admin/AdminEntities"
 import Categories from "./pages/Admin/Categories"
+import Cont from "./pages/Cont"
 
 function App() {
 
@@ -39,6 +40,7 @@ function App() {
           <Route path="login" element={<Login />}/>
           <Route path="obiective/:name" element={ <Entity /> } />
           <Route path="obiective" element={ <Entities /> } />
+          <Route path="cont" element={ <Cont /> } />
 
           {/**Private routes */}
           
