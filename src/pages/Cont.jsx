@@ -1,4 +1,4 @@
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect } from 'react'
 import useAxiosPrivate from '../hooks/useAxiosPrivate'
@@ -12,6 +12,11 @@ const Cont = () => {
     const {auth} = useAuth()
     const api = useAxiosPrivate()
 
+    const [showEditForm, setShowEditForm] = useState(false)
+    const [showPwForm, setShowPwForm] = useState(false)
+    const [showLocatiiVizitate, setShowLocatiiVizitate] = useState(false)
+    const [showLocatiiDeVizitat, setShowLocatiiDeVizitat] = useState(false)
+    const [showRecenzii, setShowRecenzii] = useState(false)
     const [user, setUser] = useState({})
 
     useEffect(() => {
@@ -45,44 +50,106 @@ const Cont = () => {
             <p>{user.bio}</p>
             <p>Adresa</p>
         </section>
+
+        <Tab 
+            toggle={showEditForm} 
+            setToggle={setShowEditForm} 
+            text='Editeaza profilul' 
+            component={<ProfilForm user={user} setShowEditForm={setShowEditForm} setUser={setUser} userData={user} />} 
+
+        />
+        
+        <Tab 
+            toggle={showPwForm}
+            setToggle={setShowPwForm}
+            text='Schimba parola'
+            component={<ChangePwForm setShowPwForm={setShowPwForm}/>}
+        />
+
+        <Tab 
+            toggle={showLocatiiVizitate}
+            setToggle={setShowLocatiiVizitate}
+            text='Locatii vizitate'
+            
+        />
+
+        <Tab 
+            toggle={showLocatiiDeVizitat}
+            setToggle={setShowLocatiiDeVizitat}
+            text='Locatii de vizitat'
+            
+        />
+
+        <Tab 
+            toggle={showRecenzii}
+            setToggle={setShowRecenzii}
+            text='Recenziile mele'
+            
+        />
+
+        <button className='text-white w-full my-3 bg-red-700 font-bold'>Sterge cont</button>
        
-        <button className='w-full my-3'>Editeaza profil</button>
-        <button className='w-full my-3'>Schimba parola</button>
-        <button className='w-full my-3'>Locatii vizitate</button>
-        <button className='w-full my-3'>Locatii de vizitat</button>
-        <button className='w-full my-3'>Recenziile mele</button>
-        <button className='w-full my-3 bg-red-700 font-bold'>Sterge cont</button>
-       
-        <ProfilForm />
+        
     </section>
   )
 }
 
 
-const ProfilForm = () => {
+const Tab = ({toggle, setToggle, text, component}) => {
+
+    return(
+        <section className='border-2 border-gray-900 my-2 p-2'>
+            <section onClick={() => setToggle(prev => !prev)} className='flex justify-between items-center text-xl cursor-pointer'>
+                <p>{text}</p>
+                <FontAwesomeIcon icon={toggle ? faCaretDown : faCaretUp}/>
+            </section>
+            {toggle && component}
+        </section>
+    )
+
+}
+
+const ProfilForm = ({user, setShowEditForm, setUser, userData}) => {
+    
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
     
+    const api = useAxiosPrivate()
+    const {auth} = useAuth()
+
+
+    const handleSubmit = async (values) => {
+        console.log('asd')
+        console.log(values)
+        try{
+            const res = await api.patch(`/users/${auth.username}`, values)
+            console.log(res.data)
+            if(res.status === 200){
+                setUser({...userData, ...values})
+            }
+            setShowEditForm(false)
+        }catch(err){
+            console.log(err)
+        }
+    }
+
     const formik = useFormik({
         initialValues:{
-            lastName: '',
-            firstName: '',
-            bio: '',
-            email: '',
-            phoneNr: '',
+            lastName: user.lastName || '',
+            firstName: user.firstName || '',
+            bio: user.bio || '',
+            email: user.email || '',
+            phoneNr: user.phoneNr || '',
         },
 
         validationSchema: Yup.object({
-            lastName: Yup.string().min(4,'Camul trebuie sa contina minim 4 caracter'),
-            firstName: Yup.string().min(4,'Camul trebuie sa contina minim 4 caracter'),
+            lastName: Yup.string().min(4,'Campul trebuie sa contina minim 4 caracter').matches(/^[aA-zZ\s]+$/, "Campul trebuie sa contina doar litere"),
+            firstName: Yup.string().min(4,'Campul trebuie sa contina minim 4 caracter').matches(/^[aA-zZ\s]+$/, "Campul trebuie sa contina doar litere"),
             bio: Yup.string(),
             email: Yup.string().email('Adresa de email este invalida'),
             phoneNr: Yup.string().matches(phoneRegExp, 'Numarul de telefon este invalid'),
         }),
 
-        onSubmit: (values) => {
-            console.log('asd')
-            console.log(values)
-        }
+        onSubmit: handleSubmit
     })
 
     return(
@@ -124,7 +191,7 @@ const ProfilForm = () => {
                     : 'Bio: '
                 } 
             </label>
-            <input 
+            <textarea 
                 type="text" 
                 name="bio" 
                 id="bio" 
@@ -164,7 +231,75 @@ const ProfilForm = () => {
                 onBlur={formik.handleBlur}
             />
 
-            <button className='mt-5 text-amber-400 border-2 border-amber-400 cursor-pointer' type="submit">Editeaza</button>
+            <button className='mt-5 text-amber-400 border-2 border-amber-400' type="submit">Editeaza</button>
+        </form>
+    )
+}
+
+const ChangePwForm = ({setShowPwForm}) => {
+
+    const api = useAxiosPrivate()
+    const {auth} = useAuth()
+
+    const handleSubmit = async (values) => {
+        console.log(values)
+        try{
+            const res = await api.patch(`/users/edit/password/${auth.username}`, values)
+            console.log(res.data)
+            setShowPwForm(false)
+        }catch(err){
+            console.log(err)
+        }
+    }
+
+    const formik = useFormik({
+        initialValues: {
+            pw: '',
+            confPw: ''
+        },
+         validationSchema: Yup.object({
+            pw: Yup.string().required('Camp Obligatoriu').min(8, 'Parola trebuie sa contina minim 8 caractere'),
+            confPw: Yup.string().required('Camp Obligatoriu').oneOf([Yup.ref('pw'), null], 'Parolele trebuie sa coincida'),
+         }),
+
+         onSubmit: handleSubmit
+    }
+    )
+
+    return(
+        <form onSubmit={formik.handleSubmit} autoComplete="off">
+
+            <label htmlFor="pw">
+                {formik.touched.pw && formik.errors.pw 
+                    ? formik.errors.pw
+                    : 'Parola: '
+                } 
+            </label>
+            <input 
+                type="password" 
+                name='pw'
+                id='pw'
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.pw}
+            />
+
+            <label htmlFor="confPw">
+                {formik.touched.confPw && formik.errors.confPw 
+                    ? formik.errors.confPw
+                    : 'Confirmati parola: '
+                } 
+            </label>
+            <input 
+                type="password" 
+                name='confPw'
+                id='confPw'
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.confPw}
+            />
+
+            <button className='mt-5 text-amber-400 border-2 border-amber-400' type="submit">Confirma</button>
         </form>
     )
 }
