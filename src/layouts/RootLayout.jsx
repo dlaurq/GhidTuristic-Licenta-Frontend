@@ -5,10 +5,10 @@ import MainNav from "../components/MainNav"
 const RootLayout = () => {
   return (
     <>
-        <header>
+        <header className="min-h-[20vh]">
             <MainNav />
         </header>
-        <main>
+        <main className="min-h-[80vh]">
             <Outlet />
         </main>
         <Footer />

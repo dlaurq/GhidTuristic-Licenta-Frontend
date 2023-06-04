@@ -46,13 +46,13 @@ function App() {
           
             <Route element={<RequireAuth allowedRoles={[420]} />}>
               <Route path="admin" element={<AdminLayout />}>
-                <Route path="country" element={<Countries />} />
-                <Route path="county" element={<Counties />} />
-                <Route path="city" element={<Cities />} />
-                <Route path="locations" element={<Locations />} />
-                <Route path="users" element={<Users />} />
-                <Route path="entities" element={<AdminEntities />} />
-                <Route path="categories" element={<Categories />} />
+                <Route path="tari" element={<Countries />} />
+                <Route path="judete" element={<Counties />} />
+                <Route path="orase" element={<Cities />} />
+                <Route path="locatii" element={<Locations />} />
+                <Route path="utilizatori" element={<Users />} />
+                <Route path="entitati" element={<AdminEntities />} />
+                <Route path="categorii" element={<Categories />} />
               </Route>
             </Route>
           
