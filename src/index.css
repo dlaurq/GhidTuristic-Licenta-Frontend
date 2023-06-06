@@ -8,17 +8,21 @@
     }
 
     input, textarea {
-        @apply border-2 border-gray-900 pl-1 leading-10 focus:border-amber-400 text-neutral-400 focus:text-amber-400 w-full;
+        @apply lg:w-80 border-2 border-gray-900 pl-1 leading-10 focus:border-amber-400 text-neutral-400 focus:text-amber-400 w-full;
     }
     select {
         @apply text-gray-900;
     }
 
     form {
-        @apply text-gray-300 text-xl font-bold p-5 w-full text-left border-b flex flex-col justify-around;
+        @apply sm:mx-16 sm:w-auto md:mx-28 lg:mx-36 bg-gray-900 text-white text-xl font-bold p-5 w-full text-left flex flex-col justify-around;
     }
 
     label {
-        @apply text-gray-900
+        @apply text-white;
+    }
+
+    select {
+        @apply lg:w-80;
     }
 }

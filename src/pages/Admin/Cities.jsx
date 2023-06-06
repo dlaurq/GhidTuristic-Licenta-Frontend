@@ -6,13 +6,17 @@ import { useFormik } from "formik"
 import * as Yup from "yup"
 import { useNavigate } from "react-router-dom"
 import ConfBox from '../../components/ConfBox'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faX, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
+import DropDownForm from "../../components/DropDownForm"
+import Filtru from '../../components/FIltru'
 
 const Cities = () => {
   const [cities ,setCities] = useState([])
   const [counties ,setCounties] = useState([])
   const [filter, setFilter] = useState('')
-  const [serverMsg, setServerMsg] = useState()
-  const [msgColor, setMsgColor] = useState('')
+
+  const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
 
   const location = useLocation()
 
@@ -26,9 +30,8 @@ const Cities = () => {
     try{
       const res = await api.get('api/cities')
       setCities(res.data)
-      setServerMsg('')
     }catch (err){
-      setServerMsg(`Error: ${err.message}`)
+      console.log(err)
     }
   }
 
@@ -38,7 +41,7 @@ const Cities = () => {
       setCounties(res.data)
       setServerMsg('')
     }catch (err){
-      setServerMsg(`Error: ${err.message}`)
+      console.log(err)
     }
   }
 
@@ -51,11 +54,9 @@ const Cities = () => {
       const res = await api.post('api/cities',{name:values.city, countyId:values.county})
       const newCities = [...cities, {...res.data.city}]
       setCities(newCities)
-      setServerMsg(res.data.message)
-      setMsgColor('text-green-500')
+      setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
     }catch(err){
-      setServerMsg(`Error: ${err.message}`)
-      setMsgColor('text-red-500')
+      setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
     }
   }
 
@@ -64,11 +65,9 @@ const Cities = () => {
       const res = await api.delete(`api/cities/${id}`)
       const newCities = cities.filter(city => city.id !== id)
       setCities(newCities)
-      setServerMsg(res.data.message)
-      setMsgColor('text-green-500')
+      setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
     }catch(err){
-      setServerMsg(`Error: ${err.response.data.message}`)
-      setMsgColor('text-red-500')
+      setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
     }
   }
   
@@ -77,11 +76,9 @@ const Cities = () => {
       const res = await api.patch(`api/cities/${values.id}`,{name:values.city,countyId:values.county})
       const newCities = cities.map(city => (city.id === values.id ? {...city, name:values.city, edit:false} : {...city}))
       setCities(newCities)
-      setServerMsg(res.data.message)
-      setMsgColor('text-blue-500')
+      setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
     }catch(err){
-      setServerMsg(`Error: ${err.response.data.message}`)
-      setMsgColor('text-red-500')
+      setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
     }
   }
 
@@ -95,31 +92,30 @@ const Cities = () => {
     setCities(newCities)
   }
 
+  const hideForm = () => {
+    const newArr = cities.map(city => ({...city, edit: false}))
+    setCities(newArr)
+  }
+
   return (
-    <section className='bg-gray-900 text-gray-300'>
+    <section className=''>
 
-      <section className="flex flex-row justify-between items-center p-5 text-xl border-b font-medium">
-        <p>Filtreaza dupa Judet:</p>
-        <select name="citySelector" id="citySelector" onChange={handleChange} className='text-gray-900' value={filter}>
-          <option value="">--Alege un Judet--</option>
-          {counties.map(county => 
-            <option 
-              key={county.id} 
-              value={county.id}
-            >
-              {county.name}
-            </option>
-          )}
-        </select>
-      </section>
+      {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
 
-      <ErrorMsg color={msgColor}>{serverMsg ? serverMsg : 'Adauga un oras'}</ErrorMsg>
-
-      <CityForm 
-        counties={counties}
-        buttonText='Adauga'
-        handleSubmit={handleCreate}
+      <Filtru 
+        text='Filtreaza dupa Judet:'
+        handleChange={handleChange}
+        list={counties}
+        placeholder='--Alege un Judet--'
+        value={filter}
       />
+
+      <DropDownForm 
+        text='Adauga un oras' 
+        form={<CityForm counties={counties} buttonText='Adauga' handleSubmit={handleCreate} />}
+      />
+
+      
 
       {cities.map(city => 
         <City 
@@ -131,6 +127,7 @@ const Cities = () => {
           handleUpdate={handleUpdate}
           counties={counties}
           className={filter && city.CountyId !== filter && "hidden"}
+          hideForm={hideForm}
         />
       )}
 
@@ -139,7 +136,7 @@ const Cities = () => {
 }
 
 
-const CityForm = ({handleSubmit, buttonText, city, counties}) => {
+const CityForm = ({handleSubmit, buttonText, city, counties, children}) => {
   const formik = useFormik({
     initialValues:{
       county: (city ? city.CountyId : ''),
@@ -164,7 +161,7 @@ const CityForm = ({handleSubmit, buttonText, city, counties}) => {
   
 
   return (
-    <form onSubmit={formik.handleSubmit} className='h-60'>
+    <form onSubmit={formik.handleSubmit} className=''>
       <section>
         <label htmlFor="county">
           {formik.touched.county && formik.errors.county 
@@ -178,14 +175,14 @@ const CityForm = ({handleSubmit, buttonText, city, counties}) => {
           value={formik.values.county}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          className='text-gray-900 w-full font-bold bg-gray-300'
+          className=''
         >
           <option value=''>Selecteaza un judet</option>
-          {counties.map(county => <option key={county.id} value={county.id} className='font-normal bg-gray-300 '>{county.name}</option>)}
+          {counties.map(county => <option key={county.id} value={county.id} className=''>{county.name}</option>)}
         </select>
       </section>
     
-      <section className="mb-2">
+      <section className="flex flex-col gap-2 mt-5">
         <label htmlFor="city">
           {formik.touched.city && formik.errors.city 
           ? formik.errors.city
@@ -202,14 +199,17 @@ const CityForm = ({handleSubmit, buttonText, city, counties}) => {
         />
       </section>
     
-      <button type="submit">{buttonText}</button>
+      <section className="flex flex-col justify-between sm:flex-row lg:justify-start lg:gap-32">
+        <button className=" sm:w-40 mt-5 md:w-60 lg:w-80" type="submit">{buttonText}</button>
+        {children}
+      </section>
     </form>
   )
 }
 
 
 
-const City = ({city, handleDelete, handleEdit, handleUpdate, toggleConfDelBox, counties, className}) => {
+const City = ({city, handleDelete, handleEdit, handleUpdate, toggleConfDelBox, counties, className, hideForm}) => {
   
   const naviage = useNavigate()
 
@@ -219,13 +219,13 @@ const City = ({city, handleDelete, handleEdit, handleUpdate, toggleConfDelBox, c
 
   return (
     <>{!city.edit 
-      ?<section className={`flex flex-row justify-between p-5 items-center border-b border-gray-300 ${className}`}>
+      ?<section className={`last:border-0 sm:mx-16 md:mx-28 lg:mx-36 flex flex-row justify-between p-5 items-center text-gray-900 bg-white border-gray-900 border-b-2 ${className}`}>
         {city.deleteBox && <ConfBox handleNo={toggleConfDelBox} handleYes={handleDelete}>Confirmare stergere?</ConfBox>}
           <h3 onClick={handleClick} className="text-2xl break-all">{city.name} ({city?.Locations?.length || 0})</h3>
-          <div className="flex flex-row">
-              <button type="button" onClick={handleEdit} className='mx-1'>Edit</button>
-              <button type="button" onClick={toggleConfDelBox} className='mx-1'>Delete</button>
-          </div>
+          <section className=" text-3xl flex flex-row justify-between items-center gap-5">
+              <FontAwesomeIcon icon={faPenToSquare} className='cursor-pointer pl-5' onClick={handleEdit}/>
+              <FontAwesomeIcon icon={faX} className='cursor-pointer' onClick={toggleConfDelBox}/>
+            </section>
       </section>
 
       :<CityForm 
@@ -233,7 +233,10 @@ const City = ({city, handleDelete, handleEdit, handleUpdate, toggleConfDelBox, c
       counties={counties}
       buttonText='Salvati'
       handleSubmit={handleUpdate}
-      />}
+      >
+        <button className="sm:w-40 mt-5 md:w-60 lg:w-80" type="button" onClick={hideForm}>Cancel</button>
+      </CityForm>
+      }
     </>
   )
 }

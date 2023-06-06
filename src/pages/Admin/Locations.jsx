@@ -5,13 +5,17 @@ import { useFormik } from "formik"
 import * as Yup from "yup"
 import { useNavigate } from "react-router-dom"
 import ConfBox from '../../components/ConfBox'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faX, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
+import DropDownForm from "../../components/DropDownForm"
+import Filtru from '../../components/FIltru'
 
 const Locations = () => {
   const [cities ,setCities] = useState([])
   const [locations ,setLocations] = useState([])
   const [filter, setFilter] = useState('')
-  const [serverMsg, setServerMsg] = useState()
-  const [msgColor, setMsgColor] = useState('')
+
+  const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
 
   const location = useLocation()
 
@@ -27,7 +31,7 @@ const Locations = () => {
       setCities(res.data)
       setServerMsg('')
     }catch (err){
-      setServerMsg(`Error: ${err.message}`)
+      console.log(err)
     }
   }
 
@@ -37,7 +41,7 @@ const Locations = () => {
       setLocations(res.data)
       setServerMsg('')
     }catch (err){
-      setServerMsg(`Error: ${err.message}`)
+      console.log(err)
     }
   }
 
@@ -45,31 +49,14 @@ const Locations = () => {
     setFilter(e.target.value)
   }
 
-  const handleCreate = async (values) =>{
-    console.log(values)
-    try{
-      const res = await api.post('api/locations',{address:values.location, cityId:values.city})
-      console.log(res.data)
-      const newLocations = [...locations, {...res.data.location}]
-      setLocations(newLocations)
-      setServerMsg(res.data.message)
-      setMsgColor('text-green-500')
-    }catch(err){
-      setServerMsg(`Error: ${err.message}`)
-      setMsgColor('text-red-500')
-    }
-  }
-
   const handleDelete = async (id) => {
     try{
       const res = await api.delete(`api/locations/${id}`)
       const newLocations = locations.filter(location => location.id !== id)
       setLocations(newLocations)
-      setServerMsg(res.data.message)
-      setMsgColor('text-green-500')
+      setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
     }catch(err){
-      setServerMsg(`Error: ${err.response.data.message}`)
-      setMsgColor('text-red-500')
+      setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
     }
   }
   
@@ -78,11 +65,9 @@ const Locations = () => {
       const res = await api.patch(`api/locations/${values.id}`,{address:values.location,cityId:values.city})
       const newLocations = locations.map(location => (location.id === values.id ? {...location, address:values.location, edit:false} : {...location}))
       setLocations(newLocations)
-      setServerMsg(res.data.message)
-      setMsgColor('text-blue-500')
+      setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
     }catch(err){
-      setServerMsg(`Error: ${err.response.data.message}`)
-      setMsgColor('text-red-500')
+      setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
     }
   }
 
@@ -96,33 +81,27 @@ const Locations = () => {
     setLocations(newLocations)
   }
 
-  return (
-    <section className='bg-gray-900 text-gray-300'>
+  const hideForm = () => {
+    const newArr = locations.map(lcoation => ({...lcoation, edit: false}))
+    setLocations(newArr)
+  }
 
-      <section className="flex flex-row justify-between items-center p-5 text-xl border-b font-medium">
-        <p>Filtreaza dupa Oras:</p>
-        <select name="locationSelector" id="locationSelector" onChange={handleChange} className='text-gray-900' value={filter}>
-          <option value="">--Alege un Oras--</option>
-          {cities.map(city => 
-            <option 
-              key={city.id} 
-              value={city.id}
-            >
-              {city.name}
-            </option>
-          )}
-        </select>
-      </section>
+  return (
+    <section className=''>
+
+      {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
+
+      <Filtru 
+        text='Filtreaza dupa Oras:'
+        handleChange={handleChange}
+        list={cities}
+        placeholder='--Alege un Oras--'
+        value={filter}
+      />
+
       
-      {/** 
-      <ErrorMsg color={msgColor}>{serverMsg ? serverMsg : "Adauga o adresa"}</ErrorMsg>
       
-        <LocationForm 
-          cities={cities}
-          buttonText='Adauga'
-          handleSubmit={handleCreate}
-        />
-      */}
+
       {locations.map(location => 
         <Location 
           key={location.id} 
@@ -151,15 +130,15 @@ const Location = ({location, handleDelete, handleEdit, handleUpdate, toggleConfD
 
   return (
     <>{!location.edit 
-      ?<section className={`flex flex-row justify-between p-5 items-center border-b border-gray-300 ${className}`}>
+      ?<section className={`last:border-0 sm:mx-16 md:mx-28 lg:mx-36 flex flex-row justify-between p-5 items-center text-gray-900 bg-white border-gray-900 border-b-2 ${className}`}>
         {location.deleteBox && <ConfBox handleNo={toggleConfDelBox} handleYes={handleDelete}>Confirmare stergere?</ConfBox>}
           <h3 onClick={handleClick} className="text-2xl break-all">{location.address} ({location?.Users[0]?.username || location?.Places[0]?.name || ' '})</h3>
-          <div className="flex flex-row">
-            {/** 
-              <Button handleClick={handleEdit} className='mx-1'>Edit</Button>
-            */}
-              <button onClick={toggleConfDelBox} className='mx-1'>Delete</button>
-          </div>
+          <section className=" text-3xl flex flex-row justify-between items-center gap-5">
+            {/**
+              <FontAwesomeIcon icon={faPenToSquare} className='cursor-pointer pl-5' onClick={handleEdit}/>
+             */}
+              <FontAwesomeIcon icon={faX} className='cursor-pointer' onClick={toggleConfDelBox}/>
+            </section>
       </section>
 
       :<LocationForm 
