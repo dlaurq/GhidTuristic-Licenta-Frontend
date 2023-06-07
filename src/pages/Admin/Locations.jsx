@@ -1,35 +1,47 @@
 import React, { useEffect, useState } from 'react'
-import api from "../../api/axios"
 import { useLocation } from 'react-router-dom'
 import { useFormik } from "formik"
 import * as Yup from "yup"
 import { useNavigate } from "react-router-dom"
-import ConfBox from '../../components/ConfBox'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faX, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
-import DropDownForm from "../../components/DropDownForm"
 import Filtru from '../../components/FIltru'
+import ErrorMsg from '../../components/ErrorMsg'
+import AdminItem from '../../components/AdminItem'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
+import SearchBar from '../../components/SearchBar'
 
 const Locations = () => {
   const [cities ,setCities] = useState([])
   const [locations ,setLocations] = useState([])
   const [filter, setFilter] = useState('')
-
+  const [geo, setGeo] = useState({})
   const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
+  const [filteredLocations, setFilteredLocations] = useState(locations)
 
+  const api = useAxiosPrivate()
   const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() =>{
     fetchCities()
     fetchLocations()
+    fetchGeo()
     setFilter(location?.state?.id)
   },[])
 
+  const fetchGeo = async () => {
+    try{
+      const res = await api.get('/geo')
+      setGeo(res.data)
+    }catch(err){
+      console.log(err)
+    }
+    
+}
+
   const fetchCities = async () =>{
     try{
-      const res = await api.get('api/cities')
+      const res = await api.get('/cities')
       setCities(res.data)
-      setServerMsg('')
     }catch (err){
       console.log(err)
     }
@@ -37,9 +49,9 @@ const Locations = () => {
 
   const fetchLocations = async () =>{
     try{
-      const res = await api.get('api/locations')
+      const res = await api.get('/locations')
       setLocations(res.data)
-      setServerMsg('')
+      setFilteredLocations(res.data)
     }catch (err){
       console.log(err)
     }
@@ -51,7 +63,7 @@ const Locations = () => {
 
   const handleDelete = async (id) => {
     try{
-      const res = await api.delete(`api/locations/${id}`)
+      const res = await api.delete(`/locations/${id}`)
       const newLocations = locations.filter(location => location.id !== id)
       setLocations(newLocations)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
@@ -62,8 +74,8 @@ const Locations = () => {
   
   const handleUpdate = async (values) =>{
     try{
-      const res = await api.patch(`api/locations/${values.id}`,{address:values.location,cityId:values.city})
-      const newLocations = locations.map(location => (location.id === values.id ? {...location, address:values.location, edit:false} : {...location}))
+      const res = await api.patch(`/locations/${values.id}`,{address: values.address, city:values.city})
+      const newLocations = locations.map(location => (location.id === values.id ? {...location, address:values.address, edit:false} : {...location}))
       setLocations(newLocations)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
     }catch(err){
@@ -99,75 +111,60 @@ const Locations = () => {
         value={filter}
       />
 
-      
+      <hr />
+
+      <SearchBar list={locations} setFilterList={setFilteredLocations} compare='address' />
+
+      <div className="p-2"></div>
       
 
-      {locations.map(location => 
-        <Location 
-          key={location.id} 
-          toggleConfDelBox={() => toggleConfDelBox(location.id)}
-          handleEdit={() => handleEdit(location.id)} 
-          location={location} 
-          handleDelete={() => handleDelete(location.id)}
-          handleUpdate={handleUpdate}
-          cities={cities}
-          className={filter && location.CityId !== filter && "hidden"}
-        />
+      {filteredLocations.map(location => 
+        <AdminItem 
+        key={location.id}
+        className={filter && location.CityId !== filter && "hidden"}
+        item={location}
+        toggleConfDelBox={() => toggleConfDelBox(location.id)}
+        handleDelete={() => handleDelete(location.id)} 
+        handleNavigate={() => navigate('/admin/orase', {state: {...location}})}
+        subItemsLength={location?.Users[0]?.username || location?.Places[0]?.name || ' '}
+        handleEdit={() => handleEdit(location.id)} 
+        form={
+          <LocationForm 
+            location={location}
+            cities={cities}
+            buttonText='Salvati'
+            handleSubmit={handleUpdate}
+            geo={geo}
+            hideForm={hideForm}
+          />
+          }
+      />
       )}
+
+          
 
     </section>
   )
 }
 
-
-const Location = ({location, handleDelete, handleEdit, handleUpdate, toggleConfDelBox, cities, className}) => {
-  
-  const navigate = useNavigate()
-
-  const handleClick = () => {
-    navigate(`/admin/${location?.Users[0]?.username ? 'Users' : 'entities'}`, {state: {search: (location?.Users[0]?.username || location?.Places[0]?.name)}})
-  }
-
-  return (
-    <>{!location.edit 
-      ?<section className={`last:border-0 sm:mx-16 md:mx-28 lg:mx-36 flex flex-row justify-between p-5 items-center text-gray-900 bg-white border-gray-900 border-b-2 ${className}`}>
-        {location.deleteBox && <ConfBox handleNo={toggleConfDelBox} handleYes={handleDelete}>Confirmare stergere?</ConfBox>}
-          <h3 onClick={handleClick} className="text-2xl break-all">{location.address} ({location?.Users[0]?.username || location?.Places[0]?.name || ' '})</h3>
-          <section className=" text-3xl flex flex-row justify-between items-center gap-5">
-            {/**
-              <FontAwesomeIcon icon={faPenToSquare} className='cursor-pointer pl-5' onClick={handleEdit}/>
-             */}
-              <FontAwesomeIcon icon={faX} className='cursor-pointer' onClick={toggleConfDelBox}/>
-            </section>
-      </section>
-
-      :<LocationForm 
-      location={location}
-      cities={cities}
-      buttonText='Salvati'
-      handleSubmit={handleUpdate}
-      />}
-    </>
-  )
-}
-
-
-
-const LocationForm = ({handleSubmit, buttonText, location, cities}) => {
+const LocationForm = ({handleSubmit, buttonText, location, geo, hideForm}) => {
   const formik = useFormik({
     initialValues:{
-      city: (location ? location.CityId : ''),
-      location: (location ? location.address : ''),
-      id: (location ? location.id : '')
+      country: location?.City?.County?.Country?.id || '',
+      county: location?.City?.County?.id || '',
+      city: location?.City?.id || '',
+      address: location?.address || '',
+      id: location?.id || ''
     },
 
     validationSchema: Yup.object({
-      location: Yup.string()
+      address: Yup.string()
         .max(60,"Numele Locatiei poate sa contina maxim 60 de caractere")
         .required("Camp obligatoriul")
         .matches(/^[a-zA-Z\s]*$/, "Numele trebuie sa contina doar litere"),
-      city: Yup.string()
-        .required("Camp obligatoriul")
+      country: Yup.string().required("Camp obligatoriul"),
+      county: Yup.string().required("Camp obligatoriul"),
+      city: Yup.string().required("Camp obligatoriul"),
     }),
 
     onSubmit:handleSubmit,
@@ -176,45 +173,86 @@ const LocationForm = ({handleSubmit, buttonText, location, cities}) => {
   
 
   return (
-    <form onSubmit={formik.handleSubmit} className='h-60'>
-      <section>
-        <label htmlFor="city">
-          {formik.touched.city && formik.errors.city 
-            ? formik.errors.city
-            : ''
-          }
-        </label>
-        <select 
-          name="city" 
-          id="city"
-          value={formik.values.city}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          className='text-gray-900 w-full font-bold bg-gray-300'
-        >
-          <option value=''>Selecteaza un oras</option>
-          {cities.map(city => <option key={city.id} value={city.id} className='font-normal bg-gray-300 '>{city.name}</option>)}
-        </select>
-      </section>
+    <form onSubmit={formik.handleSubmit} className=''>
+
+      <section className="flex flex-col gap-1 mb-3">
+            <label htmlFor="country">
+                {formik.touched.country && formik.errors.country 
+                    ? formik.errors.country
+                    : 'Tara'
+            }</label>
+            <select 
+                className=""
+                name="country" 
+                id="country"
+                value={formik.values.country}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+            >
+                    <option value="">Selectati o tara</option>
+                    {geo?.countries?.map( country => <option key={country.id} value={country.id}>{country.name}</option>)}
+            </select>
+        </section>
+
+        <section className="flex flex-col gap-1 my-3">
+            <label htmlFor="county">
+                {formik.touched.county && formik.errors.county 
+                    ? formik.errors.county
+                    : 'Judet'
+            }</label>
+            <select 
+                className=""
+                name="county" 
+                id="county"
+                value={formik.values.county}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+            >
+                <option value="">Selectati un judet</option>
+                {geo?.counties?.filter( county => county.CountryId === formik.values.country).map( county => <option key={county.id} value={county.id}>{county.name}</option>)}
+            </select>
+        </section>
+
+        <section className="flex flex-col gap-1 my-3">
+            <label htmlFor="city">
+                {formik.touched.city && formik.errors.city 
+                    ? formik.errors.city
+                    : 'Oras'
+            }</label>
+            <select 
+                className=""
+                name="city" 
+                id="city"
+                value={formik.values.city}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+            >
+                <option value="">Selectati un oras</option>
+                {geo?.cities?.filter( city => city.CountyId === formik.values.county).map( city => <option key={city.id} value={city.id}>{city.name}</option>)}
+            </select>
+        </section>
     
-      <section className="mb-2">
-        <label htmlFor="location">
-          {formik.touched.location && formik.errors.location 
-          ? formik.errors.location
+      <section className="flex flex-col gap-1 my-3">
+        <label htmlFor="address">
+          {formik.touched.address && formik.errors.address 
+          ? formik.errors.address
           : 'Nume locatie'}
         </label>
         <input 
-          id="location" 
-          name="location" 
+          id="address" 
+          name="address" 
           type="text" 
           placeholder="Nume locatie"
           onChange={formik.handleChange}
-          value={formik.values.location}
+          value={formik.values.address}
           onBlur={formik.handleBlur}
         />
       </section>
     
-      <button type="submit">{buttonText}</button>
+      <section className="flex flex-col justify-between sm:flex-row lg:justify-start lg:gap-32">
+        <button className=" sm:w-40 mt-5 md:w-60 lg:w-80" type="submit">{buttonText}</button>
+        <button className="sm:w-40 mt-5 md:w-60 lg:w-80" type="button" onClick={hideForm}>Cancel</button>
+      </section>
     </form>
   )
 }

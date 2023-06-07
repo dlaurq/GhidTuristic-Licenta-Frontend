@@ -43,7 +43,7 @@ const Home = () => {
           <section>
             <p className="font-bold text-2xl mb-2">Top Restaurante</p>
             <section className="flex flex-row overflow-y-auto gap-5 ">
-              {recomandari?.topRest?.map(item => <EntityCard className='min-w-[15rem]' key={item.id} name={item.name} />)}
+              {recomandari?.topRest?.map(item => <EntityCard className='min-w-[15rem]' key={item.id} entity={item} />)}
             </section>
           </section>
         }
@@ -52,7 +52,7 @@ const Home = () => {
           <section>
             <p>Top Hoteluri</p>
             <section className="flex flex-row overflow-y-auto gap-5 ">
-              {recomandari?.topHotel?.map(item => <EntityCard className='min-w-[15rem]' key={item.id} name={item.name} />)}
+              {recomandari?.topHotel?.map(item => <EntityCard className='min-w-[15rem]' key={item.id} entity={item} />)}
             </section>
           </section>
         }
@@ -61,7 +61,7 @@ const Home = () => {
         <section>
           <p>Top Activitati</p>
           <section className="flex flex-row overflow-y-auto gap-5 justify-start items-center">
-            {recomandari?.topActiv?.map(item => <EntityCard className='min-w-[15rem]' key={item.id} name={item.name} />)}
+            {recomandari?.topActiv?.map(item => <EntityCard className='min-w-[15rem]' key={item.id} entity={item} />)}
           </section>
         </section>
         }

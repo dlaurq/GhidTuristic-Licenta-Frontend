@@ -1,33 +1,35 @@
 import React, { useEffect, useState } from 'react'
-import api from "../../api/axios"
 import ErrorMsg from '../../components/ErrorMsg'
 import { useLocation } from 'react-router-dom'
 import { useFormik } from "formik"
 import * as Yup from "yup"
 import { useNavigate } from "react-router-dom"
-import ConfBox from '../../components/ConfBox'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faX, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
 import DropDownForm from "../../components/DropDownForm"
+import Filtru from '../../components/Filtru'
+import SearchBar from '../../components/SearchBar'
+import AdminItem from '../../components/AdminItem'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 
 const Counties = () => {
   const [countries ,setCountries] = useState([])
   const [counties ,setCounties] = useState([])
   const [filter, setFilter] = useState('')
   const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
+  const [filteredCounties, setFilteredCounties] = useState(counties)
 
   const location = useLocation()
+  const navigate = useNavigate()
+  const api = useAxiosPrivate()
 
   useEffect(() =>{
     fetchCountries()
     fetchCounties()
     setFilter(location?.state?.id)
-    console.log(location)
   },[])
 
   const fetchCountries = async () =>{
     try{
-      const res = await api.get('api/countries')
+      const res = await api.get('/countries')
       setCountries(res.data)
     }catch (err){
     }
@@ -35,7 +37,7 @@ const Counties = () => {
 
   const fetchCounties = async () =>{
     try{
-      const res = await api.get('api/counties')
+      const res = await api.get('/counties')
       setCounties(res.data)
     }catch (err){
     }
@@ -48,7 +50,7 @@ const Counties = () => {
 
   const handleCreate = async (values) =>{
     try{
-      const res = await api.post('api/counties',{name:values.county, countryId:values.country})
+      const res = await api.post('/counties',{name:values.county, countryId:values.country})
       const newCounties = [...counties, {...res.data.county}]
       setCounties(newCounties)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
@@ -59,7 +61,7 @@ const Counties = () => {
 
   const handleDelete = async (id) => {
     try{
-      const res = await api.delete(`api/counties/${id}`)
+      const res = await api.delete(`/counties/${id}`)
       const newCounties = counties.filter(county => county.id !== id)
       setCounties(newCounties)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
@@ -70,7 +72,7 @@ const Counties = () => {
   
   const handleUpdate = async (values) =>{
     try{
-      const res = await api.patch(`api/counties/${values.id}`,{name:values.county,countryId:values.country})
+      const res = await api.patch(`/counties/${values.id}`,{name:values.county,countryId:values.country})
       const newCounties = counties.map(county => (county.id === values.id ? {...county, name:values.county, edit:false} : {...county}))
       setCounties(newCounties)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
@@ -95,46 +97,54 @@ const Counties = () => {
   }
 
   return (
-    <section className=''>
+    <section>
 
       {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
+      
+      
 
       <DropDownForm 
         text='Adauga un judet' 
         form={<CountyForm countries={countries} buttonText='Adauga' handleSubmit={handleCreate}/>}
       />
 
+      <hr />
 
+      <Filtru 
+        text='Filtreaza dupa tara:'
+        handleChange={handleChange}
+        list={countries}
+        placeholder='--Alege un tara--'
+        value={filter}
+      />
 
-      {/** Filtare */}
-      <section className="sm:mx-16 md:mx-28 lg:mx-36 px-5 py-3 text-white flex flex-col justify-between items-start text-2xl bg-gray-900">
-        <p>Filtreaza dupa tara:</p>
-        <select name="countrySelector" id="countrySelector" onChange={handleChange} className='text-gray-900' value={filter}>
-          <option value="">--Alege o tara--</option>
-          {countries.map(country => 
-            <option 
-              key={country.id} 
-              value={country.id}
-            >
-              {country.name}
-            </option>
-          )}
-        </select>
-      </section>
+      <hr />
+
+      <SearchBar list={counties} setFilterList={setFilteredCounties} compare='name' />
+
+      <div className="p-2"></div>
 
      
       <section className='bg-white'>
-        {counties.map(county => 
-          <County 
-            key={county.id} 
-            toggleConfDelBox={() => toggleConfDelBox(county.id)}
-            handleEdit={() => handleEdit(county.id)} 
-            county={county} 
-            handleDelete={() => handleDelete(county.id)}
-            handleUpdate={handleUpdate}
-            countries={countries}
+        {filteredCounties.map(county => 
+          <AdminItem 
+            key={county.id}
             className={filter && county.CountryId !== filter && "hidden"}
-            hideForm={hideForm}
+            item={county}
+            toggleConfDelBox={() => toggleConfDelBox(county.id)}
+            handleDelete={() => handleDelete(county.id)} 
+            handleNavigate={() => navigate('/admin/orase', {state: {...county}})}
+            subItemsLength={county?.Cities?.length}
+            handleEdit={() => handleEdit(county.id)} 
+            form={
+              <CountyForm 
+                county={county}
+                countries={countries}
+                buttonText='Salvati'
+                handleSubmit={handleUpdate}
+              >
+                <button className="sm:w-40 mt-5 md:w-60 lg:w-80" type="button" onClick={hideForm}>Cancel</button>
+              </CountyForm>}
           />
         )}
       </section>
@@ -144,43 +154,6 @@ const Counties = () => {
     </section>
   )
 }
-
-
-const County = ({county, handleDelete, handleEdit, handleUpdate, toggleConfDelBox, countries, className, hideForm}) => {
-  
-  const naviage = useNavigate()
-
-  const handleClick = () => {
-    naviage('/admin/City', {state: {...county}})
-  }
-
-
-  return (
-    <>
-      {!county.edit 
-        ?<section className={`last:border-0 sm:mx-16 md:mx-28 lg:mx-36 flex flex-row justify-between p-5 items-center text-gray-900 bg-white border-gray-900 border-b-2 ${className}`}>
-          {county.deleteBox && <ConfBox handleNo={toggleConfDelBox} handleYes={handleDelete}>Confirmare stergere?</ConfBox>}
-            <h3 onClick={handleClick} className="text-2xl break-all">{county.name} ({county?.Cities?.length || 0})</h3>
-            <section className=" text-3xl flex flex-row justify-between items-center gap-5">
-              <FontAwesomeIcon icon={faPenToSquare} className='cursor-pointer pl-5' onClick={handleEdit}/>
-              <FontAwesomeIcon icon={faX} className='cursor-pointer' onClick={toggleConfDelBox}/>
-            </section>
-        </section>
-
-        :<CountyForm 
-          county={county}
-          countries={countries}
-          buttonText='Salvati'
-          handleSubmit={handleUpdate}
-        >
-          <button className="sm:w-40 mt-5 md:w-60 lg:w-80" type="button" onClick={hideForm}>Cancel</button>
-        </CountyForm>
-      }
-    </>
-  )
-}
-
-
 
 const CountyForm = ({handleSubmit, buttonText, county, country, countries, children}) => {
   const formik = useFormik({

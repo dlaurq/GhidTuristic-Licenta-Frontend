@@ -117,7 +117,7 @@ const Entities = () => {
         </nav>
         {entities.length === 0 
             ? <h3 className='text-gray-300'>Nu exista obiective</h3>
-            : entities.map(entity => <EntityCard key={entity.id} name={entity.name} />)
+            : entities.map(entity => <EntityCard key={entity.id} entity={entity} />)
         }
     </section>
   )

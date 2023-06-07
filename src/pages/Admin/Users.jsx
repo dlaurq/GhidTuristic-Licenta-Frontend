@@ -7,6 +7,7 @@ import { faUser } from '@fortawesome/free-solid-svg-icons'
 import Review from "../../components/Review"
 import ConfBox from "../../components/ConfBox"
 import { useLocation, useNavigate } from "react-router-dom"
+import SearchBar from "../../components/SearchBar"
 
 
 const Users = () => {
@@ -26,6 +27,7 @@ const Users = () => {
             try {
                 const res = await api.get('/users')
                 setUsers(res.data)
+                console.log(res.data)
                 setFilterUsers(res.data)
             } catch (err) {
                 console.log(err)
@@ -54,18 +56,7 @@ const Users = () => {
   return (
     <section>
 
-        <section className="p-5 bg-gray-900 text-gray-300 flex flex-row justify-between items-center gap-5">
-            <FontAwesomeIcon icon={faMagnifyingGlass} />
-            <input 
-            id="filterBar"
-            name="filterBar"
-            placeholder="Nume utilizator"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            />
-        </section>
-
-        <hr />
+        <SearchBar list={users} setFilterList={setFilterUsers} compare='username' />
 
         {filterUsers?.map(user => <User key={user?.username} {...user} Entities={user?.Places} handleDeleteUser={handleDeleteUser} />)}
         
@@ -117,29 +108,32 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
     }
 
     return(
-        <section className="p-5 bg-gray-900 text-gray-300 text-xl border-b-2">
+        <section className="">
             {!showUserDetails 
-                ?<section className="flex flex-row justify-between items-center text-2xl">
+                ?<section className=" sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem] flex flex-row justify-between p-5 items-center text-gray-900 bg-white border-gray-900 border-b-2 text-2xl">
                     <section className="flex flex-row justify-between items-center">
                         <FontAwesomeIcon icon={faUser}/>
                         <h3 className="pl-5">{username}</h3>
                     </section>
                     <p onClick={toggleShowUserDetails}><FontAwesomeIcon icon={faCaretUp}/></p>
                 </section>
-                :<section className="flex flex-col gap-4">
+                :<section className="sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem] flex flex-col gap-4 text-xl p-5 border-4 border-amber-500 my-5">
                     <section className="flex flex-row justify-between items-center text-2xl ">
                         <FontAwesomeIcon icon={faUser}/>
                         <p onClick={toggleShowUserDetails}><FontAwesomeIcon icon={faCaretDown}/></p>
                     </section>
 
-                    <h3 className="text-2xl">{username}</h3>
-                    <p>Nume: {firstName} {lastName}</p>
+                    <h3 className="text-2xl">@{username}</h3>
+                    <p>Nume complet: {firstName} {lastName}</p>
                     <p>Bio: {bio}</p>
                     <p>Email: {email}</p>
                     <p>Nr. Tel: {phoneNR}</p>
                     
-                    <button type="button" onClick={handlePromote} >{ roles?.find(role => role.name === '1337') ? "Retrogradeaza la utilizator" : "Promovati ca partener"}</button>
-                    <button type="button" onClick={() => setShowConfBox(username)} >Sterge profilul</button>
+                    <section className="flex flex-col sm:flex-row items-stretch justify-start gap-5">
+                        <button className="sm:px-5 bg-amber-500 text-left pl-5" type="button" onClick={handlePromote} >{ roles?.find(role => role.name === '1337') ? "Retrogradeaza la utilizator" : "Promovati ca partener"}</button>
+                        <button className="sm:px-5    bg-red-500 text-left pl-5" type="button" onClick={() => setShowConfBox(username)} >Sterge profilul</button>
+                    </section>
+
                     {showConfBox === username && <ConfBox handleNo={() =>setShowConfBox('')} handleYes={() => handleDeleteUser(username)} >Confirmati stergerea?</ConfBox>}
 
                     <hr />
@@ -156,7 +150,7 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                             </section>
                             <section>
                                 {Entities.map((entity, index) => 
-                                    <section key={index} onClick={() => navigate('/admin/entities', {state: {search: entity.name}})}>
+                                    <section key={index} onClick={() => navigate('/admin/entitati', {state: {search: entity.name}})}>
                                         <p>{entity.name}</p>
                                     </section>
                                     )}
@@ -176,7 +170,7 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                                 <p>Recenzii: {reviews.length}</p>
                                 <p onClick={toggleShowReviewsDetails}><FontAwesomeIcon icon={faCaretDown}/></p>
                             </section>
-                            <section className="text-gray-900">
+                            <section className="text-gray-900 lg:grid lg:grid-cols-2 lg:gap-2 xl:grid-cols-3 2xl:grid-cols-4 ">
                                 {reviews?.map((review) => 
                                     <Review key={review.id} {...review}>
                                         <section className="mt-5">

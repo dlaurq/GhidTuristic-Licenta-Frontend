@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import api from "../../api/axios"
 import ErrorMsg from '../../components/ErrorMsg'
 import { useLocation } from 'react-router-dom'
 import { useFormik } from "formik"
 import * as Yup from "yup"
 import { useNavigate } from "react-router-dom"
-import ConfBox from '../../components/ConfBox'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faX, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
 import DropDownForm from "../../components/DropDownForm"
 import Filtru from '../../components/FIltru'
+import SearchBar from '../../components/SearchBar'
+import AdminItem from '../../components/AdminItem'
+import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 
 const Cities = () => {
   const [cities ,setCities] = useState([])
   const [counties ,setCounties] = useState([])
   const [filter, setFilter] = useState('')
-
+  const [filteredCities, setFilteredCities] = useState(cities)
   const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
 
   const location = useLocation()
+  const navigate = useNavigate()
+  const api = useAxiosPrivate()
 
   useEffect(() =>{
     fetchCities()
@@ -28,7 +29,7 @@ const Cities = () => {
 
   const fetchCities = async () =>{
     try{
-      const res = await api.get('api/cities')
+      const res = await api.get('/cities')
       setCities(res.data)
     }catch (err){
       console.log(err)
@@ -37,9 +38,8 @@ const Cities = () => {
 
   const fetchCounties = async () =>{
     try{
-      const res = await api.get('api/counties')
+      const res = await api.get('/counties')
       setCounties(res.data)
-      setServerMsg('')
     }catch (err){
       console.log(err)
     }
@@ -51,7 +51,7 @@ const Cities = () => {
 
   const handleCreate = async (values) =>{
     try{
-      const res = await api.post('api/cities',{name:values.city, countyId:values.county})
+      const res = await api.post('/cities',{name:values.city, countyId:values.county})
       const newCities = [...cities, {...res.data.city}]
       setCities(newCities)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
@@ -62,7 +62,7 @@ const Cities = () => {
 
   const handleDelete = async (id) => {
     try{
-      const res = await api.delete(`api/cities/${id}`)
+      const res = await api.delete(`/cities/${id}`)
       const newCities = cities.filter(city => city.id !== id)
       setCities(newCities)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
@@ -73,7 +73,7 @@ const Cities = () => {
   
   const handleUpdate = async (values) =>{
     try{
-      const res = await api.patch(`api/cities/${values.id}`,{name:values.city,countyId:values.county})
+      const res = await api.patch(`/cities/${values.id}`,{name:values.city,countyId:values.county})
       const newCities = cities.map(city => (city.id === values.id ? {...city, name:values.city, edit:false} : {...city}))
       setCities(newCities)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
@@ -102,6 +102,13 @@ const Cities = () => {
 
       {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
 
+      <DropDownForm 
+        text='Adauga un oras' 
+        form={<CityForm counties={counties} buttonText='Adauga' handleSubmit={handleCreate} />}
+      />
+
+      <hr />
+
       <Filtru 
         text='Filtreaza dupa Judet:'
         handleChange={handleChange}
@@ -110,24 +117,31 @@ const Cities = () => {
         value={filter}
       />
 
-      <DropDownForm 
-        text='Adauga un oras' 
-        form={<CityForm counties={counties} buttonText='Adauga' handleSubmit={handleCreate} />}
-      />
+      <hr />
 
-      
+      <SearchBar list={cities} setFilterList={setFilteredCities} compare='name' />
 
-      {cities.map(city => 
-        <City 
-          key={city.id} 
-          toggleConfDelBox={() => toggleConfDelBox(city.id)}
-          handleEdit={() => handleEdit(city.id)} 
-          city={city} 
-          handleDelete={() => handleDelete(city.id)}
-          handleUpdate={handleUpdate}
-          counties={counties}
+      <div className="p-2"></div>
+
+      {filteredCities.map(city => 
+        <AdminItem 
+          key={city.id}
           className={filter && city.CountyId !== filter && "hidden"}
-          hideForm={hideForm}
+          item={city}
+          toggleConfDelBox={() => toggleConfDelBox(city.id)}
+          handleDelete={() => handleDelete(city.id)} 
+          handleNavigate={() => navigate('/admin/locatii', {state: {...city}})}
+          subItemsLength={city?.Locations?.length}
+          handleEdit={() => handleEdit(city.id)} 
+          form={
+            <CityForm 
+              city={city}
+              counties={counties}
+              buttonText='Salvati'
+              handleSubmit={handleUpdate}
+              >
+                <button className="sm:w-40 mt-5 md:w-60 lg:w-80" type="button" onClick={hideForm}>Cancel</button>
+            </CityForm>}
         />
       )}
 
@@ -206,40 +220,5 @@ const CityForm = ({handleSubmit, buttonText, city, counties, children}) => {
     </form>
   )
 }
-
-
-
-const City = ({city, handleDelete, handleEdit, handleUpdate, toggleConfDelBox, counties, className, hideForm}) => {
-  
-  const naviage = useNavigate()
-
-  const handleClick = () => {
-    naviage('/admin/Locations', {state: {...city}})
-  }
-
-  return (
-    <>{!city.edit 
-      ?<section className={`last:border-0 sm:mx-16 md:mx-28 lg:mx-36 flex flex-row justify-between p-5 items-center text-gray-900 bg-white border-gray-900 border-b-2 ${className}`}>
-        {city.deleteBox && <ConfBox handleNo={toggleConfDelBox} handleYes={handleDelete}>Confirmare stergere?</ConfBox>}
-          <h3 onClick={handleClick} className="text-2xl break-all">{city.name} ({city?.Locations?.length || 0})</h3>
-          <section className=" text-3xl flex flex-row justify-between items-center gap-5">
-              <FontAwesomeIcon icon={faPenToSquare} className='cursor-pointer pl-5' onClick={handleEdit}/>
-              <FontAwesomeIcon icon={faX} className='cursor-pointer' onClick={toggleConfDelBox}/>
-            </section>
-      </section>
-
-      :<CityForm 
-      city={city}
-      counties={counties}
-      buttonText='Salvati'
-      handleSubmit={handleUpdate}
-      >
-        <button className="sm:w-40 mt-5 md:w-60 lg:w-80" type="button" onClick={hideForm}>Cancel</button>
-      </CityForm>
-      }
-    </>
-  )
-}
-
 
 export default Cities

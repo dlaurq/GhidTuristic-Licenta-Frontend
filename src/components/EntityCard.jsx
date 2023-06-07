@@ -3,19 +3,21 @@ import useStaticApi from "../hooks/useStaticApi"
 import useAxiosPrivate from "../hooks/useAxiosPrivate"
 import { useNavigate } from "react-router-dom"
 
-const EntityCard = ({name, children, className}) => {
+const EntityCard = ({entity, children, className}) => {
 
   const staticApi = useStaticApi()
   const api = useAxiosPrivate()
   const navigate = useNavigate()
   
-  const [entity, setEntity] = useState({})
+  //const [entity, setEntity] = useState({})
 
   useEffect(() => {
+    /** 
     const fetchEntity = async () => {
+      
       try {
         const res = await api.get(`/places/${name}`)
-        //console.log(res.data)
+        console.log(res.data)
         setEntity(res.data)
       } catch (err) {
         console.log(err)
@@ -24,30 +26,33 @@ const EntityCard = ({name, children, className}) => {
     }
 
     fetchEntity()
-    //console.log(entity, name)
+    */
   }, [])
 
   const calcRating = (reviews) => {
-    //console.log(reviews)
     let sum = 0
     reviews?.forEach(review => sum += parseFloat(review?.rating));
     return sum / reviews?.length
   }
 
-
   return (
-    <section className={`text-gray-300 bg-gray-900 text-center border-b-2 p-5 ${className}`} >
-      
-        <img className="w-full" src={`${staticApi}${entity?.Images?.[0]?.imgUrl}`} alt={entity?.name} />
-        <h2 onClick={() => navigate(`/obiective/${entity.name}`)} className="font-bold text-2xl my-4 cursor-pointer">{entity?.name}</h2>
-        <section className="flex flex-row justify-evenly text-xl my-2">
-          <p>Rating: {calcRating(entity?.Reviews) || 0}</p>
-          <p>Recenzii: {entity?.Reviews?.length}</p>
-        </section>
-        <p className="py-3 text-left">{entity?.Category?.name}</p>
-        <p className="pb-6 text-left">{entity?.description}</p>
+    <section className={`last:border-b-0 sm:px-0 md:mt-5 md:p-0 md:border-2 md:last:border-b-2  md:flex md:flex-col md:justify-between  p-5 border-gray-900 border-b-2 ${className}`} >
+      <section className="">
+        <img onClick={() => navigate(`/obiective/${entity.name}`)} className="w-full cursor-pointer !p-0" src={`${staticApi}${entity?.Images?.[0]?.imgUrl}`} alt={entity?.name} />
 
+        <section onClick={() => navigate(`/obiective/${entity.name}`)} className="md:pl-5 flex flex-row justify-start gap-5 items-center mt-4 cursor-pointer">
+          <h2 className="text-2xl font-bold">{entity?.name}</h2>
+          <p className="opacity-50 text-lg">{entity?.Category?.name}</p>
+        </section>
+
+        <p className="md:pl-5 text-lg mb-2">Rating {calcRating(entity?.Reviews) || 0} &#x2022; Recenzii {entity?.Reviews?.length} </p>
+        
+        <p className="md:pl-5  text-left sm:w-4/5">{entity?.description}</p>
+      </section>
+      
+      <section className="md:pl-5 md:pb-5">
         {children}
+      </section>
     </section>
   )
 }

@@ -15,7 +15,7 @@
     }
 
     form {
-        @apply sm:mx-16 sm:w-auto md:mx-28 lg:mx-36 bg-gray-900 text-white text-xl font-bold p-5 w-full text-left flex flex-col justify-around;
+        @apply sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem]  bg-gray-900 text-white text-xl font-bold p-5 w-full text-left flex flex-col justify-around;
     }
 
     label {
@@ -24,5 +24,9 @@
 
     select {
         @apply lg:w-80;
+    }
+
+    hr {
+        @apply sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem];
     }
 }

@@ -5,7 +5,7 @@ const AdminNav = () => {
 
   return (
     <nav className="">
-        <ul className="grid grid-cols-2 p-5 gap-2 h-full sm:grid-cols-3 sm:px-16 md:grid-cols-4 md:px-28 md:gap-3 lg:grid-cols-6 lg:gap-5 lg:px-36 xl:grid-cols-8 2xl:w-11/12 2xl:mx-auto">
+        <ul className="sm:mx-auto sm:w-[37rem] sm:grid-cols-4 md:w-[45rem] lg:w-[61rem] lg:grid-cols-8 xl:w-[71rem]  grid grid-cols-2 gap-5 m-5">
           {[
             ['Admin','/admin'],
             ['Tari','tari'],

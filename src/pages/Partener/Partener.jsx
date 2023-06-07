@@ -70,7 +70,7 @@ const Partener = () => {
         ? <h3 className='text-gray-300'>Nu aveti nici o entitate inregistrata</h3>
         : entities.map((entity) => 
           entity.id !== showEditBox 
-            ? <EntityCard key={entity.id} name={entity.name} >
+            ? <EntityCard key={entity.id} entity={entity} >
               <section className='flex flex-row justify-between items-center'>
                 <button type='button' onClick={() => setShowEditBox(entity.id)}>Editeaza</button>
                 <button type='button' onClick={() => setShowConfBox(entity)}>Sterge</button>

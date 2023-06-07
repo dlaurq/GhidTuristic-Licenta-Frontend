@@ -1,32 +1,34 @@
 import { useEffect, useState } from "react"
 import ErrorMsg from "../../components/ErrorMsg"
-import useAxiosPrivate from "../../hooks/useAxiosPrivate"
-import { useNavigate, useLocation } from "react-router-dom"
+
+import { useNavigate } from "react-router-dom"
 import { useFormik } from "formik"
 import * as Yup from "yup"
-import ConfBox from "../../components/ConfBox"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faX, faPenToSquare, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons'
+import DropDownForm from "../../components/DropDownForm"
+import AdminItem from "../../components/AdminItem"
+import SearchBar from "../../components/SearchBar"
+import useAxiosPrivate from "../../hooks/useAxiosPrivate"
 
 
 const Countries = () => {
   const [countries, setCountries] = useState([])
+  const [filteredCountries, setFilteredCountries] = useState(countries)
   const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
   const [delConfBox, setDelConfBox] = useState(false)
-  const axiosPrivate = useAxiosPrivate()
-  const [showForm, setShowForm] = useState(false)
-
   
+  const navigate = useNavigate()
+  const api = useAxiosPrivate()
   
   useEffect(()=>{
 
     const fetchCountries = async () =>{
       try{
-        const res = await axiosPrivate.get('/countries')
+        const res = await api.get('/countries')
         const newCountries = res.data.map(country => ({...country, edit:false}))
         setCountries(newCountries)
       }catch (err){
         console.log(err)
+        setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
       }
     }
   
@@ -36,12 +38,12 @@ const Countries = () => {
 
   const handleCreate = async (values) => {
     try{
-      const res = await axiosPrivate.post('/countries',{name:values.country})
+      const res = await api.post('/countries',{name:values.country})
       const newCountries = [...countries, {...res.data.country, edit:false}]
       setCountries(newCountries)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
     }catch(err){
-      console.log(err.response)
+      console.log(err)
       setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
     }
     
@@ -49,7 +51,7 @@ const Countries = () => {
 
   const handleDelete = async (id) => {
     try{
-      const res = await axiosPrivate.delete(`/countries/${id}`)
+      const res = await api.delete(`/countries/${id}`)
       const newCountries = countries.filter(country => country.id !== id)
       setCountries(newCountries)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
@@ -61,9 +63,8 @@ const Countries = () => {
   }
   
   const handleUpdate = async (values) =>{
-    console.log(values)
     try{
-      const res = await axiosPrivate.patch(`/countries/${values.id}`,{name:values.country})
+      const res = await api.patch(`/countries/${values.id}`,{name:values.country})
       const newCountries = countries.map(country => (country.id === values.id ? {...country, name:values.country, edit:false} : {...country}))
       setCountries(newCountries)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
@@ -79,6 +80,7 @@ const Countries = () => {
   }
 
   const toggleConfDelBox = (id)=>{
+    console.log(id)
     const newCountries = countries.map(country => country.id === id ? {...country, deleteBox:!country.deleteBox} : country)
     setCountries(newCountries)
   }
@@ -90,75 +92,43 @@ const Countries = () => {
   
 
   return (
-    <section className="bg-gray-900">
+    <section>
       
-      {/** DROP DOWN FORM */}
-      <section className="bg-white">
-        <section 
-          onClick={() => setShowForm(prev => !prev)} 
-          className="sm:mx-16 md:mx-28 lg:mx-36 px-5 py-3 text-white flex flex-row justify-between items-center text-2xl bg-gray-900">
-          <p className="">Adauga o tara</p>
-          <FontAwesomeIcon icon={showForm ? faCaretDown : faCaretUp} />
-        </section>
-        {showForm && <CountryForm handleSubmit={handleCreate} buttonText='Adauga'/>}
-      </section>
-
       {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
 
-      {/** Sectiunea cu lista de tari */}
-      <section className=" bg-white ">
-        {countries.map(country =>
-          <Country 
-            toggleConfDelBox={() => toggleConfDelBox(country.id)}
-            delConfBox={delConfBox}
-            country={country} 
-            handleDelete={() => handleDelete(country.id)} 
-            handleEdit={() => handleEdit(country.id)} 
-            handleUpdate={handleUpdate}
-            key={country.id}
-            hideForm={hideForm}
-          />
-        )}
-      </section>
-    
+      <DropDownForm 
+        text='Adauga o tara' 
+        form={<CountryForm handleSubmit={handleCreate} buttonText='Adauga'/>}
+      />
 
+      <hr />
+
+      <SearchBar list={countries} setFilterList={setFilteredCountries} compare='name' />
+
+      <div className="p-2"></div>
+
+      {filteredCountries.map(country =>
+        <AdminItem 
+          key={country.id}
+          item={country}
+          toggleConfDelBox={() => toggleConfDelBox(country.id)}
+          handleDelete={() => handleDelete(country.id)} 
+          handleNavigate={() => navigate('/admin/judete', {state: {...country}})}
+          subItemsLength={country?.Counties?.length}
+          handleEdit={() => handleEdit(country.id)} 
+          form={
+            <CountryForm buttonText='Edit' handleSubmit={handleUpdate} country={country}>
+              <button className="sm:w-40 mt-5 md:w-60 lg:w-80" type="button" onClick={hideForm}>Cancel</button>
+            </CountryForm>
+          }
+
+        />
+      )}
+
+    
     </section>
   )
 }
-
-
-const Country = ({country, handleDelete, handleEdit,handleUpdate, toggleConfDelBox, hideForm}) => {
-
-  const naviage = useNavigate()
-
-  const handleClick = () => {
-    naviage('/admin/judete', {state: {...country}})
-  }
-
-  return (
-    <>
-    {!country.edit ?
-        <section className="last:border-0 sm:mx-16 md:mx-28 lg:mx-36 flex flex-row justify-between p-5 items-center text-gray-900 bg-white border-gray-900 border-b-2">
-          {country.deleteBox && <ConfBox handleNo={toggleConfDelBox} handleYes={handleDelete}>Confirmare stergere?</ConfBox>}
-          <h3 
-            onClick={handleClick}  
-            className="text-2xl break-all"
-          >
-              {country.name} ({country?.Counties?.length || 0})
-          </h3>
-          <section className=" text-3xl flex flex-row justify-between items-center gap-5">
-            <FontAwesomeIcon icon={faPenToSquare} className='cursor-pointer pl-5' onClick={handleEdit}/>
-            <FontAwesomeIcon icon={faX} className='cursor-pointer' onClick={toggleConfDelBox}/>
-          </section>
-        </section>
-      :
-      <CountryForm buttonText='Edit' handleSubmit={handleUpdate} country={country}>
-         <button className="sm:w-40 mt-5 md:w-60 lg:w-80" type="button" onClick={hideForm}>Cancel</button>
-      </CountryForm>}
-  </>
-  )
-}
-
 
 
 const CountryForm = ({handleSubmit, buttonText, country, children}) => {

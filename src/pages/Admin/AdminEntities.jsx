@@ -1,36 +1,32 @@
 import { useState } from "react"
-import { faCaretDown, faCaretUp, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { useEffect } from "react"
 import useAxiosPrivate from "../../hooks/useAxiosPrivate"
 import { useLocation } from "react-router-dom"
 import EntityCard from "../../components/EntityCard"
 import ConfBox from "../../components/ConfBox"
+import SearchBar from "../../components/SearchBar"
+import Filtru from "../../components/Filtru"
+import ErrorMsg from "../../components/ErrorMsg"
 
 const AdminEntities = () => {
 
   const [entities, setEntities] = useState([])
-  const [search, setSearch] = useState('')
   const [filterEntities, setFilterEntities] = useState(entities)
-  const [showConfBox, setShowConfBox] = useState(false)
   const [categories, setCategories] = useState([])
   const [filter, setFilter] = useState('')
+  const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
 
   const location = useLocation()
   const api = useAxiosPrivate()
 
-  const toggleShowConfBox = () => setShowConfBox(prev => !prev)
-
   useEffect(() => {
-    setSearch(location?.state?.search || '')
     setFilter(location?.state?.filter || '')
 
     const fetchEntities = async () => {
       try {
           const res = await api.get('/places')
-          //console.log(res.data)
           setEntities(res.data)
+          console.log(res.data)
           setFilterEntities(res.data)
       } catch (err) {
           console.log(err)
@@ -40,76 +36,64 @@ const AdminEntities = () => {
     const fetchCategories = async () => {
       try{
         const res = await api.get('/categories')
-        //console.log(res.data)
         setCategories(res.data)
       } catch(err){
         console.log(err)
       }
     }
 
-
     fetchCategories()
     fetchEntities()
   }, [])
-
-  useEffect(() => {
-    const newEntities = entities.filter(entity => entity.name.toLowerCase().includes(search.toLowerCase()) && entity?.Category?.id === filter || filter === '')
-    setFilterEntities(newEntities)
-}, [search, filter, entities])
-
-
 
   const handleDeleteEntity = async (id) => {
     try {
         const res = await api.delete(`/places/${id}`)
         const newEntities = entities.filter(review => review.id !== id)
         setEntities(newEntities)
+        setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
     } catch (err) {
         console.log(err)
+        setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
     }
   }
+
+  const toggleConfDelBox = (id)=>{
+    const newEntities = entities.map(entity => entity.id === id ? {...entity, deleteBox:!entity.deleteBox} : entity)
+    setEntities(newEntities)
+  }
+  
 
   return (
     <section>
 
-    <section className="p-5 bg-gray-900 text-gray-300 text-xl">
-      <p className="mb-2">Filtreaza dupa categorie: </p>
-      <select 
-        name='categories'
-        id='categories'
-        onChange={(e) => setFilter(e.target.value)}
+      {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
+
+      <Filtru 
+        text='Filtreaza dupa categorie:'
+        handleChange={(e) => setFilter(e.target.value)}
+        list={categories}
+        placeholder='--Alege o categorie--'
         value={filter}
-        
-        >
-        <option value=''>
-          Alege o categorie
-        </option>
-        {categories.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
-      </select>
-    </section>
-
-
-      <section className="p-5 bg-gray-900 text-gray-300 flex flex-row justify-between items-center gap-5">
-        <FontAwesomeIcon icon={faMagnifyingGlass} />
-        <input 
-        id="searchBar"
-        name="searchBar"
-        placeholder="Nume utilizator"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        />
-      </section>
+      />
 
       <hr />
 
-      {filterEntities?.map((entity, index) => 
-        <EntityCard key={entity.id} name={entity.name} >
-          <section className="mt-5">
-              <button type="button" onClick={toggleShowConfBox} className="w-full text-gray-300 border-gray-300 border-2 font-bold">Sterge Entitatea</button>
-              {showConfBox && <ConfBox handleNo={toggleShowConfBox} handleYes={() => handleDeleteEntity(entity.id)} >Confirmati stergerea?</ConfBox>}
-          </section>
-        </EntityCard>
-      )}
+      <SearchBar list={entities} setFilterList={setFilterEntities} compare='name' />
+
+      
+
+      <section className="sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem] md:grid md:grid-cols-2 md:auto-rows-fr md:gap-5 lg:grid-cols-3">
+        {filterEntities?.map(entity => 
+          <EntityCard key={entity.id} entity={entity} className={filter && entity.CategoryId !== filter && "hidden"} >
+            <section className="mt-5">
+                <button type="button" onClick={() => toggleConfDelBox(entity.id)} className="sm:px-5 sm:w-auto  bg-red-500 text-left pl-5 w-full border-2 font-bold">Sterge Entitatea</button>
+                {entity.deleteBox && <ConfBox handleNo={() => toggleConfDelBox(entity.id)} handleYes={() => handleDeleteEntity(entity.id)} >Confirmati stergerea?</ConfBox>}
+            </section>
+          </EntityCard>
+        )}
+      </section>
+      
 
     </section>
   )
