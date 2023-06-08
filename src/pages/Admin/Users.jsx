@@ -8,6 +8,8 @@ import Review from "../../components/Review"
 import ConfBox from "../../components/ConfBox"
 import { useLocation, useNavigate } from "react-router-dom"
 import SearchBar from "../../components/SearchBar"
+import EntityCard from "../../components/EntityCard"
+import ErrorMsg from "../../components/ErrorMsg"
 
 
 const Users = () => {
@@ -58,7 +60,7 @@ const Users = () => {
 
         <SearchBar list={users} setFilterList={setFilterUsers} compare='username' />
 
-        {filterUsers?.map(user => <User key={user?.username} {...user} Entities={user?.Places} handleDeleteUser={handleDeleteUser} />)}
+        {filterUsers?.map(user => <User key={user?.username} {...user} handleDeleteUser={handleDeleteUser} />)}
         
     </section>
   )
@@ -73,6 +75,8 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
     const [showConfBox, setShowConfBox] = useState('')
     const [reviews, setReviews] = useState(Reviews)
     const [roles, setRoles] = useState(Roles)
+    const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
+    const [entities, setEntities] = useState(Entities)
 
     const api = useAxiosPrivate()
     const navigate = useNavigate()
@@ -80,6 +84,10 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
     const toggleShowUserDetails = () => setShowUserDetails(prev => !prev)
     const toggleShowEntitiesDetails = () => setShowEntitiesDetails(prev => !prev)
     const toggleShowReviewsDetails = () => setShowReviewsDetails(prev => !prev)
+    const toggleConfDelBox = (id)=>{
+        const newEntities = entities.map(entity => entity.id === id ? {...entity, deleteBox:!entity.deleteBox} : entity)
+        setEntities(newEntities)
+      }
     //const toggleShowConfBox = () => setShowConfBox(prev => !prev)
     
     const handleDeleteReview = async (id) => {
@@ -94,6 +102,18 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
         
     }
 
+    const handleDeleteEntity = async (id) => {
+        try {
+            const res = await api.delete(`/places/${id}`)
+            const newEntities = entities.filter(review => review.id !== id)
+            setEntities(newEntities)
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
+        } catch (err) {
+            console.log(err)
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
+        }
+      }
+    
     const handlePromote = async () => {
         try {
             const res = await api.patch('/users/partener', {username: username})
@@ -109,6 +129,8 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
 
     return(
         <section className="">
+            {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
+
             {!showUserDetails 
                 ?<section className=" sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem] flex flex-row justify-between p-5 items-center text-gray-900 bg-white border-gray-900 border-b-2 text-2xl">
                     <section className="flex flex-row justify-between items-center">
@@ -140,19 +162,22 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                     {/**Lista entitati */}
                     {!showEntitiesDetails
                         ?<section className="flex flex-row justify-between items-center">
-                            <p>Entitati: {Entities.length}</p>
+                            <p>Entitati: {entities?.length}</p>
                             <p onClick={toggleShowEntitiesDetails}><FontAwesomeIcon icon={faCaretUp}/></p>
                         </section>
                         :<section>
                             <section className="flex flex-row justify-between items-center mb-5">
-                                <p>Entitati: {Entities.length}</p>
+                                <p>Entitati: {entities.length}</p>
                                 <p onClick={toggleShowEntitiesDetails}><FontAwesomeIcon icon={faCaretDown}/></p>
                             </section>
-                            <section>
-                                {Entities.map((entity, index) => 
-                                    <section key={index} onClick={() => navigate('/admin/entitati', {state: {search: entity.name}})}>
-                                        <p>{entity.name}</p>
-                                    </section>
+                            <section className=" md:grid md:grid-cols-2 md:auto-rows-fr md:gap-5 lg:grid-cols-3">
+                                {entities.map((entity) => 
+                                    <EntityCard key={entity.id} entity={entity}>
+                                        <section className="mt-5">
+                                            <button type="button" onClick={() => toggleConfDelBox(entity.id)} className="sm:px-5 sm:w-auto  bg-red-500 text-left pl-5 w-full border-2 font-bold">Sterge Entitatea</button>
+                                            {entity.deleteBox && <ConfBox handleNo={() => toggleConfDelBox(entity.id)} handleYes={() => handleDeleteEntity(entity.id)} >Confirmati stergerea?</ConfBox>}
+                                        </section>
+                                    </EntityCard>
                                     )}
                             </section>
                         </section>

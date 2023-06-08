@@ -1,33 +1,11 @@
-import { useEffect, useState } from "react"
 import useStaticApi from "../hooks/useStaticApi"
-import useAxiosPrivate from "../hooks/useAxiosPrivate"
 import { useNavigate } from "react-router-dom"
 
 const EntityCard = ({entity, children, className}) => {
 
   const staticApi = useStaticApi()
-  const api = useAxiosPrivate()
   const navigate = useNavigate()
   
-  //const [entity, setEntity] = useState({})
-
-  useEffect(() => {
-    /** 
-    const fetchEntity = async () => {
-      
-      try {
-        const res = await api.get(`/places/${name}`)
-        console.log(res.data)
-        setEntity(res.data)
-      } catch (err) {
-        console.log(err)
-      }
-      
-    }
-
-    fetchEntity()
-    */
-  }, [])
 
   const calcRating = (reviews) => {
     let sum = 0

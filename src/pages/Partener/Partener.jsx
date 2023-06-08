@@ -5,6 +5,10 @@ import jwt_decode from "jwt-decode"
 import useAuth from '../../hooks/useAuth'
 import EntityCard from '../../components/EntityCard'
 import ConfBox from '../../components/ConfBox'
+import ErrorMsg from '../../components/ErrorMsg'
+import DropDownForm from '../../components/DropDownForm'
+import Filtru from '../../components/Filtru'
+import SearchBar from '../../components/SearchBar'
 
 const Partener = () => {
 
@@ -13,6 +17,10 @@ const Partener = () => {
   const [showConfBox, setShowConfBox] = useState(false)
   const [showEditBox, setShowEditBox] = useState(false)
   const [formSubmited, setFormSubmited] = useState(false)
+  const [filter, setFilter] = useState('')
+  const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
+  const [filterEntities, setFilterEntities] = useState(entities)
+  const [categories, setCategories] = useState([])
 
   const { auth } = useAuth()
 
@@ -21,6 +29,7 @@ const Partener = () => {
   //const toggleShowConfBox = () => setShowConfBox(prev => !prev)
 
   useEffect(() => {
+
     const fetchEntities = async () => {
       const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
@@ -31,7 +40,19 @@ const Partener = () => {
       const res = await api.get(`/places/user/${username}`)
       //console.log(res.data)
       setEntities(res.data)
+      setFilterEntities(res.data)
     }
+
+    const fetchCategories = async () => {
+      try{
+        const res = await api.get('/categories')
+        setCategories(res.data)
+      } catch(err){
+        console.log(err)
+      }
+    }
+
+    fetchCategories()
 
     fetchEntities()
   }, [formSubmited])
@@ -52,41 +73,65 @@ const Partener = () => {
   }
 
   return (
-    <section className='bg-gray-900 text-center'>
+    <section className=''>
 
-      <button 
-        type='button'
-        className="m-5"
-        onClick={ () => setToggleForm(prevToggleForm => !prevToggleForm)}
-      >
-        Creaza o noua entitate
-      </button>
+      <hr />
+      
+      {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
 
-      {toggleForm ? <NewEntityForm setFormSubmited={setFormSubmited} setEntities={setEntities} setToggleForm={setToggleForm}/> : null}
+      <DropDownForm 
+        text='Adauga o entitate' 
+        form={<NewEntityForm setFormSubmited={setFormSubmited} setEntities={setEntities} setToggleForm={setToggleForm}/>}
+      />
 
       <hr />
 
-      {entities.length === 0 
-        ? <h3 className='text-gray-300'>Nu aveti nici o entitate inregistrata</h3>
-        : entities.map((entity) => 
-          entity.id !== showEditBox 
-            ? <EntityCard key={entity.id} entity={entity} >
-              <section className='flex flex-row justify-between items-center'>
-                <button type='button' onClick={() => setShowEditBox(entity.id)}>Editeaza</button>
-                <button type='button' onClick={() => setShowConfBox(entity)}>Sterge</button>
-                
+      <Filtru 
+        text='Filtreaza dupa tara:'
+        handleChange={(e) => setFilter(e.target.value)}
+        list={categories}
+        placeholder='--Alege un tara--'
+        value={filter}
+      />
+
+      <hr />
+
+      <SearchBar list={entities} setFilterList={setFilterEntities} compare='name' />
+
+      <div className="p-2"></div>
+
+      <hr />
+      
+      <section className="sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem] md:grid md:grid-cols-2 md:auto-rows-fr md:gap-5 lg:grid-cols-3 md:auto-rows-auto">
+        {filterEntities.length === 0  && <h3 className=''>Nu aveti nici o entitate inregistrata</h3>}
+
+        {filterEntities.map(entity => entity.id !== showEditBox 
+          ? <EntityCard key={entity.id} entity={entity} className={filter && entity.Category.id !== filter && "hidden"}>
+              <section className='flex flex-col justify-between gap-4 mt-5 md:pr-5'>
+                <button className='text-gray-900 border-gray-900 font-bold border-4' type='button' onClick={() => setShowEditBox(entity.id)}>Editeaza</button>
+                <button className='text-red-500 font-bold border-4 border-red-500' type='button' onClick={() => setShowConfBox(entity)}>Sterge</button>
                 {showConfBox?.id === entity.id && <ConfBox handleNo={() => setShowConfBox({})} handleYes={() => handleDelete(entity.id)} >Confirmati stergerea?</ConfBox>}
               </section>
-            </EntityCard>
-            : <NewEntityForm setFormSubmited={setFormSubmited} setEntities={setEntities} key={entity.id} entity={entity} submitTxt="Salveaza" update={true} hideForm={() => setShowEditBox(false)}>
-              <section>
-                <button type='button' className="w-full" onClick={() => setShowEditBox(false)}>
-                  Cancel
-                </button>
-              </section>
-            </NewEntityForm>
-          )
-      }
+          </EntityCard>
+          :<NewEntityForm 
+            setFormSubmited={setFormSubmited} 
+            setEntities={setEntities} 
+            key={entity.id} 
+            entity={entity} 
+            submitTxt="Salveaza" 
+            update={true} 
+            hideForm={() => setShowEditBox(false)}
+            className='md:mt-5 col-span-3'
+            >
+            <section>
+              <button type='button' className="w-full md:w-80" onClick={() => setShowEditBox(false)}>
+                Cancel
+              </button>
+            </section>
+          </NewEntityForm>
+          
+        )}
+      </section>
 
     </section>
   )
