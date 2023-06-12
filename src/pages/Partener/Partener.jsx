@@ -81,7 +81,7 @@ const Partener = () => {
 
       <DropDownForm 
         text='Adauga o entitate' 
-        form={<NewEntityForm setFormSubmited={setFormSubmited} setEntities={setEntities} setToggleForm={setToggleForm}/>}
+        form={<NewEntityForm setFormSubmited={setFormSubmited} setEntities={setEntities} setToggleForm={setToggleForm} setServerResp={setServerResp}/>}
       />
 
       <hr />
@@ -106,7 +106,7 @@ const Partener = () => {
         {filterEntities.length === 0  && <h3 className=''>Nu aveti nici o entitate inregistrata</h3>}
 
         {filterEntities.map(entity => entity.id !== showEditBox 
-          ? <EntityCard key={entity.id} entity={entity} className={filter && entity.Category.id !== filter && "hidden"}>
+          ? <EntityCard key={entity.id} entity={entity} className={filter && entity.Category.id !== filter && "!hidden"}>
               <section className='flex flex-col justify-between gap-4 mt-5 md:pr-5'>
                 <button className='text-gray-900 border-gray-900 font-bold border-4' type='button' onClick={() => setShowEditBox(entity.id)}>Editeaza</button>
                 <button className='text-red-500 font-bold border-4 border-red-500' type='button' onClick={() => setShowConfBox(entity)}>Sterge</button>

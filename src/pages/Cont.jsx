@@ -6,6 +6,10 @@ import useAuth from '../hooks/useAuth'
 import { useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from "yup"
+import EntityCard from '../components/EntityCard'
+import ConfBox from '../components/ConfBox'
+import Review from '../components/Review'
+import ErrorMsg from '../components/ErrorMsg'
 
 const Cont = () => {
 
@@ -18,6 +22,8 @@ const Cont = () => {
     const [showLocatiiDeVizitat, setShowLocatiiDeVizitat] = useState(false)
     const [showRecenzii, setShowRecenzii] = useState(false)
     const [user, setUser] = useState({})
+    const [showConfBox, setShowConfBox] = useState()
+    const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
 
     useEffect(() => {
 
@@ -34,8 +40,53 @@ const Cont = () => {
         fetchUser()
     }, [])
 
-  return (
-    <section className='px-5'>
+    const handleDeleteVisited = async (id) => {
+        try{
+            const res = await api.delete(`/visited/${id}`)
+            const newVisited = [...user.PlacesVisited2].filter(item => item.PlacesVisited.id !== id)
+            setUser({...user, PlacesVisited2: newVisited})
+            setShowConfBox('')
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
+        }catch(err){
+            console.log(err)
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
+        }
+    }
+
+    const handleDelteTovisit = async (id) => {
+        try{
+            const res = await api.delete(`/toVisit/${id}`)
+            const newToVisit = [...user.PlacesToVisit2].filter(item => item.PlacesToVisit.id !== id)
+            setUser({...user, PlacesToVisit2: newToVisit})
+            setShowConfBox('')
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
+        }catch(err){
+            console.log(err)
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
+        }
+    }
+
+    const handleDeleteReview = async (id) => {
+        try{
+            const res = await api.delete(`/reviews/${id}`)
+            const newReviews = [...user.Reviews].filter(item => item.id !== id)
+            setUser({...user, Reviews: newReviews})
+            setShowConfBox('')
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
+        }catch(err){
+            console.log(err)
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
+        }
+    }
+
+  return (<>
+    
+    {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
+
+    <section className='px-5 sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem]'>
+
+
+
         <section className='text-xl'>
             <section className='flex flex-row justify-start items-center'>
                 <FontAwesomeIcon icon={faUser} className="mr-5 text-4xl"/>
@@ -51,55 +102,92 @@ const Cont = () => {
             <p>Adresa</p>
         </section>
 
-        <Tab 
-            toggle={showEditForm} 
-            setToggle={setShowEditForm} 
-            text='Editeaza profilul' 
-            component={<ProfilForm user={user} setShowEditForm={setShowEditForm} setUser={setUser} userData={user} />} 
+        <section className='md:grid md:grid-cols-2 md:gap-5 md:auto-rows-min'>
+            <Tab 
+                toggle={showEditForm} 
+                setToggle={setShowEditForm} 
+                text='Editeaza profilul' 
+                component={<ProfilForm user={user} setShowEditForm={setShowEditForm} setUser={setUser} userData={user} />} 
 
-        />
+            />
+                
+            <Tab 
+                toggle={showPwForm}
+                setToggle={setShowPwForm}
+                text='Schimba parola'
+                component={<ChangePwForm setShowPwForm={setShowPwForm}/>}
+            />
+        </section>
         
-        <Tab 
-            toggle={showPwForm}
-            setToggle={setShowPwForm}
-            text='Schimba parola'
-            component={<ChangePwForm setShowPwForm={setShowPwForm}/>}
-        />
 
         <Tab 
             toggle={showLocatiiVizitate}
             setToggle={setShowLocatiiVizitate}
             text='Locatii vizitate'
-            
+            component={
+                <section className="sm:mx-auto  md:grid md:grid-cols-2 md:auto-rows-fr md:gap-5 lg:grid-cols-3" >
+                    {user?.PlacesVisited2?.length === 0 && <p>Lista goala</p>}
+                    {user?.PlacesVisited2?.map(entity => 
+                    <EntityCard key={entity.id} entity={entity} >
+                        <section className="mt-5">
+                            <button type="button" onClick={() => setShowConfBox(entity.id)} className="sm:px-5 sm:w-auto  bg-red-500 text-left pl-5 w-full border-2 font-bold">Sterge din lista</button>
+                            {entity.id === showConfBox && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDeleteVisited(entity.PlacesVisited.id)} >Confirmati stergerea?</ConfBox>}
+                        </section>
+                    </EntityCard>)}
+                </section>
+            }
         />
 
         <Tab 
             toggle={showLocatiiDeVizitat}
             setToggle={setShowLocatiiDeVizitat}
             text='Locatii de vizitat'
-            
+            component={
+                <section className="sm:mx-auto  md:grid md:grid-cols-2 md:auto-rows-fr md:gap-5 lg:grid-cols-3">
+                    {user?.PlacesToVisit2?.length === 0 && <p>Lista goala</p>}
+                    {user?.PlacesToVisit2?.map(entity => 
+                    <EntityCard key={entity.id} entity={entity} >
+                        <section className="mt-5">
+                            <button type="button" onClick={() => setShowConfBox(entity.id)} className="sm:px-5 sm:w-auto  bg-red-500 text-left pl-5 w-full border-2 font-bold">Sterge din lista</button>
+                            {entity.id === showConfBox && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDelteTovisit(entity.PlacesToVisit.id)} >Confirmati stergerea?</ConfBox>}
+                        </section>
+                    </EntityCard>
+                    )}
+                </section>
+            }
         />
 
         <Tab 
             toggle={showRecenzii}
             setToggle={setShowRecenzii}
             text='Recenziile mele'
-            
+            component={
+                <section className="sm:mx-auto  md:grid md:grid-cols-2 md:auto-rows-fr md:gap-5 lg:grid-cols-3">
+                    {user?.Reviews?.map(review =>
+                    <Review key={review.id} review={review}>
+                        <section className="mt-5">
+                            <button type="button" onClick={() => setShowConfBox(review.id)} className="w-full text-gray-900 border-gray-900 border-2 font-bold">Sterge recenzia</button>
+                            {review.id === showConfBox  && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDeleteReview(review.id)} >Confirmati stergerea?</ConfBox>}
+                        </section>
+                    </Review>)}
+                </section>
+            }
+
         />
 
         <button className='text-white w-full my-3 bg-red-700 font-bold'>Sterge cont</button>
        
        
     </section>
-  )
+    </>)
 }
 
 
 const Tab = ({toggle, setToggle, text, component}) => {
 
     return(
-        <section className='border-2 border-gray-900 my-2 p-2'>
-            <section onClick={() => setToggle(prev => !prev)} className='flex justify-between items-center text-xl cursor-pointer'>
+        <section className='border-2 border-gray-900 my-2 p-2 md:h-fit'>
+            <section onClick={() => setToggle(prev => !prev)} className='flex justify-between items-center text-xl cursor-pointer md:p-2'>
                 <p>{text}</p>
                 <FontAwesomeIcon icon={toggle ? faCaretDown : faCaretUp}/>
             </section>
@@ -153,7 +241,7 @@ const ProfilForm = ({user, setShowEditForm, setUser, userData}) => {
     })
 
     return(
-        <form onSubmit={formik.handleSubmit} autoComplete="off">
+        <form onSubmit={formik.handleSubmit} autoComplete="off" className='w-auto mt-2'>
             
             <label htmlFor="lastName">
                 {formik.touched.lastName && formik.errors.lastName 
@@ -168,6 +256,7 @@ const ProfilForm = ({user, setShowEditForm, setUser, userData}) => {
                 value={formik.values.lastName}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                className=''
             />
 
             <label htmlFor="firstName">
@@ -267,7 +356,7 @@ const ChangePwForm = ({setShowPwForm}) => {
     )
 
     return(
-        <form onSubmit={formik.handleSubmit} autoComplete="off">
+        <form onSubmit={formik.handleSubmit} autoComplete="off" className='w-auto'>
 
             <label htmlFor="pw">
                 {formik.touched.pw && formik.errors.pw 

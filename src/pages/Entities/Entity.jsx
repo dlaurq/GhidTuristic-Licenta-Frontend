@@ -62,20 +62,27 @@ const Entity = (props) => {
         
     }
 
-  return (
-    <section className=' '>
-        <section className=' p-5'>
-            <h2 className='text-3xl font-bold text-center py-5'>{entity.name}</h2>
+    const calcRating = (reviews) => {
+        let sum = 0
+        reviews?.forEach(review => sum += parseFloat(review?.rating));
+        return sum / reviews?.length
+        }
 
-            <section className='flex flex-row overflow-auto my-5'>
-                {entity?.Images?.map((img, index) => <img key={index} src={`http://localhost:5000/uploads/${img?.imgUrl}`} />)}
+  return (
+    <section className='sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem]'>
+        <section className=' p-5'>
+            <h2 className='text-3xl font-bold pt-5'>{entity.name}</h2>
+
+            <p className="text-xl"> {entity?.Category?.name} &#x2022; Rating {calcRating(entity?.Reviews) || 0} </p>
+
+            <section className='flex flex-row overflow-auto my-5 gap-5'>
+                {entity?.Images?.map((img, index) => <img key={index} src={`http://localhost:5000/uploads/${img?.imgUrl}`} className='md:max-h-80 max-h-64 object-contain' />)}
             </section>
 
-            <p className='text-xl py-3'>{entity?.Category?.name}</p>
             <p className='text-xl py-3'>{entity.description}</p>
 
             {auth?.accessToken
-            ?<section>
+            ?<section className='sm:flex sm:flex-row sm:gap-5 sm:justify-between'>
                 
                 {entity?.PlacesToVisits?.length === 0 || !entity?.PlacesToVisits?.some(place => place?.User?.username === auth?.username)
                     ? <button type="button" className="bg-gray-900 my-2 w-full text-left pl-5" onClick={handleToVisitBtn}>Adauga la 'De vizitat'</button>
@@ -97,12 +104,12 @@ const Entity = (props) => {
         
         
 
-        <section className='bg-gray-900 p-5'>
+        <section className='p-5 '>
             {!auth?.accessToken 
             ?<p className='text-gray-300 text-2xl p-5'><NavLink to='/login' className='font-bold text-amber-500 hover:cursor-pointer'>Autentifica-te</NavLink> pentru a putea lasa recenzii</p>
             :entity?.Reviews?.find(review => review?.User?.username === auth?.username)
             ?entity?.Reviews?.map((review, index) => review?.User?.username === auth?.username && 
-                <Review key={index} {...review}>
+                <Review key={index} review={review}>
                     <section className="mt-5">
                         <button type="button" onClick={() => setShowConfBox(prev => !prev)} className="w-full text-gray-900 border-gray-900 border-2 font-bold">Sterge recenzia</button>
                         {showConfBox  && <ConfBox handleNo={() => setShowConfBox(prev => !prev)} handleYes={() => handleDeleteReview(review.id)} >Confirmati stergerea?</ConfBox>}
@@ -110,7 +117,7 @@ const Entity = (props) => {
                 </Review>)
             :<ReviewForm fetchEntity={fetchEntity} entityName={name}/>}
             
-            {entity?.Reviews?.map((review, index) => review?.User?.username !== auth?.username && <Review key={index} {...review}/>)}
+            {entity?.Reviews?.map((review, index) => review?.User?.username !== auth?.username && <Review key={index} review={review}/>)}
         </section>
     </section>
   )

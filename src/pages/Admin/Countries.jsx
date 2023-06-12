@@ -149,7 +149,7 @@ const CountryForm = ({handleSubmit, buttonText, country, children}) => {
   })
 
 return (
-    <form onSubmit={formik.handleSubmit} className=' sm:mx-16 sm:w-auto md:mx-28 lg:mx-36 bg-gray-900'>
+    <form onSubmit={formik.handleSubmit} className='  bg-gray-900'>
       <section className="flex flex-col">
         <label htmlFor="country" className="mb-3 text-white">
           {formik.touched.country && formik.errors.country 

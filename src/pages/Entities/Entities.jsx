@@ -71,8 +71,8 @@ const Entities = () => {
 
   return (
     <section className=''>
-        
-            <section className='p-5 text-xl bg-gray-900 sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem] mt-5 flex flex-row gap-5 justify-start items-center'>
+            <hr className='sm:hidden' />
+            <section className='p-5 text-xl bg-gray-900 sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem] sm:mt-5 flex flex-row gap-5 justify-start items-center'>
                 <label htmlFor="sort">
                     Sorteaza dupa: 
                 </label>
@@ -90,6 +90,7 @@ const Entities = () => {
                 </select>
             </section>
  
+
             <hr />
 
             <button 

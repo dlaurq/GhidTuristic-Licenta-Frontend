@@ -16,7 +16,7 @@ const EntityCard = ({entity, children, className}) => {
   return (
     <section className={`last:border-b-0 sm:px-0 md:mt-5 md:p-0 md:border-2 md:last:border-b-2  md:flex md:flex-col md:justify-between  p-5 border-gray-900 border-b-2 ${className}`} >
       <section className="">
-        <img onClick={() => navigate(`/obiective/${entity.name}`)} className="w-full cursor-pointer !p-0" src={`${staticApi}${entity?.Images?.[0]?.imgUrl}`} alt={entity?.name} />
+        <img onClick={() => navigate(`/obiective/${entity.name}`)} className="w-full cursor-pointer !p-0 max-h-64 object-cover" src={`${staticApi}${entity?.Images?.[0]?.imgUrl}`} alt={entity?.name} />
 
         <section onClick={() => navigate(`/obiective/${entity.name}`)} className="md:pl-5 flex flex-row justify-start gap-5 items-center mt-4 cursor-pointer">
           <h2 className="text-2xl font-bold">{entity?.name}</h2>

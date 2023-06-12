@@ -8,7 +8,7 @@ import useStaticApi from "../../../hooks/useStaticApi"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faX } from "@fortawesome/free-solid-svg-icons"
 
-const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggleForm, setFormSubmited, setEntities, className}) => {
+const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggleForm, setFormSubmited, setEntities, className, setServerResp}) => {
 
     const [geo, setGeo] = useState({})
     const [categories, setCategories] = useState([])
@@ -76,7 +76,7 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
                 formData,
                 {headers: {'Content-Type': 'multipart/form-data'}})
             //console.log(res.data)
-            hideForm()
+            formik.hideForm()
             
 
         }else{
@@ -84,6 +84,8 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
                 '/places',
                 formData,
                 {headers: {'Content-Type': 'multipart/form-data'}})
+
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
             //console.log(res.data)
         }
 
@@ -121,7 +123,12 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
             address: Yup.string().required("Camp obligatoriul"),
           }),
 
-        onSubmit: handleSubmit
+        onSubmit: (values) => {
+            handleSubmit(values)
+            formik.setFieldValue('imgs', [])
+            setImgsUrl([])
+            formik.resetForm()
+          },
     })
     
     useEffect(() => {
