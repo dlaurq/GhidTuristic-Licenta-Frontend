@@ -174,8 +174,10 @@ const Cont = () => {
             }
 
         />
-
+        {/**
+         
         <button className='text-white w-full my-3 bg-red-700 font-bold'>Sterge cont</button>
+         */}
        
        
     </section>

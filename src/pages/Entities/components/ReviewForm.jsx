@@ -61,7 +61,7 @@ const ReviewForm = ({entityName, fetchEntity}) => {
             title: Yup.string().required("Camp obligatoriul"),
             description: Yup.string(),
             rating: Yup.number().min(1, "Camp obligatoriul").required("Camp obligatoriul"),
-            imgs: Yup.mixed().test('file-length', "Puteti adauga doar 3 poze", (value) => value.length < 4),
+            imgs: Yup.mixed().test('file-length', "Puteti adauga maxim 3 poze", (value) => value.length < 4),
             
         }),
         onSubmit: handleSubmit

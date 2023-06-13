@@ -27,7 +27,7 @@ const Home = () => {
   return (
 
 
-    <section className="min-h-screen bg-gray-300">
+    <section className="min-h-screen sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem]">
       <div className="p-5"></div>
       <button onClick={() => navigate(('/obiective'))} className="bg-gray-900 border-gray-900 border-2 font-bold mx-auto  block">Exploreaza</button>
       <section className="p-5 text-xl">

@@ -28,9 +28,10 @@ const MainNav = () => {
   }
 
   return (
-    <>
+    <>{/**MOBILE NAV */}
       {!mobileNav
-        ?<nav className="h-full flex flex-row justify-between items-center bg-gray-900 text-gray-300 p-5 font-bold ">
+        /* MOBILE NAV RESTRANTS - TITLU + HAMBURGER*/
+        ?<nav className="h-full flex flex-row justify-between items-center bg-gray-900 text-white p-5 font-bold sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:hidden">
           <Link className="text-3xl w-1/2" to='/'>Ghidul Calatorului</Link>
           <FontAwesomeIcon onClick={handleClick} icon={faBars} size='3x'/>
           
@@ -39,7 +40,8 @@ const MainNav = () => {
           <li></li>
           </ul>
         </nav>
-        :<nav onClick={handleClick} className="  fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-screen flex flex-col items-center bg-gray-900  text-gray-300 font-bold ">
+        /* MOBILE NAV EXTINS - TITLU + TOATE NAV URILE*/
+        :<nav onClick={handleClick} className="  fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-screen flex flex-col items-center bg-gray-900  text-white font-bold ">
             <header className="flex justify-between items-center p-5 border-b-2">
               <Link className="text-3xl w-1/2" to='/'>Ghidul Calatorului</Link>
               <FontAwesomeIcon icon={faX} size='3x'/>
@@ -60,14 +62,33 @@ const MainNav = () => {
                     {roles?.find(role => role === 1337) && <li><NavLink to="partener" className="">Partener</NavLink></li>}
 
                   </>
-                
               }
-                  
-                  
               </>
             </ul>
           </nav>
       }
+
+      {/** */}
+      <nav className="hidden text-white w-[61rem] xl:w-[71rem] mx-auto p-5 font-bold lg:flex flex-row justify-between ">
+        <Link className="text-3xl w-1/2" to='/'>Ghidul Calatorului</Link>
+        <ul className="flex flex-row gap-5 font-normal items-center text-xl">
+          <li><NavLink to="/obiective" className="">Exploreaza</NavLink></li>
+          {!auth?.accessToken
+            ?<>
+              <li><NavLink to="register" className="">Inregistrare</NavLink></li>
+              <li><NavLink to="login" className="">Autentificare</NavLink></li>
+            </>  
+            :<>
+              <li><NavLink to="/cont" className="">Cont</NavLink></li>
+              <li><NavLink to="/" onClick={handleLogout} className="">Logout</NavLink></li>
+
+              {roles?.find(role => role === 420) && <li><NavLink to="admin" className="">Admin</NavLink></li>}
+              {roles?.find(role => role === 1337) && <li><NavLink to="partener" className="">Partener</NavLink></li>}
+
+            </>
+          }
+        </ul>
+      </nav>
     </>
   )
 }

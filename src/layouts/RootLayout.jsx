@@ -5,7 +5,7 @@ import MainNav from "../components/MainNav"
 const RootLayout = () => {
   return (
     <>
-        <header className="">
+        <header className="bg-gray-900">
             <MainNav />
         </header>
         <main className="min-h-[80vh]">
