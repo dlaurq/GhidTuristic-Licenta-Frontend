@@ -24,6 +24,7 @@ import Users from "./pages/Admin/Users"
 import AdminEntities from "./pages/Admin/AdminEntities"
 import Categories from "./pages/Admin/Categories"
 import Cont from "./pages/Cont"
+import CreeazaPlan from "./pages/CreeazaPlan"
 
 function App() {
 
@@ -40,10 +41,12 @@ function App() {
           <Route path="login" element={<Login />}/>
           <Route path="obiective/:name" element={ <Entity /> } />
           <Route path="obiective" element={ <Entities /> } />
-          <Route path="cont" element={ <Cont /> } />
+          
 
           {/**Private routes */}
-          
+            <Route path="cont" element={ <Cont /> } />
+            <Route path="creeazaplan" element={ <CreeazaPlan /> } />
+
             <Route element={<RequireAuth allowedRoles={[420]} />}>
               <Route path="admin" element={<AdminLayout />}>
                 <Route path="tari" element={<Countries />} />

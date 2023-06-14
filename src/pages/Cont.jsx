@@ -10,6 +10,7 @@ import EntityCard from '../components/EntityCard'
 import ConfBox from '../components/ConfBox'
 import Review from '../components/Review'
 import ErrorMsg from '../components/ErrorMsg'
+import { useNavigate } from 'react-router-dom'
 
 const Cont = () => {
 
@@ -24,6 +25,8 @@ const Cont = () => {
     const [user, setUser] = useState({})
     const [showConfBox, setShowConfBox] = useState()
     const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
+
+    const navigate = useNavigate()
 
     useEffect(() => {
 
@@ -119,6 +122,25 @@ const Cont = () => {
             />
         </section>
         
+        <Tab 
+            toggle={showLocatiiDeVizitat}
+            setToggle={setShowLocatiiDeVizitat}
+            text='Planurile mele'
+            component={
+                <section className="sm:mx-auto  md:grid md:grid-cols-2 md:auto-rows-fr md:gap-5 lg:grid-cols-3">
+                    {user?.PlacesToVisit2?.length === 0 && <p>Lista goala</p>}
+                    <button onClick={() => navigate('/creeazaplan')}>Creeaza plan nou</button>
+                    {user?.PlacesToVisit2?.map(entity => 
+                    <EntityCard key={entity.id} entity={entity} >
+                        <section className="mt-5">
+                            <button type="button" onClick={() => setShowConfBox(entity.id)} className="sm:px-5 sm:w-auto  bg-red-500 text-left pl-5 w-full border-2 font-bold">Sterge din lista</button>
+                            {entity.id === showConfBox && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDelteTovisit(entity.PlacesToVisit.id)} >Confirmati stergerea?</ConfBox>}
+                        </section>
+                    </EntityCard>
+                    )}
+                </section>
+            }
+        />
 
         <Tab 
             toggle={showLocatiiVizitate}
@@ -138,24 +160,7 @@ const Cont = () => {
             }
         />
 
-        <Tab 
-            toggle={showLocatiiDeVizitat}
-            setToggle={setShowLocatiiDeVizitat}
-            text='Locatii de vizitat'
-            component={
-                <section className="sm:mx-auto  md:grid md:grid-cols-2 md:auto-rows-fr md:gap-5 lg:grid-cols-3">
-                    {user?.PlacesToVisit2?.length === 0 && <p>Lista goala</p>}
-                    {user?.PlacesToVisit2?.map(entity => 
-                    <EntityCard key={entity.id} entity={entity} >
-                        <section className="mt-5">
-                            <button type="button" onClick={() => setShowConfBox(entity.id)} className="sm:px-5 sm:w-auto  bg-red-500 text-left pl-5 w-full border-2 font-bold">Sterge din lista</button>
-                            {entity.id === showConfBox && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDelteTovisit(entity.PlacesToVisit.id)} >Confirmati stergerea?</ConfBox>}
-                        </section>
-                    </EntityCard>
-                    )}
-                </section>
-            }
-        />
+        
 
         <Tab 
             toggle={showRecenzii}

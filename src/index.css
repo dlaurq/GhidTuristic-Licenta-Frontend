@@ -29,4 +29,6 @@
     hr {
         @apply sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem];
     }
+
+    
 }

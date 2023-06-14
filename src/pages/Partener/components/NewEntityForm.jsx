@@ -106,6 +106,8 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
             city: entity?.Location?.City?.id || '',
             imgs: [],
             address: entity?.Location?.address || '',
+            lat: entity?.lat || '',
+            lng: entity?.lng || '',
         },
 
         validationSchema: Yup.object({
@@ -121,6 +123,8 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
             city: Yup.string().required("Camp obligatoriul"),
             imgs: Yup.mixed().test('file-length', "Trebuie sa adaugati minim o poza", (value) => value.length > 0),
             address: Yup.string().required("Camp obligatoriul"),
+            lat: Yup.number().typeError('Latitudinea trebuie sa fie un numar'),
+            lng: Yup.number().typeError('Longitudinea trebuie sa fie un numar'),
           }),
 
         onSubmit: (values) => {
@@ -144,7 +148,7 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
 
 
 
-        {/**NUME DESC CATEGORIE */}
+        {/**NUME DESC CATEGORIE LAT LNG*/}
         <section className="md:flex md:flex-col md:justify-between">
             <section className="flex flex-col justify-start items-start">
                 <label htmlFor="name">
@@ -200,6 +204,45 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
                         {categories.map( category => <option key={category.id} value={category.id}>{category.name}</option>)}
                 </select>
             </section>
+
+
+            <section className="flex flex-col justify-start items-start">
+                <label htmlFor="lat">
+                    {formik.touched.lat && formik.errors.lat 
+                        ? formik.errors.lat
+                        : 'Latitudinea'
+                }</label>
+                <input 
+                    id="lat" 
+                    name="lat" 
+                    type="text" 
+                    placeholder="Latitudinea" 
+                    onChange={formik.handleChange} 
+                    onBlur={formik.handleBlur} 
+                    value={formik.values.lat}
+                    className="md:w-80"
+                    />
+            </section>
+
+            <section className="flex flex-col justify-start items-start">
+                <label htmlFor="lng">
+                    {formik.touched.lng && formik.errors.lng 
+                        ? formik.errors.lng
+                        : 'Longitudinea'
+                }</label>
+                <input 
+                    id="lng" 
+                    name="lng" 
+                    type="text" 
+                    placeholder="Longitudinea" 
+                    onChange={formik.handleChange} 
+                    onBlur={formik.handleBlur} 
+                    value={formik.values.lng}
+                    className="md:w-80"
+                    />
+            </section>
+
+
         </section>
 
 

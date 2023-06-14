@@ -197,7 +197,7 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                             </section>
                             <section className="text-gray-900 lg:grid lg:grid-cols-2 lg:gap-2 xl:grid-cols-3 2xl:grid-cols-4 ">
                                 {reviews?.map((review) => 
-                                    <Review key={review.id} {...review}>
+                                    <Review key={review.id} review={review}>
                                         <section className="mt-5">
                                             <button type="button" onClick={() => setShowConfBox(review)} className="w-full text-gray-900 border-gray-900 border-2 font-bold">Sterge recenzia</button>
                                             {showConfBox?.id === review.id && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDeleteReview(review.id)} >Confirmati stergerea?</ConfBox>}

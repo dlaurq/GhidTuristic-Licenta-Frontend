@@ -6,7 +6,7 @@ import ReviewForm from './components/ReviewForm'
 import useAuth from '../../hooks/useAuth'
 import ConfBox from '../../components/ConfBox'
 
-const Entity = (props) => {
+const Entity = () => {
 
     const {name} = useParams()
     const api = useAxiosPrivate()
@@ -84,13 +84,10 @@ const Entity = (props) => {
             {auth?.accessToken
             ?<section className='sm:flex sm:flex-row sm:gap-5 sm:justify-between'>
                 
-                {entity?.PlacesToVisits?.length === 0 || !entity?.PlacesToVisits?.some(place => place?.User?.username === auth?.username)
-                    ? <button type="button" className="bg-gray-900 my-2 w-full text-left pl-5" onClick={handleToVisitBtn}>Adauga la 'De vizitat'</button>
-                    : undefined
-                }
                 
-                {entity?.PlacesToVisits?.length === 0 || !entity?.PlacesVisiteds?.some(place => place?.User?.username === auth?.username)
-                    ? <button type="button" className="bg-gray-900 my-2 w-full text-left pl-5" onClick={handleVisitedBtn}>Adauga la 'Vizitate'</button>
+                
+                {entity?.PlacesVisiteds?.length === 0 || !entity?.PlacesVisiteds?.some(place => place?.User?.username === auth?.username)
+                    ? <button type="button" className="bg-gray-900 my-2 w-full sm:w-auto text-left px-5" onClick={handleVisitedBtn}>Adauga la 'Vizitate'</button>
                     : undefined
                 }
 
