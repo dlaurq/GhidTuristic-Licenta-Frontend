@@ -2,6 +2,12 @@ import React, { useEffect, useState } from 'react'
 import EntityCard from '../../components/EntityCard'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import SearchBar from '../../components/SearchBar'
+import ReactMapGl, {Marker, Popup, Source, Layer} from 'react-map-gl'
+import 'mapbox-gl/dist/mapbox-gl.css' 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome/index"
+import { faHotel, faBed } from "@fortawesome/free-solid-svg-icons/index"
+import { faUtensils } from "@fortawesome/free-solid-svg-icons/index"
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons/index'
 
 const Entities = () => {
 
@@ -11,6 +17,13 @@ const Entities = () => {
     const [entities, setEntities] = useState([])
     const [categories, setCategories] = useState([])
     const [filteredEntities, setFilteredEntities] = useState(entities)
+    const [entitiInfo, setEntitiInfo] = useState(null)
+    const [filter, setFilter] = useState('')
+    const [viewport, setViewport] = useState({
+      latitude: 45.9432,
+      longitude: 24.9668,
+      zoom: 6,
+    })
 
     const api = useAxiosPrivate()
 
@@ -39,8 +52,9 @@ const Entities = () => {
     }, [])
 
     useEffect(() => {
-        sortEntities()
-    }, [filters])
+        //sortEntities()
+        handleFilter()
+    }, [filters, filter])
 
     const toggleShowFilters = () => {
         setShowFilters( prevShowFilters => ! prevShowFilters)
@@ -67,6 +81,17 @@ const Entities = () => {
 
         return rev2 - rev1
     }
+
+
+    const handleFilter = () => {
+        let newArr = entities.filter(entity => filters.category.length === 0 || entity.Category.id === filters.category)
+        newArr = newArr.filter(entity => filters.city.length === 0 ||  entity.Location.City.id === filters.city)
+        newArr = newArr.filter(entity => filters.county.length === 0 ||  entity.Location.City.County.id === filters.county)
+        newArr = newArr.filter(entity => filters.country.length === 0 ||  entity.Location.City.County.Country.id === filters.country)
+        newArr = newArr.sort(compareFN)
+        newArr = newArr?.filter(entity => entity?.name?.toLowerCase().includes(filter.toLowerCase()))
+        setFilteredEntities(newArr)
+    } 
 
 
   return (
@@ -165,7 +190,51 @@ const Entities = () => {
             }
         <hr />
 
-        <SearchBar list={entities} setFilterList={setFilteredEntities} compare='name' />
+        <section className="sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem] lg:justify-start p-5 text-white flex flex-row justify-between items-center gap-5 text-2xl bg-gray-900">
+            <FontAwesomeIcon icon={faMagnifyingGlass} />
+            <input 
+            id="filterBar"
+            name="filterBar"
+            placeholder="Nume utilizator"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            />
+        </section>
+
+        <div className='p-3'></div>
+
+        <section className="sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem]">
+            <ReactMapGl 
+            {...viewport}
+            onMove={evt => setViewport(evt.viewport)}
+            style={{width: '100%', height: '80vh'}}
+            mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
+            mapStyle='mapbox://styles/dlaurq/clivjzr5p012g01pfh1e0ggud' 
+            asyncRender={true}
+            
+            >
+                {filteredEntities.map(entity =>entity.lat && entity.lng &&
+                    <Marker 
+                    key={entity.id}
+                    latitude={entity.lat}
+                    longitude={entity.lng}
+                    anchor="bottom"
+                    onClick={e => {
+                        e.originalEvent.stopPropagation();
+                        setEntitiInfo(entity);
+                    }}
+                    >
+                        
+                    </Marker>
+                )}
+
+                    {/**Border RO */}
+                <Source id='RO_BORDERS' type="geojson" data='/gadm41_ROU_1.json'>
+                    <Layer id='RO_BORDERS-fill' type='line' source='RO_BORDERS' paint= {{'line-color': 'white', 'line-opacity': 0.8}} />
+                </Source>
+
+            </ReactMapGl>
+        </section>
 
         {entities.length === 0 && <h3 className=''>Nu exista obiective</h3>}
             
@@ -175,10 +244,7 @@ const Entities = () => {
                         key={entity.id} 
                         entity={entity} 
                         className={`
-                            ${filters.category && entity.Category.id !== filters.category && "!hidden"}
-                            ${filters.city && entity.Location.City.id !== filters.city && "!hidden"}
-                            ${filters.county && entity.Location.City.County.id !== filters.county && "!hidden"}
-                            ${filters.country && entity.Location.City.County.Country.id !== filters.country && "!hidden"}
+                            
                         `} 
                     />
                 )}

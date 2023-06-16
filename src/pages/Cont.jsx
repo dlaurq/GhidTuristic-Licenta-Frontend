@@ -22,6 +22,7 @@ const Cont = () => {
     const [showLocatiiVizitate, setShowLocatiiVizitate] = useState(false)
     const [showLocatiiDeVizitat, setShowLocatiiDeVizitat] = useState(false)
     const [showRecenzii, setShowRecenzii] = useState(false)
+    const [showLista, setShowLista] = useState('')
     const [user, setUser] = useState({})
     const [showConfBox, setShowConfBox] = useState()
     const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
@@ -82,6 +83,24 @@ const Cont = () => {
         }
     }
 
+    const handleDone = async (entity, list) => {
+
+        try{
+            const newPlaces = list.Places.map(e => e.id === entity.id ? {...entity, ListaEntitati:{done: true}} : {...e})
+            const newList = {...list, Places: newPlaces}
+            const newArrList = [...user.PlacesToVisits].map(l => l.id === newList.id ? {...newList} : {...l})
+            const newUser = {...user, PlacesToVisits: newArrList}
+            setUser(newUser)
+
+            const res = await api.patch(`/toVisit/${list.id}/${entity.id}`)
+            console.log(res.data)
+        }catch(err){
+            console.log(err)
+        }
+
+        
+    }
+
   return (<>
     
     {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
@@ -127,17 +146,34 @@ const Cont = () => {
             setToggle={setShowLocatiiDeVizitat}
             text='Planurile mele'
             component={
-                <section className="sm:mx-auto  md:grid md:grid-cols-2 md:auto-rows-fr md:gap-5 lg:grid-cols-3">
-                    {user?.PlacesToVisit2?.length === 0 && <p>Lista goala</p>}
+                <section className="sm:mx-auto ">
+                    {user?.PlacesToVisits?.length === 0 && <p>Lista goala</p>}
                     <button onClick={() => navigate('/creeazaplan')}>Creeaza plan nou</button>
-                    {user?.PlacesToVisit2?.map(entity => 
-                    <EntityCard key={entity.id} entity={entity} >
-                        <section className="mt-5">
-                            <button type="button" onClick={() => setShowConfBox(entity.id)} className="sm:px-5 sm:w-auto  bg-red-500 text-left pl-5 w-full border-2 font-bold">Sterge din lista</button>
-                            {entity.id === showConfBox && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDelteTovisit(entity.PlacesToVisit.id)} >Confirmati stergerea?</ConfBox>}
+
+                    <section>
+                        {user?.PlacesToVisits?.map(list => 
+                            <section key={list.id} className='border-2 border-gray-900 my-2 p-2 md:h-fit'>
+                                <section onClick={() => setShowLista(list.id === showLista ? '' : list.id)} className='flex justify-between items-center text-xl cursor-pointer md:p-2'>
+                                    <p>Planul - {list?.data}</p>
+                                    <FontAwesomeIcon icon={showLista ? faCaretDown : faCaretUp}/>
+                                </section>
+                            {list.id === showLista && 
+                                <section className='md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-3'>
+                                    {list?.Places?.map(entity => 
+                                        <EntityCard key={entity.id} entity={entity} className={entity.ListaEntitati.done && 'opacity-40 '} >
+                                            <section className="mt-5">
+                                                <button disabled={entity.ListaEntitati.done} type="button" onClick={() => setShowConfBox(entity.id)} className="disabled:line-through sm:px-5 sm:w-auto  bg-red-500 text-left pl-5 w-full border-2 font-bold">Marcheaza ca finalizat</button>
+                                                {entity.id === showConfBox && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDone(entity, list)} >Confirmati stergerea?</ConfBox>}
+                                            </section>
+                                        </EntityCard>
+                                    )}
+                                </section>
+                                
+                            }
                         </section>
-                    </EntityCard>
-                    )}
+                        )}
+                    </section>
+                    
                 </section>
             }
         />

@@ -5,6 +5,10 @@ import EntityCard from "../components/EntityCard"
 import useAxiosPrivate from "../hooks/useAxiosPrivate"
 import ReactMapGl, {Marker, Popup, Source, Layer} from 'react-map-gl'
 import 'mapbox-gl/dist/mapbox-gl.css' 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome/index"
+import { faHotel, faBed } from "@fortawesome/free-solid-svg-icons/index"
+import { faUtensils } from "@fortawesome/free-solid-svg-icons/index"
+
 //import RoBorders from '../GeoJSONs/RO_BORDERS.geojson'
 
 const Home = () => {
@@ -53,8 +57,10 @@ const Home = () => {
 
 
     <section className="min-h-screen sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem]">
+
       <div className="p-5"></div>
-      <section>
+
+      <section >
         <ReactMapGl 
           {...viewport}
           onMove={evt => setViewport(evt.viewport)}
@@ -64,22 +70,50 @@ const Home = () => {
           asyncRender={true}
           
         >
-          {entities?.map(entity =>entity.lat && entity.lng &&
+          {recomandari.topRest?.map(entity =>entity.lat && entity.lng &&
             <Marker 
-              
               key={entity.id}
               latitude={entity.lat}
               longitude={entity.lng}
               anchor="bottom"
               onClick={e => {
-                // If we let the click event propagates to the map, it will immediately close the popup
-                // with `closeOnClick: true`
                 e.originalEvent.stopPropagation();
                 setEntitiInfo(entity);
-                
               }}
-            ></Marker>
-            )}
+            >
+              <FontAwesomeIcon icon={faUtensils} size="2xl" style={{color: "#005eff",}} />
+            </Marker>
+          )}
+
+          {recomandari.topHotel?.map(entity =>entity.lat && entity.lng &&
+            <Marker 
+              key={entity.id}
+              latitude={entity.lat}
+              longitude={entity.lng}
+              anchor="bottom"
+              onClick={e => {
+                e.originalEvent.stopPropagation();
+                setEntitiInfo(entity);
+              }}
+            >
+              <FontAwesomeIcon icon={faBed} size="2xl" style={{color: "#005eff",}} />
+            </Marker>
+          )}
+
+          {recomandari.topRec?.map(entity =>entity.lat && entity.lng &&
+            <Marker 
+              key={entity.id}
+              latitude={entity.lat}
+              longitude={entity.lng}
+              anchor="bottom"
+              onClick={e => {
+                e.originalEvent.stopPropagation();
+                setEntitiInfo(entity);
+              }}
+            >
+            </Marker>
+          )}
+
 
           {entitiInfo && (
             <Popup
@@ -93,10 +127,11 @@ const Home = () => {
             </Popup>
           )}
           
-
+            {/**Border RO */}
           <Source id='RO_BORDERS' type="geojson" data='/gadm41_ROU_1.json'>
             <Layer id='RO_BORDERS-fill' type='line' source='RO_BORDERS' paint= {{'line-color': 'white', 'line-opacity': 0.8}} />
           </Source>
+
         </ReactMapGl>
       </section>
 
@@ -106,7 +141,7 @@ const Home = () => {
 
         {recomandari?.topRec?.length !== 0 && 
           <section className="">
-            <p>Top Recomandari</p>
+            <p className="font-bold text-2xl mb-2">Top Recomandari</p>
             
           </section>
         }
@@ -122,7 +157,7 @@ const Home = () => {
 
         {recomandari?.topHotel?.length !== 0 && 
           <section>
-            <p>Top Hoteluri</p>
+            <p className="font-bold text-2xl mb-2">Top Hoteluri</p>
             <section className="flex flex-row justify-start overflow-auto my-5 sm:gap-5 ">
               {recomandari?.topHotel?.map(item => <EntityCard className='min-w-fit last:border-b-2' key={item.id} entity={item} />)}
             </section>
@@ -131,7 +166,7 @@ const Home = () => {
 
         {recomandari?.topActiv?.length !== 0 && 
         <section>
-          <p>Top Activitati</p>
+          <p className="font-bold text-2xl mb-2">Top Activitati</p>
           <section className="flex flex-row overflow-y-auto gap-5 justify-start items-center">
             {recomandari?.topActiv?.map(item => <EntityCard className='min-w-[15rem]' key={item.id} entity={item} />)}
           </section>
@@ -140,7 +175,7 @@ const Home = () => {
 
         {recomandari?.topOrase?.length !== 0 && 
           <section>
-            <p>Top Orase</p>
+            <p className="font-bold text-2xl mb-2">Top Orase</p>
           </section>
         }
       </section>
