@@ -101,6 +101,18 @@ const Cont = () => {
         
     }
 
+    const handleDeleteList = async (id) =>{
+        try{
+            //console.log(id)
+            const res = await api.delete(`/toVisit/${id}`)
+            //console.log(res.data)
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
+            setUser({...user, PlacesToVisits: [...user.PlacesToVisits].filter(e => e.id !== id)})
+        }catch(err){
+            console.log(err)
+        }
+    }
+
   return (<>
     
     {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
@@ -157,9 +169,11 @@ const Cont = () => {
                                     <p>Planul - {list?.data}</p>
                                     <FontAwesomeIcon icon={showLista ? faCaretDown : faCaretUp}/>
                                 </section>
+                                <button type="button" onClick={() => setShowConfBox(list.id)} className="disabled:line-through sm:px-5 sm:w-auto  bg-red-500 text-left pl-5 w-full border-2 font-bold">Sterge lista</button>
+                                {list.id === showConfBox && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDeleteList(list.id)} >Confirmati stergerea?</ConfBox>}
                             {list.id === showLista && 
                                 <section className='md:grid md:grid-cols-2 md:gap-5 lg:grid-cols-3'>
-                                    {list?.Places?.map(entity => 
+                                    {list?.Places?.sort((a, b) => a.ListaEntitati.sort - b.ListaEntitati.sort).map(entity => 
                                         <EntityCard key={entity.id} entity={entity} className={entity.ListaEntitati.done && 'opacity-40 '} >
                                             <section className="mt-5">
                                                 <button disabled={entity.ListaEntitati.done} type="button" onClick={() => setShowConfBox(entity.id)} className="disabled:line-through sm:px-5 sm:w-auto  bg-red-500 text-left pl-5 w-full border-2 font-bold">Marcheaza ca finalizat</button>

@@ -2,30 +2,16 @@ import { useNavigate } from "react-router-dom"
 import axios from "../api/axios"
 import { useEffect, useState } from "react"
 import EntityCard from "../components/EntityCard"
-import useAxiosPrivate from "../hooks/useAxiosPrivate"
-import ReactMapGl, {Marker, Popup, Source, Layer} from 'react-map-gl'
-import 'mapbox-gl/dist/mapbox-gl.css' 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome/index"
-import { faHotel, faBed } from "@fortawesome/free-solid-svg-icons/index"
-import { faUtensils } from "@fortawesome/free-solid-svg-icons/index"
-
-//import RoBorders from '../GeoJSONs/RO_BORDERS.geojson'
+import { MapContainer, TileLayer, Marker, Popup  } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
+import 'leaflet-gpx/gpx.js'
+import Gpx from "../components/Gpx"
 
 const Home = () => {
 
-  const [recomandari, setRecomandari] = useState({topRest: [], topRec: [], topHotel: [], topActiv: [], topOrase: []})
-  const [entities, setEntities] = useState([])
-  const [entitiInfo, setEntitiInfo] = useState(null)
-  const [viewport, setViewport] = useState({
-    latitude: 45.9432,
-    longitude: 24.9668,
-    zoom: 6,
-  })
+  const [recomandari, setRecomandari] = useState({topRest: [], topRec: [], topHotel: [], topTrasee: []})
 
-  const api = useAxiosPrivate()
   const navigate = useNavigate()
-
-
 
   useEffect(() => {
     const fetchRecomandari = async () => {
@@ -37,19 +23,8 @@ const Home = () => {
         console.log(err)
       }
     }
-
-    const fetchEntities = async () => {
-      try{
-        const res = await api.get('/places')
-        setEntities(res.data)
-        console.log(res.data)
-      }catch(err){
-        console.log(err)
-      }
-    }
-
     fetchRecomandari()
-    fetchEntities()
+
   }, [])
 
 
@@ -60,83 +35,51 @@ const Home = () => {
 
       <div className="p-5"></div>
 
-      <section >
-        <ReactMapGl 
-          {...viewport}
-          onMove={evt => setViewport(evt.viewport)}
-          style={{width: '100%', height: '80vh'}}
-          mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-          mapStyle='mapbox://styles/dlaurq/clivjzr5p012g01pfh1e0ggud' 
-          asyncRender={true}
-          
-        >
-          {recomandari.topRest?.map(entity =>entity.lat && entity.lng &&
-            <Marker 
-              key={entity.id}
-              latitude={entity.lat}
-              longitude={entity.lng}
-              anchor="bottom"
-              onClick={e => {
-                e.originalEvent.stopPropagation();
-                setEntitiInfo(entity);
-              }}
-            >
-              <FontAwesomeIcon icon={faUtensils} size="2xl" style={{color: "#005eff",}} />
-            </Marker>
-          )}
+      {/**HARTA */}
+      <MapContainer center={[45.9432, 24.9668]} zoom={6} scrollWheelZoom={true}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
 
-          {recomandari.topHotel?.map(entity =>entity.lat && entity.lng &&
-            <Marker 
-              key={entity.id}
-              latitude={entity.lat}
-              longitude={entity.lng}
-              anchor="bottom"
-              onClick={e => {
-                e.originalEvent.stopPropagation();
-                setEntitiInfo(entity);
-              }}
-            >
-              <FontAwesomeIcon icon={faBed} size="2xl" style={{color: "#005eff",}} />
-            </Marker>
-          )}
-
-          {recomandari.topRec?.map(entity =>entity.lat && entity.lng &&
-            <Marker 
-              key={entity.id}
-              latitude={entity.lat}
-              longitude={entity.lng}
-              anchor="bottom"
-              onClick={e => {
-                e.originalEvent.stopPropagation();
-                setEntitiInfo(entity);
-              }}
-            >
-            </Marker>
-          )}
-
-
-          {entitiInfo && (
-            <Popup
-              className='bg-transparent'
-              anchor="top"
-              longitude={entitiInfo.lng}
-              latitude={entitiInfo.lat}
-              onClose={() => setEntitiInfo(null)}
-            >
-              <EntityCard entity={entitiInfo} className=''/>
+        {recomandari.topRest?.map(entity =>entity.lat && entity.lng &&
+          <Marker key={entity.id} position={[entity.lat, entity.lng]}>
+            <Popup >
+              <EntityCard className='!p-0' entity={entity}/>
             </Popup>
-          )}
-          
-            {/**Border RO */}
-          <Source id='RO_BORDERS' type="geojson" data='/gadm41_ROU_1.json'>
-            <Layer id='RO_BORDERS-fill' type='line' source='RO_BORDERS' paint= {{'line-color': 'white', 'line-opacity': 0.8}} />
-          </Source>
+          </Marker>
+        )}
 
-        </ReactMapGl>
-      </section>
+        {recomandari.topHotel?.map(entity =>entity.lat && entity.lng &&
+          <Marker key={entity.id} position={[entity.lat, entity.lng]}>
+            <Popup >
+              <EntityCard className='!p-0' entity={entity}/>
+            </Popup>
+          </Marker>
+        )}
 
+        {recomandari.topRec?.map(entity =>entity.lat && entity.lng &&
+          <Marker key={entity.id} position={[entity.lat, entity.lng]}>
+            <Popup >
+              <EntityCard className='!p-0' entity={entity}/>
+            </Popup>
+          </Marker>
+        )}
+
+        {recomandari.topTrasee?.map(entity =>entity.lat && entity.lng &&
+          <Marker key={entity.id} position={[entity.lat, entity.lng]}>
+            <Popup >
+              <EntityCard className='!p-0' entity={entity}/>
+            </Popup>
+          </Marker>
+        )}
+      </MapContainer>
+        
       <div className="p-5"></div>
+
       <button onClick={() => navigate(('/obiective'))} className="bg-gray-900 border-gray-900 border-2 font-bold mx-auto  block">Exploreaza</button>
+
+      {/**Liste recomandari */}
       <section className="p-5 text-xl">
 
         {recomandari?.topRec?.length !== 0 && 

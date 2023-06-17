@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import EntityCard from '../../components/EntityCard'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
-import SearchBar from '../../components/SearchBar'
-import ReactMapGl, {Marker, Popup, Source, Layer} from 'react-map-gl'
+//import SearchBar from '../../components/SearchBar'
 import 'mapbox-gl/dist/mapbox-gl.css' 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome/index"
-import { faHotel, faBed } from "@fortawesome/free-solid-svg-icons/index"
-import { faUtensils } from "@fortawesome/free-solid-svg-icons/index"
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons/index'
+import { MapContainer, TileLayer, Marker, Popup  } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
+import 'leaflet-gpx/gpx.js'
 
 const Entities = () => {
 
@@ -17,13 +17,8 @@ const Entities = () => {
     const [entities, setEntities] = useState([])
     const [categories, setCategories] = useState([])
     const [filteredEntities, setFilteredEntities] = useState(entities)
-    const [entitiInfo, setEntitiInfo] = useState(null)
     const [filter, setFilter] = useState('')
-    const [viewport, setViewport] = useState({
-      latitude: 45.9432,
-      longitude: 24.9668,
-      zoom: 6,
-    })
+
 
     const api = useAxiosPrivate()
 
@@ -108,10 +103,6 @@ const Entities = () => {
                 >
                     <option value='rating'>Rating (Mic-Mare)</option>
                     <option value='rating'>Rating (Mare-Mic)</option>
-                    {/** 
-                    <option value='PriceLH'>Pret (Mic-Mare)</option>
-                    <option value='PriceHL'>Pret (Mare-Mic)</option>
-                    */}
                 </select>
             </section>
  
@@ -203,37 +194,22 @@ const Entities = () => {
 
         <div className='p-3'></div>
 
+        
+
         <section className="sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem]">
-            <ReactMapGl 
-            {...viewport}
-            onMove={evt => setViewport(evt.viewport)}
-            style={{width: '100%', height: '80vh'}}
-            mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-            mapStyle='mapbox://styles/dlaurq/clivjzr5p012g01pfh1e0ggud' 
-            asyncRender={true}
-            
-            >
-                {filteredEntities.map(entity =>entity.lat && entity.lng &&
-                    <Marker 
-                    key={entity.id}
-                    latitude={entity.lat}
-                    longitude={entity.lng}
-                    anchor="bottom"
-                    onClick={e => {
-                        e.originalEvent.stopPropagation();
-                        setEntitiInfo(entity);
-                    }}
-                    >
-                        
+            <MapContainer center={[45.9432, 24.9668]} zoom={6} scrollWheelZoom={true}>
+                <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                {filteredEntities?.map(entity =>entity.lat && entity.lng &&
+                    <Marker key={entity.id} position={[entity.lat, entity.lng]}>
+                        <Popup >
+                        <EntityCard className='!p-0' entity={entity}/>
+                        </Popup>
                     </Marker>
                 )}
-
-                    {/**Border RO */}
-                <Source id='RO_BORDERS' type="geojson" data='/gadm41_ROU_1.json'>
-                    <Layer id='RO_BORDERS-fill' type='line' source='RO_BORDERS' paint= {{'line-color': 'white', 'line-opacity': 0.8}} />
-                </Source>
-
-            </ReactMapGl>
+            </MapContainer>
         </section>
 
         {entities.length === 0 && <h3 className=''>Nu exista obiective</h3>}
@@ -249,8 +225,6 @@ const Entities = () => {
                     />
                 )}
             </section>
-           
-        
     </section>
   )
 }

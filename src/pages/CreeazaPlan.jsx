@@ -5,6 +5,8 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate"
 import EntityCard from "../components/EntityCard"
 import SearchBar from "../components/SearchBar"
 import useAuth from "../hooks/useAuth"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome/index"
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons/index"
 
 
 const CreeazaPlan = () => {
@@ -18,6 +20,7 @@ const CreeazaPlan = () => {
     const [showFilters, setShowFilters] = useState()
     const [filteredEntities, setFilteredEntities] = useState(entities)
     const [errMsg, setErrMsg] = useState('')
+    const [submitEntities, setSubmitEntities] = useState([])
 
     const api = useAxiosPrivate()
 
@@ -54,7 +57,16 @@ const CreeazaPlan = () => {
 
     const handleCheck = (checked, entity) => {
         const newEntities = entities.map(item => item.id === entity.id ? {...item, checked: checked} : {...item})
+        let subEntities = [...submitEntities]
+
+        if(checked)
+            subEntities.push({...entity, checked: checked})
+      
+        if(!checked)
+            subEntities = submitEntities.filter(e => e.id !== entity.id)
+            
         setEntities(newEntities)
+        setSubmitEntities(subEntities)
     }
 
     const handleCreate = async () => {
@@ -68,19 +80,48 @@ const CreeazaPlan = () => {
             return
         }
 
-        const arr = entities.filter(entity => entity.checked)
-
         try{
-            const res = await api.post('/toVisit', {places: arr, data: date, username: auth.username})
+            const res = await api.post('/toVisit', {places: submitEntities, data: date, username: auth.username})
             setErrMsg('')
             const newEntities = entities.map(item => ({...item, checked: false}))
             setEntities(newEntities)
             setDate('')
+            setSubmitEntities([])
         }catch(err){
             console.log(err)
         }
 
         
+    }
+
+    const handleSort = (dir, i) => {
+        const arr = [...submitEntities]
+        if(dir === 'left'){
+            if(i === 0){
+                const moveEntity = arr.shift()
+                arr.push(moveEntity)
+                setSubmitEntities(arr)
+                return
+            }
+            const a = arr[i]
+            const b = arr[i-1]
+            arr[i] = b
+            arr[i-1] = a
+            
+        }
+        if(dir === 'right'){
+            if(i === submitEntities.length -1){
+                const moveEntity = arr.pop()
+                arr.unshift(moveEntity)
+                setSubmitEntities(arr)
+                return
+            }
+            const a = arr[i]
+            const b = arr[i+1]
+            arr[i] = b
+            arr[i+1] = a
+        }
+        setSubmitEntities(arr)
     }
 
   return (
@@ -206,11 +247,18 @@ const CreeazaPlan = () => {
         <section>
             <p className='text-xl'>Obiectivele selectate</p>
             <section className="grid grid-cols-3 gap-5">
-                {entities?.map(entity =>                    
+                {submitEntities?.map((entity, index) =>                    
                     <EntityCard className={!entity.checked && '!hidden'} key={entity.id} entity={entity} children={
-                        <section className="flex flex-row justify-start  gap-5 text-2xl">
-                            <label className="text-gray-900" htmlFor={`check-${entity.id}`}> Sterge din lista</label>
-                            <input className="block w-10" type="checkbox" name={`check-${entity.id}`}  id={`check-${entity.id}`} checked={entity.checked} onChange={(e) => handleCheck(e.target.checked, entity)} />
+                        <section >
+                            <section className="flex flex-row justify-start  gap-5 text-2xl">
+                                <label className="text-gray-900" htmlFor={`check-${entity.id}`}> Sterge din lista</label>
+                                <input className="block w-10" type="checkbox" name={`check-${entity.id}`}  id={`check-${entity.id}`} checked={entity.checked} onChange={(e) => handleCheck(e.target.checked, entity)} />
+                            </section>
+                            <section className="flex flex-row justify-start  gap-5 text-2xl">
+                                <button onClick={() => handleSort('left', index)} > <FontAwesomeIcon icon={faArrowLeft} /> </button>
+                                <button onClick={() => handleSort('right', index)} > <FontAwesomeIcon icon={faArrowRight} /> </button>
+                            </section>
+
                         </section>
                     }/>
 

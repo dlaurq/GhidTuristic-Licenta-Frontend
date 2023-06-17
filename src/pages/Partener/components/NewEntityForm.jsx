@@ -360,7 +360,7 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
             }
         </section>
 
-        <section>
+        {update && <section>
             <p>Poze existente</p>
             {extImgs.map(
                 img => 
@@ -380,7 +380,7 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
                     </section>
                 )
             }
-        </section>
+        </section>}
         {children}
     </form>
   )

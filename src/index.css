@@ -32,3 +32,8 @@
 
     
 }
+
+
+.leaflet-container{
+    height: 80vh;
+}
