@@ -5,6 +5,10 @@ import Review from '../../components/Review'
 import ReviewForm from './components/ReviewForm'
 import useAuth from '../../hooks/useAuth'
 import ConfBox from '../../components/ConfBox'
+import Map from '../../components/Map'
+import { Marker } from 'react-leaflet'
+import Gpx from '../../components/Gpx'
+
 
 const Entity = () => {
 
@@ -26,6 +30,7 @@ const Entity = () => {
     useEffect(() => {
         fetchEntity()
         console.log(entity)
+
     }, [])
 
     const handleVisitedBtn = async () => {
@@ -78,6 +83,13 @@ const Entity = () => {
             <section className='flex flex-row overflow-auto my-5 gap-5'>
                 {entity?.Images?.map((img, index) => <img key={index} src={`http://localhost:5000/uploads/${img?.imgUrl}`} className='md:max-h-80 max-h-64 object-contain' />)}
             </section>
+
+            {entity?.Gpx && <Map center={[entity.lat, entity.lng]} children={
+            <>
+                <Marker position={[entity.lat, entity.lng]}></Marker>
+                <Gpx src={`${import.meta.env.VITE_BASE_BACKEND_URL}/gpxs/${entity.Gpx.id}`} options={{async: true}} />
+            </>
+        } />}
 
             <p className='text-xl py-3'>{entity.description}</p>
 

@@ -42,16 +42,11 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
 
     const handleSubmit = async (values) => {
 
-        //console.log(values)
-
         const decoded = auth?.accessToken
         ? jwt_decode(auth.accessToken)
         : undefined
 
         const username = decoded.UserInfo.username
-
-        //console.log(values)
-        //console.log(typeof decoded.UserInfo.username)
 
         const formData = new FormData();
         
@@ -64,19 +59,21 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
         imgs.forEach(img => formData.append('imgs', img))
         
 
-        for (var pair of formData.entries()) {
-            //console.log(pair[0]+ ', ' + pair[1]); 
+        for (var pair of formData.entries()) { 
+            console.log(pair[0]+ ', ' + pair[1]); 
         }
         if(update){
             //console.log(extImgs)
             //console.log(values.imgs)
             formData.append('extImgs', JSON.stringify(extImgs))
+            
             const res = await api.patch(
                 `/places/${entity.id}`,
                 formData,
                 {headers: {'Content-Type': 'multipart/form-data'}})
-            //console.log(res.data)
-            formik.hideForm()
+            console.log(res.data)
+            
+            hideForm()
             
 
         }else{
@@ -105,6 +102,7 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
             county: entity?.Location?.City?.County?.id || '',
             city: entity?.Location?.City?.id || '',
             imgs: [],
+            gpxs: [],
             address: entity?.Location?.address || '',
             lat: entity?.lat || '',
             lng: entity?.lng || '',
@@ -121,7 +119,8 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
             country: Yup.string().required("Camp obligatoriul"),
             county: Yup.string().required("Camp obligatoriul"),
             city: Yup.string().required("Camp obligatoriul"),
-            imgs: Yup.mixed().test('file-length', "Trebuie sa adaugati minim o poza", (value) => value.length > 0),
+            imgs: Yup.mixed().test('file-length', "Trebuie sa adaugati minim o poza", (value) => update ? value.length >= 0 : value.length >0 ),
+            gpxs: Yup.mixed(),
             address: Yup.string().required("Camp obligatoriul"),
             lat: Yup.number().typeError('Latitudinea trebuie sa fie un numar'),
             lng: Yup.number().typeError('Longitudinea trebuie sa fie un numar'),
@@ -341,6 +340,22 @@ const NewEntityForm = ({entity, submitTxt, children, update, hideForm, setToggle
                 multiple
                 accept="image/*"
                 onChange={(e) => formik.setFieldValue('imgs', e.currentTarget.files)} 
+            />
+        </section>
+
+        <section className="flex flex-col justify-start items-start md:col-start-2">
+            <label htmlFor="gpxs">
+                {formik.touched.gpxs && formik.errors.gpxs 
+                    ? formik.errors.gpxs
+                    : 'Fisier GPX'
+            }</label>
+            <input 
+                className=" text-gray-200"
+                id="gpxs" 
+                name="gpxs" 
+                type="file" 
+                accept=".gpx"
+                onChange={(e) => formik.setFieldValue('gpxs', e.currentTarget.files[0])} 
             />
         </section>
         

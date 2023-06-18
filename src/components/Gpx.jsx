@@ -9,7 +9,6 @@ const Gpx = ({ src, options }) => {
       if (!map) return
   
       const gpxLayer = new L.GPX(src, options)
-      console.log(gpxLayer)
       gpxLayer.addTo(map)
   
       return () => {

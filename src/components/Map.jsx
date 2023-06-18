@@ -1,28 +1,18 @@
-import { GoogleMap } from '@react-google-maps/api'
-import React, { useCallback, useMemo, useRef } from 'react'
+import { MapContainer, TileLayer} from 'react-leaflet'
 
+const Map = ({children, center=[45.9432, 24.9668], zoom=6}) => {
+  return (
+    <MapContainer center={center} zoom={zoom} scrollWheelZoom={true}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
 
+        {children}
 
-const Map = () => {
-    const mapRef = useRef()
-    const center = useMemo(() => ({ lat: 46 , lng: 25 }), []) 
-    const options = useMemo(() => ({
-        mapId: "351ca23d4a4fdd3d",
-        disableDefaultUI: true,
-        clickableIcons: false,
-    }), [])
-
-    const onLoad = useCallback(map => mapRef.current = map)
-
-    return (
-        <GoogleMap 
-                    zoom={6} 
-                    center={center} 
-                    mapContainerClassName="w-full h-screen"
-                    options={options}
-                    onLoad={onLoad}
-                ></GoogleMap>
-    )
+        
+      </MapContainer>
+  )
 }
 
 export default Map

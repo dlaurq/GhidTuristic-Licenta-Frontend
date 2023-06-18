@@ -10,7 +10,7 @@ import Gpx from "../components/Gpx"
 const Home = () => {
 
   const [recomandari, setRecomandari] = useState({topRest: [], topRec: [], topHotel: [], topTrasee: []})
-
+  const [test, setTest] = useState()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -25,6 +25,18 @@ const Home = () => {
     }
     fetchRecomandari()
 
+    const testFetch = async () => {
+
+      try{
+        const res = await axios.get(`/gpxs/48724d2a-af06-45a2-8e6d-3cb3dbbbcfc4`)
+        //console.log(res.data)
+        setTest(res.data)
+      }catch(err) {
+        console.log(err)
+      }
+      
+    }
+    testFetch()
   }, [])
 
 
@@ -41,6 +53,8 @@ const Home = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        <Gpx src={test} options={{async: true}} />
 
         {recomandari.topRest?.map(entity =>entity.lat && entity.lng &&
           <Marker key={entity.id} position={[entity.lat, entity.lng]}>
