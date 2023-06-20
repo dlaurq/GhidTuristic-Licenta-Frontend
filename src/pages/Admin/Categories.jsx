@@ -16,7 +16,6 @@ const Categories = () => {
   const api = useAxiosPrivate()
 
   const [categories, setCategories] = useState([])
-  const [showConfBox, setShowConfBox] = useState(false)
   const [filteredCategs, setFilteredCategs] = useState(categories)
   const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
 
@@ -26,7 +25,7 @@ const Categories = () => {
         const res = await api.get('/categories')
         setCategories(res.data)
       }catch(err){
-        console.log(err)
+
       }
       
     }
@@ -41,7 +40,6 @@ const Categories = () => {
       setCategories(newCategories)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
     }catch(err){
-      console.log(err)
       setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
     }
     
@@ -59,7 +57,6 @@ const handleCreate = async (values) => {
     setCategories(prev => [...prev, res?.data?.category])
     setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
   }catch(err){
-    console.log(err)
     setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
   }
 }

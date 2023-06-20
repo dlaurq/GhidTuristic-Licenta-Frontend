@@ -1,10 +1,18 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons'
-import { useState } from "react"
+import { forwardRef, useImperativeHandle, useState } from "react"
 
-const DropDownForm = ({text, form}) => {
+const DropDownForm = forwardRef(({text, form}, ref) => {
 
-const [showForm, setShowForm] = useState(false)
+  const [showForm, setShowForm] = useState(false)
+
+  useImperativeHandle(ref, () => ({
+    handleForm() { 
+      setShowForm(prev => !prev)
+    }
+
+  }))
+
 
   return (
     <section className="bg-white ">
@@ -17,6 +25,6 @@ const [showForm, setShowForm] = useState(false)
         {showForm && form}
       </section>
   )
-}
+})
 
 export default DropDownForm

@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useEffect } from "react"
 import useAxiosPrivate from "../../hooks/useAxiosPrivate"
-import { faCaretDown, faCaretUp, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import Review from "../../components/Review"
@@ -17,6 +17,7 @@ const Users = () => {
     const [users, setUsers] = useState([])
     const [filter, setFilter] = useState('')
     const [filterUsers, setFilterUsers] = useState(users)
+    const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
     
 
     const api = useAxiosPrivate()
@@ -29,10 +30,9 @@ const Users = () => {
             try {
                 const res = await api.get('/users')
                 setUsers(res.data)
-                console.log(res.data)
                 setFilterUsers(res.data)
             } catch (err) {
-                console.log(err)
+
             }
         }
         fetchUsers()
@@ -48,8 +48,9 @@ const Users = () => {
             const res = await api.delete(`/users/${username}`)
             const newUsers = users?.filter(user => user.username !== username)
             setUsers(newUsers)
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
         } catch (err) {
-            console.log(err)
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
         }
     }
 
@@ -57,7 +58,8 @@ const Users = () => {
 
   return (
     <section>
-
+        {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
+        
         <SearchBar list={users} setFilterList={setFilterUsers} compare='username' />
 
         {filterUsers?.map(user => <User key={user?.username} {...user} handleDeleteUser={handleDeleteUser} />)}
@@ -91,13 +93,13 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
     //const toggleShowConfBox = () => setShowConfBox(prev => !prev)
     
     const handleDeleteReview = async (id) => {
-        
         try {
             const res = await api.delete(`/reviews/${id}`)
             const newReviews = reviews.filter(review => review.id !== id)
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
             setReviews(newReviews)
         } catch (err) {
-            console.log(err)
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
         }
         
     }
@@ -109,7 +111,6 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
             setEntities(newEntities)
             setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
         } catch (err) {
-            console.log(err)
             setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
         }
       }
@@ -121,9 +122,10 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                 const newRoles = roles?.filter(role => role.name !== '1337')
                 setRoles(newRoles)
             }else setRoles(prev => [...prev, {name: '1337'}])
-            
+
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
         } catch (err) {
-            console.log(err)
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
         }
     }
 
@@ -153,7 +155,7 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                     
                     <section className="flex flex-col sm:flex-row items-stretch justify-start gap-5">
                         <button className="sm:px-5 bg-amber-500 text-left pl-5" type="button" onClick={handlePromote} >{ roles?.find(role => role.name === '1337') ? "Retrogradeaza la utilizator" : "Promovati ca partener"}</button>
-                        <button className="sm:px-5    bg-red-500 text-left pl-5" type="button" onClick={() => setShowConfBox(username)} >Sterge profilul</button>
+                        <button className="sm:px-5 bg-red-500 text-left pl-5" type="button" onClick={() => setShowConfBox(username)} >Sterge profilul</button>
                     </section>
 
                     {showConfBox === username && <ConfBox handleNo={() =>setShowConfBox('')} handleYes={() => handleDeleteUser(username)} >Confirmati stergerea?</ConfBox>}
@@ -195,7 +197,7 @@ const User = ({firstName, lastName, username, email, phoneNR, bio, Roles, Review
                                 <p>Recenzii: {reviews.length}</p>
                                 <p onClick={toggleShowReviewsDetails}><FontAwesomeIcon icon={faCaretDown}/></p>
                             </section>
-                            <section className="text-gray-900 lg:grid lg:grid-cols-2 lg:gap-2 xl:grid-cols-3 2xl:grid-cols-4 ">
+                            <section className="text-gray-900 flex flex-col justify-start gap-5 ">
                                 {reviews?.map((review) => 
                                     <Review key={review.id} review={review}>
                                         <section className="mt-5">

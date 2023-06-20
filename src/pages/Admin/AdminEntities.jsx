@@ -26,10 +26,9 @@ const AdminEntities = () => {
       try {
           const res = await api.get('/places')
           setEntities(res.data)
-          console.log(res.data)
           setFilterEntities(res.data)
       } catch (err) {
-          console.log(err)
+
       }
     }
 
@@ -38,7 +37,7 @@ const AdminEntities = () => {
         const res = await api.get('/categories')
         setCategories(res.data)
       } catch(err){
-        console.log(err)
+
       }
     }
 
@@ -53,7 +52,6 @@ const AdminEntities = () => {
         setEntities(newEntities)
         setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
     } catch (err) {
-        console.log(err)
         setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
     }
   }
@@ -80,8 +78,6 @@ const AdminEntities = () => {
       <hr />
 
       <SearchBar list={entities} setFilterList={setFilterEntities} compare='name' />
-
-      
 
       <section className="sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem] md:grid md:grid-cols-2 md:auto-rows-fr md:gap-5 lg:grid-cols-3">
         {filterEntities?.map(entity => 

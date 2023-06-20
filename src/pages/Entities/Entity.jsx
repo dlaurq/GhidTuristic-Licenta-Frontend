@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from 'react'
-import { Link, NavLink, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, useParams } from 'react-router-dom'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
 import Review from '../../components/Review'
-import ReviewForm from './components/ReviewForm'
 import useAuth from '../../hooks/useAuth'
 import ConfBox from '../../components/ConfBox'
 import Map from '../../components/Map'
 import { Marker } from 'react-leaflet'
 import Gpx from '../../components/Gpx'
-
+import { useFormik } from 'formik'
+import * as Yup from 'yup'
+import { Rating } from 'react-simple-star-rating'
+import jwt_decode from "jwt-decode"
+import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import ErrorMsg from '../../components/ErrorMsg'
 
 const Entity = () => {
 
@@ -17,64 +22,39 @@ const Entity = () => {
     const [entity, setEntity] = useState({PlacesToVisits: [], PlacesVisiteds: []})
     const {auth} = useAuth()
     const [showConfBox, setShowConfBox] = useState(false)
+    const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
 
 
     const fetchEntity = async () => {
         const res = await api.get(`/places/${name}`)
-        console.log(res.data)
         setEntity(res.data)
         //DE CALCULAT RATING SI NR RECENZII
-        //setEntity(res.data)
     }
 
     useEffect(() => {
         fetchEntity()
-        console.log(entity)
-
     }, [])
 
-    const handleVisitedBtn = async () => {
-        try{
-            //console.log(auth?.username, entity?.id)
-            const res = await api.post('/visited', {username: auth?.username, place: entity?.id})
-            //console.log(res.data)
-            fetchEntity()
-        }catch (err){
-            console.log(err)
-        }
-    }
-
-    const handleToVisitBtn = async () => {
-        try{
-            //console.log(auth?.username, entity?.id)
-            const res = await api.post('/toVisit', {username: auth?.username, place: entity?.id})
-            //.log(res.data)
-            fetchEntity()
-        }catch (err){
-            console.log(err)
-        }
-    }
-
     const handleDeleteReview = async (id) => {
-        console.log(id)
-        
         try {
             const res = await api.delete(`/reviews/${id}`)
             fetchEntity()
-        } catch (err) {
-            console.log(err)
-        }
-        
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
+        }catch(err){
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
+        } 
     }
 
     const calcRating = (reviews) => {
         let sum = 0
         reviews?.forEach(review => sum += parseFloat(review?.rating));
         return sum / reviews?.length
-        }
+    }
 
   return (
     <section className='sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem]'>
+        {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
+
         <section className=' p-5'>
             <h2 className='text-3xl font-bold pt-5'>{entity.name}</h2>
 
@@ -89,30 +69,10 @@ const Entity = () => {
                 <Marker position={[entity.lat, entity.lng]}></Marker>
                 <Gpx src={`${import.meta.env.VITE_BASE_BACKEND_URL}/gpxs/${entity.Gpx.id}`} options={{async: true}} />
             </>
-        } />}
-
-            <p className='text-xl py-3'>{entity.description}</p>
-
-            {auth?.accessToken
-            ?<section className='sm:flex sm:flex-row sm:gap-5 sm:justify-between'>
-                
-                
-                
-                {entity?.PlacesVisiteds?.length === 0 || !entity?.PlacesVisiteds?.some(place => place?.User?.username === auth?.username)
-                    ? <button type="button" className="bg-gray-900 my-2 w-full sm:w-auto text-left px-5" onClick={handleVisitedBtn}>Adauga la 'Vizitate'</button>
-                    : undefined
-                }
-
-            </section>
-            : null}
-                
-            
-
-            
+            }/>}
+            <p className='text-xl py-3'>{entity.description}</p>    
         </section>
         
-        
-
         <section className='p-5 '>
             {!auth?.accessToken 
             ?<p className='text-gray-300 text-2xl p-5'><NavLink to='/login' className='font-bold text-amber-500 hover:cursor-pointer'>Autentifica-te</NavLink> pentru a putea lasa recenzii</p>
@@ -130,6 +90,165 @@ const Entity = () => {
         </section>
     </section>
   )
+}
+
+const ReviewForm = ({entityName, fetchEntity}) => {
+
+    const [imgsUrl, setImgsUrl] = useState([])
+    const [toggleForm, setToggleForm] = useState(false)
+    const { auth } = useAuth()
+    const api = useAxiosPrivate()
+    const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
+
+    const handleToggleForm = () => {
+        setToggleForm(prev => !prev)
+    }
+
+    const handleSubmit = async (values) => {
+        const decoded = auth?.accessToken
+        ? jwt_decode(auth.accessToken)
+        : undefined
+        
+        const username = decoded.UserInfo.username
+
+        const formData = new FormData();
+
+        formData.append("entityName", entityName)
+        
+        for (let value in values) {
+            if(values !== 'imgs')
+                formData.append(value, values[value]);
+        }
+        formData.append('username', username)
+        const imgs = [...values.imgs]
+        imgs.forEach(img => formData.append('imgs', img))
+
+        try{
+            const res = await api.post('/reviews',formData,{headers: {'Content-Type': 'multipart/form-data'}})
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
+        }catch(err){
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
+        }
+
+        setToggleForm(prev => !prev)
+        fetchEntity()
+    }
+
+    const formik = useFormik({
+        initialValues:{
+            title: '',
+            description: '',
+            rating: 0,
+            imgs: [],
+            postDate: new Date().toLocaleString('ro-RO')
+        },
+        validationSchema: Yup.object({
+            title: Yup.string().required("Camp obligatoriul"),
+            description: Yup.string().max(500, 'Descrierea poate sa contina maxim 500 de caractere'),
+            rating: Yup.number().min(1, "Camp obligatoriul").required("Camp obligatoriul"),
+            imgs: Yup.mixed().test('file-length', "Puteti adauga maxim 3 poze", (value) => value.length < 4),
+            
+        }),
+        onSubmit: handleSubmit
+    })
+
+    useEffect(() => {
+        const imgs = [...formik.values.imgs]
+        if(imgs.length < 1) 
+            setImgsUrl([])
+        else{
+            const newImgsUrl = []
+            imgs.forEach(img => newImgsUrl.push(URL.createObjectURL(img)))
+            setImgsUrl(newImgsUrl)
+        }
+    }, [formik.values.imgs])
+
+  return (<>
+    {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
+  
+    {!toggleForm
+        ?<p onClick={handleToggleForm} className='text-3xl p-5 bg-gray-900 text-gray-300 font-bold'>Lasa o recenzie <FontAwesomeIcon icon={faCaretUp}/></p>
+        :<form onSubmit={formik.handleSubmit} className='bg-gray-900 border-none' encType="multipart/form-data" >
+            <p onClick={handleToggleForm} className='text-3xl mb-3'>Lasa o recenzie <FontAwesomeIcon icon={faCaretDown}/></p>
+            <section>
+                <label htmlFor='title'>{
+                    formik.touched.title && formik.errors.title 
+                        ? formik.errors.title
+                        : 'Titlu'
+                }</label>
+                <input 
+                    id="title" 
+                    name="title" 
+                    type="text" 
+                    placeholder="Titlu" 
+                    onChange={formik.handleChange} 
+                    onBlur={formik.handleBlur} 
+                    value={formik.values.title}
+                />
+            </section>
+
+            <section>
+                <label htmlFor='description'>{
+                    formik.touched.description && formik.errors.description 
+                        ? formik.errors.description
+                        : 'Descriere'
+                }</label>
+                <textarea 
+                    className='text-neutral-700 w-full'
+                    id="description" 
+                    name="description" 
+                    spellCheck='false'
+                    placeholder="Descriere" 
+                    onChange={formik.handleChange} 
+                    onBlur={formik.handleBlur} 
+                    value={formik.values.description}
+                />
+
+                <section>
+                    <label htmlFor='rating'>{
+                        formik.touched.rating && formik.errors.rating 
+                            ? formik.errors.rating
+                            : 'Rating'
+                    }</label>
+                    <Rating 
+                        SVGstyle={{display: 'inline-block'}}
+                        onClick={(rate) => formik.setFieldValue('rating', rate)}
+                    />
+                </section>
+                
+
+                <section className=''>
+                    <label htmlFor="imgs">
+                        {formik.touched.imgs && formik.errors.imgs 
+                            ? formik.errors.imgs
+                            : 'Poze'
+                    }</label>
+                    <input 
+                        className=" text-gray-200"
+                        id="imgs" 
+                        name="imgs" 
+                        type="file" 
+                        multiple
+                        accept="image/*"
+                        onChange={(e) => formik.setFieldValue('imgs', e.currentTarget.files)} 
+                    />
+                    <section className='flex flex-row flex-wrap justify-center items-center gap-4 py-2'>
+                        {imgsUrl.map(img => 
+                            <img 
+                                className="py-2 w-1/4 h-auto self-center"
+                                key={img} 
+                                src={img} 
+                                alt={img} 
+                            />
+                        )}
+                    </section>
+                    
+                </section>
+            </section>
+
+            <button type='submit'>Adauga recenzie</button>
+        </form>
+    }</>)
 }
 
 export default Entity

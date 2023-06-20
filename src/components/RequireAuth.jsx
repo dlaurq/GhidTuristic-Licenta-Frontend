@@ -14,7 +14,7 @@ const RequireAuth = ({allowedRoles}) => {
     const roles = decoded?.UserInfo.roles || []
     
     return (
-        roles.find(role => allowedRoles?.includes(role))
+        roles.find(role => allowedRoles?.includes(role)) || allowedRoles.length === 0 && auth?.accessToken
             ? <Outlet />
             : <Navigate to='/login' state={{from:location}} replace />
     )

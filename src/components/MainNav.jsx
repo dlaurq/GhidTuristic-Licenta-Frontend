@@ -41,7 +41,7 @@ const MainNav = () => {
           </ul>
         </nav>
         /* MOBILE NAV EXTINS - TITLU + TOATE NAV URILE*/
-        :<nav onClick={handleClick} className="  fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-screen flex flex-col items-center bg-gray-900  text-white font-bold ">
+        :<nav onClick={handleClick} className="  fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-screen h-screen flex flex-col items-center bg-gray-900 z-10 text-white font-bold ">
             <header className="flex justify-between items-center p-5 border-b-2">
               <Link className="text-3xl w-1/2" to='/'>Ghidul Calatorului</Link>
               <FontAwesomeIcon icon={faX} size='3x'/>
@@ -68,7 +68,7 @@ const MainNav = () => {
           </nav>
       }
 
-      {/** */}
+      {/** DESKTOP NAV*/}
       <nav className="hidden text-white w-[61rem] xl:w-[71rem] mx-auto p-5 font-bold lg:flex flex-row justify-between ">
         <Link className="text-3xl w-1/2" to='/'>Ghidul Calatorului</Link>
         <ul className="flex flex-row gap-5 font-normal items-center text-xl">

@@ -33,7 +33,7 @@ const Locations = () => {
       const res = await api.get('/geo')
       setGeo(res.data)
     }catch(err){
-      console.log(err)
+      //console.log(err)
     }
     
 }
@@ -43,7 +43,7 @@ const Locations = () => {
       const res = await api.get('/cities')
       setCities(res.data)
     }catch (err){
-      console.log(err)
+      //console.log(err)
     }
   }
 
@@ -53,7 +53,7 @@ const Locations = () => {
       setLocations(res.data)
       setFilteredLocations(res.data)
     }catch (err){
-      console.log(err)
+      //console.log(err)
     }
   }
 
@@ -99,7 +99,7 @@ const Locations = () => {
   }
 
   return (
-    <section className=''>
+    <section>
 
       {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
 
@@ -117,7 +117,7 @@ const Locations = () => {
 
       <div className="p-2"></div>
       
-
+      {/**LISTA ADRESE */}
       {filteredLocations.map(location => 
         <AdminItem 
         key={location.id}

@@ -35,34 +35,36 @@ function App() {
       <Route element={<PersistLogin />}>
         <Route path="/" element={<RootLayout />}>
 
-          {/**Public routes */}
+          {/**RUTE PUBLICE */}
           <Route path="/" element={<Home />}/>
           <Route path="register" element={<Register />}/>
           <Route path="login" element={<Login />}/>
           <Route path="obiective/:name" element={ <Entity /> } />
           <Route path="obiective" element={ <Entities /> } />
           
-
-          {/**Private routes */}
+          {/**RUTE CONT */}
+          <Route element={<RequireAuth allowedRoles={[]} />}>
             <Route path="cont" element={ <Cont /> } />
             <Route path="creeazaplan" element={ <CreeazaPlan /> } />
-
-            <Route element={<RequireAuth allowedRoles={[420]} />}>
-              <Route path="admin" element={<AdminLayout />}>
-                <Route path="tari" element={<Countries />} />
-                <Route path="judete" element={<Counties />} />
-                <Route path="orase" element={<Cities />} />
-                <Route path="locatii" element={<Locations />} />
-                <Route path="utilizatori" element={<Users />} />
-                <Route path="entitati" element={<AdminEntities />} />
-                <Route path="categorii" element={<Categories />} />
-              </Route>
+          </Route>
+          {/**RUTE ADMIN */}
+          <Route element={<RequireAuth allowedRoles={[420]} />}>
+            <Route path="admin" element={<AdminLayout />}>
+              <Route path="tari" element={<Countries />} />
+              <Route path="judete" element={<Counties />} />
+              <Route path="orase" element={<Cities />} />
+              <Route path="locatii" element={<Locations />} />
+              <Route path="utilizatori" element={<Users />} />
+              <Route path="entitati" element={<AdminEntities />} />
+              <Route path="categorii" element={<Categories />} />
             </Route>
+          </Route>
           
 
-
-          <Route path="partener" element={ <Partener /> } />
-
+          {/**RUTE PARTENER */}
+          <Route element={<RequireAuth allowedRoles={[420]} />}>
+            <Route path="partener" element={ <Partener /> } />
+          </Route>
 
 
           {/**404 route */}

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import EntityCard from '../../components/EntityCard'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
-//import SearchBar from '../../components/SearchBar'
 import 'mapbox-gl/dist/mapbox-gl.css' 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome/index"
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons/index'
@@ -24,21 +23,31 @@ const Entities = () => {
 
     useEffect(() => {
         const fetchPlaces = async () => {
-            const res = await api.get('/places')
-            setEntities(res.data)
-            setFilteredEntities(res.data)
-            console.log(res.data)
+            try{
+                const res = await api.get('/places')
+                setEntities(res.data)
+                setFilteredEntities(res.data)
+            }catch(err){
+
+            }
         }
 
         const fetchGeo = async () => {
-            const res = await api.get('/geo')
-            setGeo(res.data)
+            try{
+                const res = await api.get('/geo')
+                setGeo(res.data)
+            }catch(err){
+                
+            }
         }
 
-        const fetchCategories = async () => {
-            const res = await api.get('/categories')
-            console.log(res.data)
-            setCategories(res.data)
+        const fetchCategories = async () => {     
+            try{
+                const res = await api.get('/categories')
+                setCategories(res.data)
+            }catch(err){
+                
+            }
         }
 
         fetchPlaces()
@@ -47,19 +56,12 @@ const Entities = () => {
     }, [])
 
     useEffect(() => {
-        //sortEntities()
         handleFilter()
     }, [filters, filter])
 
     const toggleShowFilters = () => {
         setShowFilters( prevShowFilters => ! prevShowFilters)
     }
-
-    const sortEntities = () => {
-        const newArr = entities.sort(compareFN)
-        setEntities([...newArr])
-    }
-
 
     const compareFN = (a, b) => {
         let rev1, rev2
@@ -76,7 +78,6 @@ const Entities = () => {
 
         return rev2 - rev1
     }
-
 
     const handleFilter = () => {
         let newArr = entities.filter(entity => filters.category.length === 0 || entity.Category.id === filters.category)
@@ -101,8 +102,8 @@ const Entities = () => {
                     id="sort"
                     onChange={() =>setFilters({...filters, sort: !filters.sort})}
                 >
-                    <option value='rating'>Rating (Mic-Mare)</option>
                     <option value='rating'>Rating (Mare-Mic)</option>
+                    <option value='rating'>Rating (Mic-Mare)</option>
                 </select>
             </section>
  

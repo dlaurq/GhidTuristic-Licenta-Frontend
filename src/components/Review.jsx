@@ -6,7 +6,7 @@ const Review = ({ children, review }) => {
 
   return (
     <section className='p-5 mb-5 border-4 last:mb-0 border-amber-500 bg-white flex flex-col justify-between lg:mb-0'>
-      <section className='sm:flex sm:flex-row sm:justify-between'>
+      <section className='sm:flex sm:flex-row sm:justify-start sm:gap-5'>
         <section className='flex flex-row justify-start items-center mb-2'>
           <FontAwesomeIcon icon={faUser} className="mr-5 text-4xl"/>
           <section>

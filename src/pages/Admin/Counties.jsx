@@ -101,8 +101,6 @@ const Counties = () => {
 
       {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
       
-      
-
       <DropDownForm 
         text='Adauga un judet' 
         form={<CountyForm countries={countries} buttonText='Adauga' handleSubmit={handleCreate}/>}
@@ -123,39 +121,35 @@ const Counties = () => {
       <SearchBar list={counties} setFilterList={setFilteredCounties} compare='name' />
 
       <div className="p-2"></div>
-
      
-      <section className='bg-white'>
-        {filteredCounties.map(county => 
-          <AdminItem 
-            key={county.id}
-            className={filter && county.CountryId !== filter && "hidden"}
-            item={county}
-            toggleConfDelBox={() => toggleConfDelBox(county.id)}
-            handleDelete={() => handleDelete(county.id)} 
-            handleNavigate={() => navigate('/admin/orase', {state: {...county}})}
-            subItemsLength={county?.Cities?.length}
-            handleEdit={() => handleEdit(county.id)} 
-            form={
-              <CountyForm 
-                county={county}
-                countries={countries}
-                buttonText='Salvati'
-                handleSubmit={handleUpdate}
-              >
-                <button className="sm:w-40 mt-5 md:w-60 lg:w-80" type="button" onClick={hideForm}>Cancel</button>
-              </CountyForm>}
-          />
-        )}
-      </section>
-
+      {/**LISTA JUDETE */}
+      {filteredCounties.map(county => 
+        <AdminItem 
+          key={county.id}
+          className={filter && county.CountryId !== filter && "hidden"}
+          item={county}
+          toggleConfDelBox={() => toggleConfDelBox(county.id)}
+          handleDelete={() => handleDelete(county.id)} 
+          handleNavigate={() => navigate('/admin/orase', {state: {...county}})}
+          subItemsLength={county?.Cities?.length}
+          handleEdit={() => handleEdit(county.id)} 
+          form={
+            <CountyForm 
+              county={county}
+              countries={countries}
+              buttonText='Salvati'
+              handleSubmit={handleUpdate}
+            >
+              <button className="sm:w-40 mt-5 md:w-60 lg:w-80" type="button" onClick={hideForm}>Cancel</button>
+            </CountyForm>}
+        />
+      )}
       
-
     </section>
   )
 }
 
-const CountyForm = ({handleSubmit, buttonText, county, country, countries, children}) => {
+const CountyForm = ({handleSubmit, buttonText, county, countries, children}) => {
   const formik = useFormik({
     initialValues:{
       country: (county ? county.CountryId : ''),

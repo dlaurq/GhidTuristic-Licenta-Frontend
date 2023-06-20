@@ -34,10 +34,9 @@ const Cont = () => {
         const fetchUser = async () => {
             try{
                 const res = await api.get(`/users/${auth.username}`)
-                console.log(res.data)
                 setUser(res.data)
             }catch(err){
-                console.log(err)
+
             }
         }
 
@@ -52,20 +51,6 @@ const Cont = () => {
             setShowConfBox('')
             setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
         }catch(err){
-            console.log(err)
-            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
-        }
-    }
-
-    const handleDelteTovisit = async (id) => {
-        try{
-            const res = await api.delete(`/toVisit/${id}`)
-            const newToVisit = [...user.PlacesToVisit2].filter(item => item.PlacesToVisit.id !== id)
-            setUser({...user, PlacesToVisit2: newToVisit})
-            setShowConfBox('')
-            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
-        }catch(err){
-            console.log(err)
             setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
         }
     }
@@ -78,13 +63,11 @@ const Cont = () => {
             setShowConfBox('')
             setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
         }catch(err){
-            console.log(err)
             setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
         }
     }
 
     const handleDone = async (entity, list) => {
-
         try{
             const newPlaces = list.Places.map(e => e.id === entity.id ? {...entity, ListaEntitati:{done: true}} : {...e})
             const newList = {...list, Places: newPlaces}
@@ -93,23 +76,19 @@ const Cont = () => {
             setUser(newUser)
 
             const res = await api.patch(`/toVisit/${list.id}/${entity.id}`)
-            console.log(res.data)
         }catch(err){
-            console.log(err)
+            
         }
-
-        
     }
 
     const handleDeleteList = async (id) =>{
         try{
-            //console.log(id)
             const res = await api.delete(`/toVisit/${id}`)
-            //console.log(res.data)
             setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
             setUser({...user, PlacesToVisits: [...user.PlacesToVisits].filter(e => e.id !== id)})
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
         }catch(err){
-            console.log(err)
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
         }
     }
 
@@ -118,8 +97,6 @@ const Cont = () => {
     {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
 
     <section className='px-5 sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem]'>
-
-
 
         <section className='text-xl'>
             <section className='flex flex-row justify-start items-center'>
@@ -141,7 +118,7 @@ const Cont = () => {
                 toggle={showEditForm} 
                 setToggle={setShowEditForm} 
                 text='Editeaza profilul' 
-                component={<ProfilForm user={user} setShowEditForm={setShowEditForm} setUser={setUser} userData={user} />} 
+                component={<ProfilForm user={user} setShowEditForm={setShowEditForm} setUser={setUser} userData={user} setServerResp={setServerResp} />} 
 
             />
                 
@@ -149,7 +126,7 @@ const Cont = () => {
                 toggle={showPwForm}
                 setToggle={setShowPwForm}
                 text='Schimba parola'
-                component={<ChangePwForm setShowPwForm={setShowPwForm}/>}
+                component={<ChangePwForm setShowPwForm={setShowPwForm} setServerResp={setServerResp} />}
             />
         </section>
         
@@ -217,7 +194,7 @@ const Cont = () => {
             setToggle={setShowRecenzii}
             text='Recenziile mele'
             component={
-                <section className="sm:mx-auto  md:grid md:grid-cols-2 md:auto-rows-fr md:gap-5 lg:grid-cols-3">
+                <section className="text-gray-900 flex flex-col justify-start gap-5 ">
                     {user?.Reviews?.map(review =>
                     <Review key={review.id} review={review}>
                         <section className="mt-5">
@@ -229,11 +206,6 @@ const Cont = () => {
             }
 
         />
-        {/**
-         
-        <button className='text-white w-full my-3 bg-red-700 font-bold'>Sterge cont</button>
-         */}
-       
        
     </section>
     </>)
@@ -254,8 +226,8 @@ const Tab = ({toggle, setToggle, text, component}) => {
 
 }
 
-const ProfilForm = ({user, setShowEditForm, setUser, userData}) => {
-    
+const ProfilForm = ({user, setShowEditForm, setUser, userData, setServerResp}) => {
+
     const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
     
     const api = useAxiosPrivate()
@@ -263,17 +235,15 @@ const ProfilForm = ({user, setShowEditForm, setUser, userData}) => {
 
 
     const handleSubmit = async (values) => {
-        console.log('asd')
-        console.log(values)
         try{
             const res = await api.patch(`/users/${auth.username}`, values)
-            console.log(res.data)
             if(res.status === 200){
                 setUser({...userData, ...values})
             }
             setShowEditForm(false)
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
         }catch(err){
-            console.log(err)
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
         }
     }
 
@@ -382,19 +352,18 @@ const ProfilForm = ({user, setShowEditForm, setUser, userData}) => {
     )
 }
 
-const ChangePwForm = ({setShowPwForm}) => {
+const ChangePwForm = ({setShowPwForm, setServerResp}) => {
 
     const api = useAxiosPrivate()
     const {auth} = useAuth()
 
     const handleSubmit = async (values) => {
-        console.log(values)
         try{
             const res = await api.patch(`/users/edit/password/${auth.username}`, values)
-            console.log(res.data)
             setShowPwForm(false)
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
         }catch(err){
-            console.log(err)
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
         }
     }
 

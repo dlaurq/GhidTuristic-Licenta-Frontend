@@ -7,6 +7,7 @@ import SearchBar from "../components/SearchBar"
 import useAuth from "../hooks/useAuth"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome/index"
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons/index"
+import ErrorMsg from "../components/ErrorMsg"
 
 
 const CreeazaPlan = () => {
@@ -21,6 +22,8 @@ const CreeazaPlan = () => {
     const [filteredEntities, setFilteredEntities] = useState(entities)
     const [errMsg, setErrMsg] = useState('')
     const [submitEntities, setSubmitEntities] = useState([])
+    const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
+
 
     const api = useAxiosPrivate()
 
@@ -32,18 +35,25 @@ const CreeazaPlan = () => {
                 setEntities(arr)
                 setFilteredEntities(arr)
             }catch(err){
-                console.log(err)
+                
             }
         }
         const fetchGeo = async () => {
-            const res = await api.get('/geo')
-            setGeo(res.data)
+            try {
+                const res = await api.get('/geo')
+                setGeo(res.data)
+            } catch (err) {
+                
+            }
         }
 
         const fetchCategories = async () => {
-            const res = await api.get('/categories')
-            console.log(res.data)
-            setCategories(res.data)
+            try{
+                const res = await api.get('/categories')
+                setCategories(res.data)
+            }catch(err){
+
+            }
         }
 
         fetchGeo()
@@ -87,8 +97,10 @@ const CreeazaPlan = () => {
             setEntities(newEntities)
             setDate('')
             setSubmitEntities([])
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
         }catch(err){
-            console.log(err)
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
+            
         }
 
         
@@ -124,8 +136,11 @@ const CreeazaPlan = () => {
         setSubmitEntities(arr)
     }
 
-  return (
+  return (<>
+    {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
+
     <section className='sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem] p-5 '>
+
         <h3 className='text-2xl'>Creaza plan</h3>
 
         <div className='p-5'></div>
@@ -270,7 +285,7 @@ const CreeazaPlan = () => {
         <p className="text-red-500 text-xl">{errMsg}</p>
         <button onClick={handleCreate}>Creeaza lista</button>
     </section>
-  )
+    </>)
 }
 
 export default CreeazaPlan

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import ErrorMsg from "../../components/ErrorMsg"
-
 import { useNavigate } from "react-router-dom"
 import { useFormik } from "formik"
 import * as Yup from "yup"
@@ -14,7 +13,6 @@ const Countries = () => {
   const [countries, setCountries] = useState([])
   const [filteredCountries, setFilteredCountries] = useState(countries)
   const [serverResp, setServerResp] = useState({bgColor: 'bg-black', text: 'test', show: false})
-  const [delConfBox, setDelConfBox] = useState(false)
   
   const navigate = useNavigate()
   const api = useAxiosPrivate()
@@ -27,13 +25,11 @@ const Countries = () => {
         const newCountries = res.data.map(country => ({...country, edit:false}))
         setCountries(newCountries)
       }catch (err){
-        console.log(err)
         setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
       }
     }
   
     fetchCountries()
-
   },[])
 
   const handleCreate = async (values) => {
@@ -43,10 +39,8 @@ const Countries = () => {
       setCountries(newCountries)
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
     }catch(err){
-      console.log(err)
       setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
     }
-    
   }
 
   const handleDelete = async (id) => {
@@ -57,8 +51,6 @@ const Countries = () => {
       setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
     }catch(err){
       setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
-    }finally{
-      setDelConfBox(false)
     }
   }
   
@@ -80,7 +72,6 @@ const Countries = () => {
   }
 
   const toggleConfDelBox = (id)=>{
-    console.log(id)
     const newCountries = countries.map(country => country.id === id ? {...country, deleteBox:!country.deleteBox} : country)
     setCountries(newCountries)
   }
@@ -107,6 +98,7 @@ const Countries = () => {
 
       <div className="p-2"></div>
 
+      {/**LISTA TARI */}
       {filteredCountries.map(country =>
         <AdminItem 
           key={country.id}
@@ -125,7 +117,6 @@ const Countries = () => {
         />
       )}
 
-    
     </section>
   )
 }

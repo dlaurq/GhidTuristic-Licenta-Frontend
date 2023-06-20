@@ -32,7 +32,7 @@ const Cities = () => {
       const res = await api.get('/cities')
       setCities(res.data)
     }catch (err){
-      console.log(err)
+      //console.log(err)
     }
   }
 
@@ -41,7 +41,7 @@ const Cities = () => {
       const res = await api.get('/counties')
       setCounties(res.data)
     }catch (err){
-      console.log(err)
+      //console.log(err)
     }
   }
 
@@ -98,7 +98,7 @@ const Cities = () => {
   }
 
   return (
-    <section className=''>
+    <section>
 
       {serverResp.show && <ErrorMsg bgColor={serverResp.bgColor} text={serverResp.text} setServerResp={setServerResp} />}
 
@@ -122,7 +122,8 @@ const Cities = () => {
       <SearchBar list={cities} setFilterList={setFilteredCities} compare='name' />
 
       <div className="p-2"></div>
-
+      
+      {/**LISTA ORASE */}
       {filteredCities.map(city => 
         <AdminItem 
           key={city.id}
