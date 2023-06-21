@@ -1,7 +1,6 @@
 import { useEffect } from "react"
 import { useState } from "react"
 import useAxiosPrivate from "../hooks/useAxiosPrivate"
-
 import EntityCard from "../components/EntityCard"
 import SearchBar from "../components/SearchBar"
 import useAuth from "../hooks/useAuth"

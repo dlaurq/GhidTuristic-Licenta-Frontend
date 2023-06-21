@@ -74,7 +74,7 @@ const Entities = () => {
         if(a.Reviews.length > 1) rev1 = a.Reviews?.reduce((r1, r2) => r1.rating + r2.rating, 0)
         if(b.Reviews.length > 1) rev2 = b.Reviews?.reduce((r1, r2) => r1.rating + r2.rating, 0)
 
-        if(!filters.sort) return rev1 - rev2
+        if(filters.sort) return rev1 - rev2
 
         return rev2 - rev1
     }

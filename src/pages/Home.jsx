@@ -42,7 +42,6 @@ const Home = () => {
 
   return (
 
-
     <section className="min-h-screen sm:mx-auto sm:w-[37rem] md:w-[45rem] lg:w-[61rem] xl:w-[71rem]">
 
       <div className="p-5"></div>
@@ -72,7 +71,7 @@ const Home = () => {
           </Marker>
         )}
 
-        {recomandari.topRec?.map(entity =>entity.lat && entity.lng &&
+        {recomandari.topActivitati?.map(entity =>entity.lat && entity.lng &&
           <Marker key={entity.id} position={[entity.lat, entity.lng]}>
             <Popup >
               <EntityCard className='!p-0' entity={entity}/>
@@ -96,16 +95,18 @@ const Home = () => {
       {/**Liste recomandari */}
       <section className="p-5 text-xl">
 
-        {recomandari?.topRec?.length !== 0 && 
+        {recomandari?.topActivitati?.length !== 0 && 
           <section className="">
-            <p className="font-bold text-2xl mb-2">Top Recomandari</p>
-            
+            <p className="font-bold text-2xl mb-2">Top activitati</p>
+            <section className="flex flex-row justify-start overflow-auto my-5 sm:gap-5  ">
+              {recomandari?.topActivitati?.map(item => <EntityCard className='min-w-fit last:border-b-2' key={item.id} entity={item} />)}
+            </section>
           </section>
         }
 
         {recomandari?.topRest?.length !== 0 && 
           <section className="">
-            <p className="font-bold text-2xl mb-2">Top Restaurante</p>
+            <p className="font-bold text-2xl mb-2">Top restaurante</p>
             <section className="flex flex-row justify-start overflow-auto my-5 sm:gap-5  ">
               {recomandari?.topRest?.map(item => <EntityCard className='min-w-fit last:border-b-2' key={item.id} entity={item} />)}
             </section>
@@ -114,27 +115,23 @@ const Home = () => {
 
         {recomandari?.topHotel?.length !== 0 && 
           <section>
-            <p className="font-bold text-2xl mb-2">Top Hoteluri</p>
+            <p className="font-bold text-2xl mb-2">Top hoteluri</p>
             <section className="flex flex-row justify-start overflow-auto my-5 sm:gap-5 ">
               {recomandari?.topHotel?.map(item => <EntityCard className='min-w-fit last:border-b-2' key={item.id} entity={item} />)}
             </section>
           </section>
         }
 
-        {recomandari?.topActiv?.length !== 0 && 
+        {recomandari?.topTrasee?.length !== 0 && 
         <section>
-          <p className="font-bold text-2xl mb-2">Top Activitati</p>
+          <p className="font-bold text-2xl mb-2">Top trasee montane</p>
           <section className="flex flex-row overflow-y-auto gap-5 justify-start items-center">
-            {recomandari?.topActiv?.map(item => <EntityCard className='min-w-[15rem]' key={item.id} entity={item} />)}
+            {recomandari?.topTrasee?.map(item => <EntityCard className='min-w-[15rem]' key={item.id} entity={item} />)}
           </section>
         </section>
         }
 
-        {recomandari?.topOrase?.length !== 0 && 
-          <section>
-            <p className="font-bold text-2xl mb-2">Top Orase</p>
-          </section>
-        }
+        
       </section>
         
       

@@ -72,11 +72,13 @@ const Cont = () => {
             const newPlaces = list.Places.map(e => e.id === entity.id ? {...entity, ListaEntitati:{done: true}} : {...e})
             const newList = {...list, Places: newPlaces}
             const newArrList = [...user.PlacesToVisits].map(l => l.id === newList.id ? {...newList} : {...l})
-            const newUser = {...user, PlacesToVisits: newArrList}
+            const res = await api.patch(`/toVisit/${list.id}/${entity.id}`, {username: user.username})
+            const newUser = {...user, PlacesToVisits: newArrList, PlacesVisited2:[...user.PlacesVisited2, {...entity, PlacesVisited: {id: res.data.visitedId}}]}
             setUser(newUser)
-
-            const res = await api.patch(`/toVisit/${list.id}/${entity.id}`)
+            console.log(res.data)
+            setServerResp({bgColor: 'bg-green-500', text: res.data.message, show: true})
         }catch(err){
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
             
         }
     }
