@@ -105,7 +105,7 @@ const hideForm = () => {
               toggleConfDelBox={() => toggleConfDelBox(category.id)}
               handleDelete={() => handleDelete(category.id)} 
               handleNavigate={() => navigate('/admin/Entities', {state: {filter: category.id}})}
-              subItemsLength={category?.Locations?.length}
+              subItemsLength={category?.Places?.length}
               handleEdit={() => handleEdit(category.id)} 
               form={
                 <CategoryForm buttonText='Edit' handleSubmit={handleUpdate} category={category}>

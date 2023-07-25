@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { useFormik } from "formik"
 import * as Yup from "yup"
 import { useNavigate } from "react-router-dom"
-import Filtru from '../../components/FIltru'
+import Filtru from '../../components/Filtru'
 import ErrorMsg from '../../components/ErrorMsg'
 import AdminItem from '../../components/AdminItem'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'

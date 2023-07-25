@@ -8,7 +8,13 @@ const Gpx = ({ src, options }) => {
     useEffect(() => {
       if (!map) return
   
-      const gpxLayer = new L.GPX(src, options)
+      const gpxLayer = new L.GPX(src, {
+        marker_options: {
+          startIconUrl: '',
+          endIconUrl: '',
+          shadowUrl: ''
+          }
+      })
       gpxLayer.addTo(map)
   
       return () => {

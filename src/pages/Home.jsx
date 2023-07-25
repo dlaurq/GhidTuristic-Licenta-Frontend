@@ -53,8 +53,6 @@ const Home = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <Gpx src={test} options={{async: true}} />
-
         {recomandari.topRest?.map(entity =>entity.lat && entity.lng &&
           <Marker key={entity.id} position={[entity.lat, entity.lng]}>
             <Popup >

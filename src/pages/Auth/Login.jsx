@@ -22,7 +22,7 @@ const Login = () => {
                 withCredentials: true
             })
             const accessToken = res.data.accessToken
-            setAuth({...auth, username:values.username, accessToken})
+            setAuth({...auth, username:values.username, accessToken, roles: res.data.roles})
             navigate(from, { replace: true })
         }catch(err){
             setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})

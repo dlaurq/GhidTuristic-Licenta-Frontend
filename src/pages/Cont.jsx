@@ -112,7 +112,7 @@ const Cont = () => {
             <p>{user.email}</p>
             <p>{user.phoneNr}</p>
             <p>{user.bio}</p>
-            <p>Adresa</p>
+            {/** <p>Adresa</p>*/}
         </section>
 
         <section className='md:grid md:grid-cols-2 md:gap-5 md:auto-rows-min'>
@@ -156,7 +156,7 @@ const Cont = () => {
                                         <EntityCard key={entity.id} entity={entity} className={entity.ListaEntitati.done && 'opacity-40 '} >
                                             <section className="mt-5">
                                                 <button disabled={entity.ListaEntitati.done} type="button" onClick={() => setShowConfBox(entity.id)} className="disabled:line-through sm:px-5 sm:w-auto  bg-red-500 text-left pl-5 w-full border-2 font-bold">Marcheaza ca finalizat</button>
-                                                {entity.id === showConfBox && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDone(entity, list)} >Confirmati stergerea?</ConfBox>}
+                                                {entity.id === showConfBox && <ConfBox handleNo={() => setShowConfBox('')} handleYes={() => handleDone(entity, list)} >Confirmati marcarea ca finalizat?</ConfBox>}
                                             </section>
                                         </EntityCard>
                                     )}

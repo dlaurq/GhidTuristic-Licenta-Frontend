@@ -75,7 +75,7 @@ const Entity = () => {
         
         <section className='p-5 '>
             {!auth?.accessToken 
-            ?<p className='text-gray-300 text-2xl p-5'><NavLink to='/login' className='font-bold text-amber-500 hover:cursor-pointer'>Autentifica-te</NavLink> pentru a putea lasa recenzii</p>
+            ?<p className='text-gray-900 text-2xl p-5'><NavLink to='/login' className='font-bold text-amber-500 hover:cursor-pointer'>Autentifica-te</NavLink> pentru a putea lasa recenzii</p>
             :entity?.Reviews?.find(review => review?.User?.username === auth?.username)
             ?entity?.Reviews?.map((review, index) => review?.User?.username === auth?.username && 
                 <Review key={index} review={review}>
