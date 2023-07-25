@@ -5,7 +5,7 @@ import { useFormik } from "formik"
 import * as Yup from "yup"
 import { useNavigate } from "react-router-dom"
 import DropDownForm from "../../components/DropDownForm"
-import Filtru from '../../components/FIltru'
+import Filtru from '../../components/Filtru'
 import SearchBar from '../../components/SearchBar'
 import AdminItem from '../../components/AdminItem'
 import useAxiosPrivate from '../../hooks/useAxiosPrivate'
