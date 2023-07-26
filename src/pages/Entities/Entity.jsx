@@ -61,7 +61,7 @@ const Entity = () => {
             <p className="text-xl"> {entity?.Category?.name} &#x2022; Rating {calcRating(entity?.Reviews) || 0} &#x2022; Recenzii {entity?.Reviews?.length} </p>
 
             <section className='flex flex-row overflow-auto my-5 gap-5'>
-                {entity?.Images?.map((img, index) => <img key={index} src={`http://localhost:5000/uploads/${img?.imgUrl}`} className='md:max-h-80 max-h-64 object-contain' />)}
+                {entity?.Images?.map((img, index) => <img key={index} src={import.meta.env.VITE_BASE_BACKEND_URL + '/uploads/' + img?.imgUrl} className='md:max-h-80 max-h-64 object-contain' />)}
             </section>
 
             {entity?.Gpx && <Map center={[entity.lat, entity.lng]} children={
