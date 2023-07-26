@@ -8,6 +8,8 @@ const ErrorMsg = ({text = ' test', bgColor = "bg-red-600", setServerResp}) => {
   const [show, setShow] = useState(true)
 
   useEffect(() => {
+    console.log(text)
+
     const timer = setTimeout(() => {
       setShow(false)
       setServerResp(prev => ({...prev, show: false}))
@@ -26,7 +28,7 @@ const ErrorMsg = ({text = ' test', bgColor = "bg-red-600", setServerResp}) => {
   return (
     <section onClick={handleClick} className={`fixed w-screen bottom-0 ${bgColor} text-white cursor-pointer`}>
       <section className="flex flex-row px-5 py-3 justify-between items-center text-2xl font-bold">
-        <p>{text}</p>
+        <p>{JSON.stringify(text)}</p>
         <FontAwesomeIcon icon={faX}/>
       </section>
     </section>

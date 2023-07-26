@@ -1,4 +1,5 @@
-const STATIC_API_ROUTE = 'http://localhost:5000/uploads/'
+const STATIC_API_ROUTE = import.meta.env.VITE_BASE_BACKEND_URL + '/uploads/'
+
 
 const useStaticApi = () => {
   return STATIC_API_ROUTE
