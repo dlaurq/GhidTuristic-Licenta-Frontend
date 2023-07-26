@@ -26,7 +26,7 @@ const Review = ({ children, review }) => {
       </section>
      
       <section className='flex gap-10 flex-col flex-wrap justify-start sm:flex-row'>
-          {review.Images?.map((img, index) => <img className='sm:max-h-20 md:max-h-28 lg:max-h-36' key={index} src={`http://localhost:5000/uploads/${img?.imgUrl}`} />)}
+          {review.Images?.map((img, index) => <img className='sm:max-h-20 md:max-h-28 lg:max-h-36' key={index} src={import.meta.env.VITE_BASE_BACKEND_URL + '/uploads/' +img?.imgUrl} />)}
       </section>
 
       {children}
