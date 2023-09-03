@@ -28,7 +28,7 @@ const Register = () => {
             //console.log(res.data)
             navigate('/login')
         }catch(err){
-            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response.data.message}`, show: true})
+            setServerResp({bgColor: 'bg-red-500', text: `Error: ${err.response?.data.message}`, show: true})
         }
     }
 
