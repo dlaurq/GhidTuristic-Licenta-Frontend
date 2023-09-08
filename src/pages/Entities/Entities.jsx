@@ -5,7 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome/index"
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons/index'
 import { MapContainer, TileLayer, Marker, Popup  } from 'react-leaflet'
-import 'leaflet/dist/leaflet.css'
+//import 'leaflet/dist/leaflet.css'
 import 'leaflet-gpx/gpx.js'
 import "leaflet/dist/images/marker-shadow.png";
 
